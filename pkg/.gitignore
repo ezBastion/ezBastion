@@ -1,0 +1,7 @@
+*.crt
+*.key
+*.db
+*.exe
+*.log
+config.json
+*.out

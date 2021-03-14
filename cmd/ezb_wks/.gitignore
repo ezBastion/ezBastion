@@ -1,0 +1,11 @@
+*.crt
+*.key
+*.db
+*.exe
+*.log
+*.json
+*.out
+*.ps1
+*.ico
+*.syso
+*.zip
