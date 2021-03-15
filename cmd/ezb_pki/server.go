@@ -32,9 +32,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ezBastion/ezb_microservice/pkg/logmanager"
-	"github.com/ezbastion/ezb_pki/models"
-	"github.com/ezbastion/ezb_pki/setup"
+	"ezBastion/cmd/ezb_pki/models"
+	"ezBastion/cmd/ezb_pki/setup"
+
+	"ezBastion/pkg/logmanager"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/urfave/cli"

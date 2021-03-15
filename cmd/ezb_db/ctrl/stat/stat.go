@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ezBastion/ezb_db/tools"
+	"ezBastion/cmd/ezb_db/tools"
 
 	"github.com/gin-gonic/gin"
 )

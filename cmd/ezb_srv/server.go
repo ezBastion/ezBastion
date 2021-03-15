@@ -21,20 +21,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ezbastion/ezb_lib/logmanager"
-	"github.com/ezbastion/ezb_srv/cache"
-	"github.com/ezbastion/ezb_srv/cache/memory"
-	"github.com/ezbastion/ezb_srv/ctrl"
-	"github.com/ezbastion/ezb_srv/middleware"
-	"github.com/ezbastion/ezb_srv/models"
-	"github.com/ezbastion/ezb_srv/setup"
+	"ezBastion/cmd/ezb_srv/cache"
+	"ezBastion/cmd/ezb_srv/cache/memory"
+	"ezBastion/cmd/ezb_srv/ctrl"
+	"ezBastion/cmd/ezb_srv/middleware"
+	"ezBastion/cmd/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/setup"
+
+	"ezBastion/pkg/logmanager"
+
 	"github.com/gin-contrib/location"
+
+	"net/http"
+	"os"
 
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"os"
 )
 
 var storage cache.Storage
@@ -45,7 +48,7 @@ func mainGin(serverchan *chan bool) {
 	if err != nil {
 		panic(err)
 	}
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath,  "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, true, true, true)
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, true, true, true)
 
 	storage = memory.NewStorage()
 

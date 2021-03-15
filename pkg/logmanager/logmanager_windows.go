@@ -24,7 +24,8 @@ import (
 	"runtime"
 	"strings"
 
-	ezbevent "github.com/ezBastion/ezb_lib/eventlogmanager"
+	ezbevent "ezBastion/pkg/eventlogmanager"
+
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -55,7 +56,7 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 	case "critical":
 		log.SetLevel(log.FatalLevel)
 	default:
-		fmt.Errorf("ezb_lib/logmanager/SetLogLevel() failed: Bad log level name, set to Info")
+		fmt.Errorf("logmanager/SetLogLevel() failed: Bad log level name, set to Info")
 		log.SetLevel(log.InfoLevel)
 	}
 
@@ -110,19 +111,18 @@ func WithFields(s1 string, s2 string) {
 }
 
 func StartWindowsEvent(name string) {
-		if ezbevent.Status == 0 {
-			ezbevent.Open(name)
-		}
-	
+	if ezbevent.Status == 0 {
+		ezbevent.Open(name)
+	}
+
 }
 
 // Info logs an info event into the windows eventlog system
 func Debug(logline string) error {
 	log.Debugln(logline)
 	if level == "debug" {
-			if ezbevent.Status == 0 {
-				ezbevent.Elog.Info(1, "DEBUG : "+logline)
-			}
+		if ezbevent.Status == 0 {
+			ezbevent.Elog.Info(1, "DEBUG : "+logline)
 		}
 	}
 	return nil
@@ -146,9 +146,6 @@ func Info(logline string, forceStdout ...bool) error {
 	return nil
 }
 
-
-
-
 // Error logs an error event into the windows eventlog system
 func Error(logline string) error {
 	log.Errorln(logline)
@@ -156,7 +153,7 @@ func Error(logline string) error {
 		if ezbevent.Status == 0 {
 			ezbevent.Elog.Error(1, logline)
 		}
-		
+
 	}
 	return nil
 }
@@ -167,7 +164,7 @@ func Warning(logline string) error {
 	if (level == "debug") || (level == "info") || (level == "warning") {
 		if ezbevent.Status == 0 {
 			ezbevent.Elog.Warning(1, logline)
-		}	
+		}
 	}
 	return nil
 }

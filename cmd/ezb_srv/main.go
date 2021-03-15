@@ -20,8 +20,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ezbastion/ezb_srv/models"
-	"github.com/ezbastion/ezb_srv/setup"
+	"ezBastion/cmd/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"

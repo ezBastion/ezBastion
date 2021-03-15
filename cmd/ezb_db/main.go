@@ -22,8 +22,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/ezBastion/ezb_db/configuration"
-	"github.com/ezBastion/ezb_db/setup"
+	"ezBastion/cmd/ezb_db/configuration"
+	"ezBastion/cmd/ezb_db/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"

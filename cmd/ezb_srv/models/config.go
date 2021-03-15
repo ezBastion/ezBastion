@@ -15,7 +15,7 @@
 
 package models
 
-import "github.com/ezbastion/ezb_lib/confmanager"
+import "ezBastion/pkg/confmanager"
 
 type Configuration struct {
 	Listen          string             `json:"listen"`

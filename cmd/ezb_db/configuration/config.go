@@ -15,7 +15,7 @@
 
 package configuration
 
-import "github.com/ezBastion/ezb_lib/confmanager"
+import "ezBastion/pkg/confmanager"
 
 type Configuration struct {
 	ListenJWT       string             `json:"listenjwt"`

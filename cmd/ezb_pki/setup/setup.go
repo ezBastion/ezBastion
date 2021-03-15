@@ -32,10 +32,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ezbastion/ezb_lib/setupmanager"
-	"github.com/ezbastion/ezb_pki/models"
+	"ezBastion/cmd/ezb_pki/models"
 
-	"github.com/ShowMax/go-fqdn"
+	"ezBastion/pkg/setupmanager"
+
+	"github.com/Showmax/go-fqdn"
 
 	"github.com/urfave/cli"
 )

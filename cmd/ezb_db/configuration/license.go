@@ -10,7 +10,7 @@ import (
 
 	t "chavers.localhost/ezb_priv/tools"
 
-	"github.com/ezBastion/ezb_db/models"
+	"ezBastion/cmd/ezb_db/models"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 )

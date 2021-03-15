@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ezbastion/ezb_srv/cache"
+	"ezBastion/cmd/ezb_srv/cache"
 
 	"github.com/go-resty/resty/v2"
 	log "github.com/sirupsen/logrus"

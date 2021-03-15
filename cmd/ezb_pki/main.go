@@ -22,7 +22,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/ezbastion/ezb_pki/setup"
+	"ezBastion/cmd/ezb_pki/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"

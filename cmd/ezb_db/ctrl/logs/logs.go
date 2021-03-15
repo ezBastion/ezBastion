@@ -20,8 +20,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ezBastion/ezb_db/models"
-	"github.com/ezBastion/ezb_db/tools"
+	"ezBastion/cmd/ezb_db/models"
+
+	"ezBastion/cmd/ezb_db/tools"
 
 	"github.com/gin-gonic/gin"
 )

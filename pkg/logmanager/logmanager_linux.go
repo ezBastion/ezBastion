@@ -54,7 +54,7 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 	case "critical":
 		log.SetLevel(log.FatalLevel)
 	default:
-		fmt.Errorf("ezb_lib/logmanager/SetLogLevel() failed: Bad log level name, set to Info")
+		fmt.Errorf("logmanager/SetLogLevel() failed: Bad log level name, set to Info")
 		log.SetLevel(log.InfoLevel)
 	}
 

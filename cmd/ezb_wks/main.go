@@ -24,8 +24,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ezbastion/ezb_wks/models"
-	"github.com/ezbastion/ezb_wks/setup"
+	"ezBastion/cmd/ezb_wks/models"
+	"ezBastion/cmd/ezb_wks/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"

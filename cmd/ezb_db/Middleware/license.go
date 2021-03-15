@@ -1,7 +1,7 @@
 package Middleware
 
 import (
-	"github.com/ezBastion/ezb_db/configuration"
+	"ezBastion/cmd/ezb_db/configuration"
 	"github.com/gin-gonic/gin"
 )
 

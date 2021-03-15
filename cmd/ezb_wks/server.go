@@ -26,13 +26,14 @@ import (
 	"path"
 	"time"
 
-	"github.com/ezbastion/ezb_lib/logmanager"
-	"github.com/ezbastion/ezb_wks/Middleware"
-	"github.com/ezbastion/ezb_wks/models/exec"
-	"github.com/ezbastion/ezb_wks/models/healthCheck"
-	"github.com/ezbastion/ezb_wks/models/tasks"
-	"github.com/ezbastion/ezb_wks/models/wkslog"
-	"github.com/ezbastion/ezb_wks/setup"
+	"ezBastion/cmd/ezb_wks/Middleware"
+	"ezBastion/cmd/ezb_wks/models/exec"
+	"ezBastion/cmd/ezb_wks/models/healthCheck"
+	"ezBastion/cmd/ezb_wks/models/tasks"
+	"ezBastion/cmd/ezb_wks/models/wkslog"
+	"ezBastion/cmd/ezb_wks/setup"
+
+	"ezBastion/pkg/logmanager"
 
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"

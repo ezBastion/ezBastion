@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ezbastion/ezb_srv/cache"
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/cache"
+	"ezBastion/cmd/ezb_srv/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

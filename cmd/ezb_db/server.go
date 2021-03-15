@@ -27,13 +27,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ezBastion/ezb_db/configuration"
-	"github.com/ezBastion/ezb_db/routes"
-	"github.com/ezBastion/ezb_db/setup"
-	"github.com/ezBastion/ezb_lib/logmanager"
+	"ezBastion/cmd/ezb_db/configuration"
+	"ezBastion/cmd/ezb_db/routes"
+	"ezBastion/cmd/ezb_db/setup"
+	"ezBastion/pkg/logmanager"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/ezBastion/ezb_db/Middleware"
+	"ezBastion/cmd/ezb_db/Middleware"
 
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"

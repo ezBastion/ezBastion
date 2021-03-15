@@ -34,11 +34,11 @@ import (
 	"strings"
 	"time"
 
-	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/ezBastion/ezb_db/configuration"
-	m "github.com/ezBastion/ezb_db/models"
-	"github.com/ezBastion/ezb_db/tools"
-	"github.com/ezBastion/ezb_lib/setupmanager"
+	fqdn "github.com/Showmax/go-fqdn"
+	"ezBastion/cmd/ezb_db/configuration"
+	m "ezBastion/cmd/ezb_db/models"
+	"ezBastion/cmd/ezb_db/tools"
+	"ezBastion/pkg/setupmanager"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 )

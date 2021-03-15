@@ -22,7 +22,7 @@ import (
 	"strconv"
 	s "strings"
 
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

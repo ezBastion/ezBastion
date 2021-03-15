@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"path"
 
-	m "github.com/ezBastion/ezb_db/models"
+	m "ezBastion/cmd/ezb_db/models"
 	uuid "github.com/gofrs/uuid"
 
-	"github.com/ezBastion/ezb_db/tools"
+	"ezBastion/cmd/ezb_db/tools"
 
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"

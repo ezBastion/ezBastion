@@ -20,7 +20,8 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 )

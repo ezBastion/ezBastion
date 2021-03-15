@@ -33,11 +33,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	s "github.com/ezbastion/ezb_lib/setupmanager"
+	s "ezBastion/pkg/setupmanager"
+
 	log "github.com/sirupsen/logrus"
 
-	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/models"
+
+	fqdn "github.com/Showmax/go-fqdn"
 )
 
 var (

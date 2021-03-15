@@ -28,8 +28,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ezbastion/ezb_srv/cache"
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/cache"
+	"ezBastion/cmd/ezb_srv/models"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

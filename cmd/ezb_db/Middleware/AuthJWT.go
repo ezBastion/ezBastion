@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/ezBastion/ezb_db/configuration"
-	"github.com/ezBastion/ezb_db/models"
+	"ezBastion/cmd/ezb_db/configuration"
+	"ezBastion/cmd/ezb_db/models"
 
 	"net/http"
 	"os"

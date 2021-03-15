@@ -34,9 +34,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/ezbastion/ezb_lib/setupmanager"
-	"github.com/ezbastion/ezb_wks/models"
+	"ezBastion/cmd/ezb_wks/models"
+
+	"ezBastion/pkg/setupmanager"
+
+	fqdn "github.com/Showmax/go-fqdn"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -10,7 +10,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ezbastion/ezb_wks/models"
+	"ezBastion/cmd/ezb_wks/models"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/encoding/unicode"

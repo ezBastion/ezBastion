@@ -21,7 +21,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ezbastion/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/models"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -83,7 +84,7 @@ func SelectWorker(c *gin.Context) {
 				return
 			}
 
-			var	worker = enableWorkers[randomWorker(&enableWorkers)]
+			var worker = enableWorkers[randomWorker(&enableWorkers)]
 
 			// switch on config worker algo
 
@@ -112,11 +113,11 @@ func SelectWorker(c *gin.Context) {
 //	sort.Ints(*keys)
 //}
 func randomWorker(workers *[]models.EzbWorkers) int {
-	j := rand.Intn(len(*workers) )
+	j := rand.Intn(len(*workers))
 	if j < len(*workers) {
 		return j
 	} else {
-		return j -1
+		return j - 1
 	}
 }
 

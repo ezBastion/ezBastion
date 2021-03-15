@@ -20,8 +20,8 @@ import (
 	s "strings"
 	"time"
 
-	"github.com/ezbastion/ezb_srv/models"
-	"github.com/ezbastion/ezb_srv/tool"
+	"ezBastion/cmd/ezb_srv/models"
+	"ezBastion/cmd/ezb_srv/tool"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"

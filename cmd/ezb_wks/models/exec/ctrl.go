@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ezbastion/ezb_wks/models"
-	"github.com/ezbastion/ezb_wks/models/tasks"
+	"ezBastion/cmd/ezb_wks/models"
+	"ezBastion/cmd/ezb_wks/models/tasks"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
