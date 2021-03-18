@@ -1,12 +1,3 @@
-*.exe
-*.db
-*.json
-*.crt
-*.key
-log/
-cert/
 db/
 *.sql
-*.syso
-*.ico
-*.zip
+

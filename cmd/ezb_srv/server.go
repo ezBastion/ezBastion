@@ -28,8 +28,6 @@ import (
 	"ezBastion/cmd/ezb_srv/models"
 	"ezBastion/cmd/ezb_srv/setup"
 
-	"ezBastion/pkg/logmanager"
-
 	"github.com/gin-contrib/location"
 
 	"net/http"
@@ -48,7 +46,6 @@ func mainGin(serverchan *chan bool) {
 	if err != nil {
 		panic(err)
 	}
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, true, true, true)
 
 	storage = memory.NewStorage()
 

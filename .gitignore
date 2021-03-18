@@ -1,8 +1,5 @@
 *.exe
 *.key
 *.crt
-*.json
 *.log
 *.zip
-*.syso
-*.ico

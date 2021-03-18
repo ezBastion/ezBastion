@@ -30,7 +30,6 @@ import (
 	"ezBastion/cmd/ezb_db/configuration"
 	"ezBastion/cmd/ezb_db/routes"
 	"ezBastion/cmd/ezb_db/setup"
-	"ezBastion/pkg/logmanager"
 	"golang.org/x/sync/errgroup"
 
 	"ezBastion/cmd/ezb_db/Middleware"
@@ -79,7 +78,6 @@ func mainGin(serverchan *chan bool) {
 	if err != nil {
 		panic(err)
 	}
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, path.Join(exPath, "log/ezb_db.log"), conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge)
 
 	log.WithFields(log.Fields{"module": "main", "type": "log"})
 	log.Debug("loglevel: ", conf.Logger.LogLevel)

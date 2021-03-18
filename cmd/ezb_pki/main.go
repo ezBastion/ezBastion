@@ -18,23 +18,34 @@
 package main
 
 import (
+	"ezBastion/cmd/ezb_pki/models"
+	"ezBastion/pkg/logmanager"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"ezBastion/cmd/ezb_pki/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
 )
+var exPath string
+var conf models.Configuration
 
+func init() {
+	ex, _ := os.Executable()
+	exPath = filepath.Dir(ex)
+	conf, _ = setup.CheckConfig()
+}
 func main() {
 
-	isIntSess, err := svc.IsAnInteractiveSession()
+	IsWindowsService, err := svc.IsWindowsService()
 	if err != nil {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
-	if !isIntSess {
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath,  "log/ezb_pki.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+	if IsWindowsService {
 		conf, err := setup.CheckConfig()
 		if err == nil {
 			runService(conf.ServiceName, false)

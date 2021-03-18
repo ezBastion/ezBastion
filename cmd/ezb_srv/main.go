@@ -15,6 +15,7 @@
 package main
 
 import (
+	"ezBastion/pkg/logmanager"
 	"fmt"
 	"log"
 	"os"
@@ -33,18 +34,19 @@ var (
 )
 
 func init() {
-	ex, _ := os.Executable()
+	ex, _ := exePath()
 	exPath = filepath.Dir(ex)
 }
 
 func main() {
 
-	isIntSess, err := svc.IsAnInteractiveSession()
+	IsWindowsService, err := svc.IsWindowsService()
 	if err != nil {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
 
-	if !isIntSess {
+	if IsWindowsService {
 		conf, err := setup.CheckConfig()
 		if err == nil {
 			runService(conf.ServiceName, false)

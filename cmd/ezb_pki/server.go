@@ -27,29 +27,17 @@ import (
 	"io/ioutil"
 	"math/big"
 	"net"
-	"os"
 	"path"
-	"path/filepath"
 	"time"
 
-	"ezBastion/cmd/ezb_pki/models"
-	"ezBastion/cmd/ezb_pki/setup"
-
-	"ezBastion/pkg/logmanager"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/urfave/cli"
 )
 
-var exPath string
-var conf models.Configuration
 
-func init() {
-	ex, _ := os.Executable()
-	exPath = filepath.Dir(ex)
-	conf, _ = setup.CheckConfig()
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, path.Join(exPath, "log/ezb_pki.log"), conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, true, true, true)
-}
+
+
 
 func startRootCAServer(serverchan *chan bool) error {
 	caPublicKeyFile, err := ioutil.ReadFile(path.Join(exPath, "cert/"+conf.ServiceName+"-ca.crt"))

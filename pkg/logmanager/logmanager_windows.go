@@ -41,7 +41,7 @@ type callInfo struct {
 var level string
 
 // SetLogLevel set logrus level
-func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, maxBackups int, maxAge int, interactive bool, reportcaller bool, jsontostdout bool) error {
+func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, maxBackups int, maxAge int, IsWindowsService bool) error {
 	log.SetFormatter(&log.JSONFormatter{})
 	level = LogLevel
 	switch LogLevel {
@@ -61,9 +61,10 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 	}
 
 	// Adding the method and line caller, easier to debug
-	log.SetReportCaller(reportcaller)
-	abspathfilename := exPath + string(os.PathSeparator) + fileName
 
+		log.SetReportCaller(!IsWindowsService)
+
+	abspathfilename := exPath + string(os.PathSeparator) + fileName
 	lj := &lumberjack.Logger{
 		Filename:   abspathfilename,
 		MaxSize:    maxSize,
@@ -71,11 +72,11 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 		MaxAge:     maxAge,
 	}
 
-	if jsontostdout {
+	if IsWindowsService {
+		log.SetOutput(lj)
+	} else {
 		mWriter := io.MultiWriter(os.Stderr, lj)
 		log.SetOutput(mWriter)
-	} else {
-		log.SetOutput(lj)
 	}
 	log.Info("Log system initialized.")
 

@@ -18,12 +18,13 @@
 package main
 
 import (
+	"ezBastion/cmd/ezb_db/configuration"
+	"ezBastion/cmd/ezb_db/setup"
+	"ezBastion/pkg/logmanager"
 	"fmt"
 	"log"
 	"os"
-
-	"ezBastion/cmd/ezb_db/configuration"
-	"ezBastion/cmd/ezb_db/setup"
+	"path/filepath"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
@@ -33,20 +34,28 @@ var (
 	exPath string
 	conf   configuration.Configuration
 )
+func init() {
+	ex, _ := exePath()
+	exPath = filepath.Dir(ex)
 
+}
 func main() {
 
-	isIntSess, err := svc.IsAnInteractiveSession()
+	IsWindowsService, err := svc.IsWindowsService()
 	if err != nil {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
-	if !isIntSess {
+
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_db.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService )
+	if IsWindowsService {
 		conf, err := setup.CheckConfig()
 		if err == nil {
 			runService(conf.ServiceName, false)
 		}
 		return
 	}
+
+
 	app := cli.NewApp()
 	app.Name = "ezb_db"
 	app.Version = "0.3.0"
