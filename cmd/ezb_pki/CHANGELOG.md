@@ -2,6 +2,10 @@
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
+## 1.0.0 - 2021-03-19  
+:warning: **BREAKING CHANGE** :warning:
+- Remove cli setup
+- Configuration file from Json to Toml 
 
 ## 0.1.2 - 2019-06-20
 - AGPL copyleft

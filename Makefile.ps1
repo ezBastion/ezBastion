@@ -47,7 +47,7 @@ function show-help {
 
 function upgrade-semver {
     param ($file)
-    $ver = $(Select-String -Path "$file\main.go" -Pattern "app.version.*""(\d\.\d.\d)"".*").Matches.Groups[1].Value
+    $ver = $(Select-String -Path "$file\main.go" -Pattern "VERSION.*""(\d\.\d.\d)"".*").Matches.Groups[1].Value
     $v = $ver.split(".")
     [int]$major = $v[0]
     [int]$minor = $v[1]

@@ -18,14 +18,13 @@
 package main
 
 import (
+	"ezBastion/pkg/confmanager"
 	"ezBastion/pkg/logmanager"
+	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"os"
-	"path/filepath"
-
 	log "github.com/sirupsen/logrus"
+	"os"
 
-	"ezBastion/cmd/ezb_wks/models"
 	"ezBastion/cmd/ezb_wks/setup"
 
 	"github.com/urfave/cli"
@@ -33,13 +32,18 @@ import (
 )
 
 var (
-	exPath string
-	conf   models.Configuration
+	exePath string
+	conf confmanager.Configuration
+	err error
 )
 
+
+
 func init() {
-	ex, _ := os.Executable()
-	exPath = filepath.Dir(ex)
+	exePath, err = setupmanager.ExePath()
+	if err != nil {
+		log.Fatalf("Path error: %v", err)
+	}
 }
 
 func main() {
@@ -48,7 +52,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath,  "log/ezb_wks.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exePath,  "log/ezb_wks.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
 	if IsWindowsService {
 		conf, err := setup.CheckConfig()
 		if err == nil {

@@ -18,26 +18,30 @@
 package main
 
 import (
-	"ezBastion/cmd/ezb_db/configuration"
 	"ezBastion/cmd/ezb_db/setup"
+	"ezBastion/pkg/confmanager"
 	"ezBastion/pkg/logmanager"
+	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
+	"log"
+	"os"
 )
 
 var (
-	exPath string
-	conf   configuration.Configuration
+	exePath string
+	conf confmanager.Configuration
+	err error
 )
-func init() {
-	ex, _ := exePath()
-	exPath = filepath.Dir(ex)
 
+
+
+func init() {
+	exePath, err = setupmanager.ExePath()
+	if err != nil {
+		log.Fatalf("Path error: %v", err)
+	}
 }
 func main() {
 
@@ -46,7 +50,7 @@ func main() {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
 
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_db.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService )
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, "log/ezb_db.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService )
 	if IsWindowsService {
 		conf, err := setup.CheckConfig()
 		if err == nil {

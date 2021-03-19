@@ -13,41 +13,41 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with ezBastion.  If not, see <https://www.gnu.org/licenses/>.
 
-package configuration
-
-import "ezBastion/pkg/confmanager"
-
-type Configuration struct {
-	ListenJWT       string             `json:"listenjwt"`
-	ListenPKI       string             `json:"listenpki"`
-	PrivateKey      string             `json:"privatekey"`
-	PublicCert      string             `json:"publiccert"`
-	CaCert          string             `json:"cacert"`
-	DB              string             `json:"db"`
-	SQLITE          SQLite             `json:"sqlite"`
-	ServiceName     string             `json:"servicename"`
-	ServiceFullName string             `json:"servicefullname"`
-	EzbPki          string             `json:"ezb_pki"`
-	SAN             []string           `json:"san"`
-	STA             string             `json:"default_sta"`
-	Logger          confmanager.Logger `json:"logger"`
-}
-
-type SQL struct {
-	Host     string `json:"host"`
-	Database string `json:"database"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Instance string `json:"instance"`
-}
-
-type SQLite struct {
-	DBPath string `json:"dbpath"`
-}
-type MYSql struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Database string `json:"database"`
-}
+//package configuration
+//
+//import "ezBastion/pkg/confmanager"
+//
+//type Configuration struct {
+//	ListenJWT       string             `json:"listenjwt"`
+//	ListenPKI       string             `json:"listenpki"`
+//	PrivateKey      string             `json:"privatekey"`
+//	PublicCert      string             `json:"publiccert"`
+//	CaCert          string             `json:"cacert"`
+//	DB              string             `json:"db"`
+//	SQLITE          SQLite             `json:"sqlite"`
+//	ServiceName     string             `json:"servicename"`
+//	ServiceFullName string             `json:"servicefullname"`
+//	EzbPki          string             `json:"ezb_pki"`
+//	SAN             []string           `json:"san"`
+//	STA             string             `json:"default_sta"`
+//	Logger          confmanager.Logger `json:"logger"`
+//}
+//
+//type SQL struct {
+//	Host     string `json:"host"`
+//	Database string `json:"database"`
+//	User     string `json:"user"`
+//	Password string `json:"password"`
+//	Instance string `json:"instance"`
+//}
+//
+//type SQLite struct {
+//	DBPath string `json:"dbpath"`
+//}
+//type MYSql struct {
+//	Host     string `json:"host"`
+//	Port     int    `json:"port"`
+//	User     string `json:"user"`
+//	Password string `json:"password"`
+//	Database string `json:"database"`
+//}

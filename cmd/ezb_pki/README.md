@@ -5,28 +5,42 @@
 
 ## SETUP
 
-The PKI (Public Key Infrastructure) is the first node to be installed. It will be in charge to create and deploy the ECDSA pair key, used by all ezBastion's node to communicate.
+The PKI (Public Key Infrastructure) is the first node to be installed. It will be in charge to create and deploy the ECDSA pair key, used by all ezBastion's node to communicate between them.
 The certificates are used to sign JWT too.
 
 
-### 1. Download ezb_pki from [GitHub](<https://github.com/ezBastion/ezb_pki/releases/latest>)
+### 1. Download ezb_pki.zip from [GitHub](<https://github.com/ezBastion/ezBastion/releases/latest>)
 
-### 2. Open an admin command prompte, like CMD or Powershell.
+### 2. Unzip it, then with an admin command like CMD or Powershell.
 
 ### 3. Run ezb_pki.exe with **init** option.
 
-```json
-{
-    "listen": ":5010",
-    "servicename": "ezb_pki",
-    "servicefullname": "ezBastion PKI",
-    "logger": {
-        "loglevel": "warning",
-        "maxsize": 5,
-        "maxbackups": 10,
-        "maxage": 180
-    }
-}
+```powershell
+    PS E:\ezbastion> ezb_pki.exe init
+```
+
+```toml
+[ezb_pki]
+
+# Root PKI public cert, must be copied on all ezBastion nodes
+cacert = "cert/ca.crt"
+
+# Root PKI private key, do not share it. Must ne ONLY on PKI node
+cakey = "cert/ca.key"
+
+[ezb_pki.listener]
+fqdn = "chavers-desk"
+port = 5010
+[logger]
+
+# log output filter [debug | info | warning | error | critical]
+loglevel = "debug"
+maxage = 180
+maxbackups = 10
+maxsize = 5
+
+[tls]
+san = ["chavers-desk"]
 ```
 
 - **servicename**: This is the name used as Windows service and as certificates root name.
@@ -45,7 +59,6 @@ The certificates are used to sign JWT too.
     ezb_pki start
 ```
 
-![setup](https://github.com/ezBastion/doc/raw/master/image/pki-setup.gif)
 
 ## security consideration
 
@@ -56,7 +69,7 @@ The certificates are used to sign JWT too.
 
 ## Copyright
 
-Copyright (C) 2018 Renaud DEVERS info@ezbastion.com
+Copyleft (C) 2018 Renaud DEVERS info@ezbastion.com
 <p align="center">
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-blueviolet.svg?style=for-the-badge&logo=gnu" alt="License"></a></p>
 
@@ -73,3 +86,4 @@ go-fqdn   | Apache v2 | 0       | github.com/ShowMax/go-fqdn
 jwt-go    | MIT       | 3.2.0   | github.com/dgrijalva/jwt-go
 gopsutil  | BSD       | 2.15.01 | github.com/shirou/gopsutil
 lumberjack| MIT       | 2.1     | github.com/natefinch/lumberjack
+go-toml   | MIT       | 1.8.1   | github.com/pelletier/go-toml

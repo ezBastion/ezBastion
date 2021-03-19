@@ -14,6 +14,7 @@ require (
 	github.com/go-resty/resty/v2 v2.5.0
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.16
+	github.com/pelletier/go-toml v1.8.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil v3.21.2+incompatible
 	github.com/sirupsen/logrus v1.8.1

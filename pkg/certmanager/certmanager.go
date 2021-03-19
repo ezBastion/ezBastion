@@ -25,9 +25,54 @@ import (
 	"encoding/binary"
 	"encoding/pem"
 	"fmt"
+	"math/big"
 	"net"
 	"os"
+	"time"
 )
+
+func NewRootCertificate(caCert, caKey string, addresses []string) error {
+	keyOut, _ := os.OpenFile(caKey, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		panic(err)
+	}
+	b, err := x509.MarshalECPrivateKey(priv)
+	if err != nil {
+		panic(err)
+	}
+
+	pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
+	keyOut.Close()
+
+	ca := &x509.Certificate{
+		SerialNumber: big.NewInt(1653),
+		Subject: pkix.Name{
+			Organization: []string{"ezBastion"},
+			CommonName:   "ezBastion PKI",
+		},
+		DNSNames:              addresses,
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(20, 0, 0),
+		IsCA:                  true,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageKeyEncipherment,
+		BasicConstraintsValid: true,
+		SignatureAlgorithm:    x509.ECDSAWithSHA256,
+	}
+	pub := &priv.PublicKey
+	caB, err := x509.CreateCertificate(rand.Reader, ca, ca, pub, priv)
+	if err != nil {
+		return err
+	}
+
+	certOut, err := os.Create(caCert)
+	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: caB})
+	certOut.Close()
+
+	return nil
+}
 
 func NewCertificateRequest(commonName string, duration int, addresses []string) *x509.CertificateRequest {
 	certificate := x509.CertificateRequest{

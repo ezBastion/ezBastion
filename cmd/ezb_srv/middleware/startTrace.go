@@ -35,12 +35,7 @@ func StartTrace(c *gin.Context) {
 	l.Xtrack = x.String()
 	l.Status = "init"
 	l.URL = c.Request.RequestURI
-	// b, err := os.Hostname()
-	// if err != nil {
 	l.Bastion = c.Request.Host
-	// } else {
-	// 	l.Bastion = b
-	// }
 	l.Ipaddr = c.Request.RemoteAddr
 	l.Methode = s.ToUpper(c.Request.Method)
 	c.Set("trace", l)

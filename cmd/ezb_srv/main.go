@@ -15,112 +15,61 @@
 package main
 
 import (
+	"ezBastion/pkg/confmanager"
+	"ezBastion/pkg/ez_cli"
 	"ezBastion/pkg/logmanager"
+	"ezBastion/pkg/servicemanager"
+	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-
-	"ezBastion/cmd/ezb_srv/models"
-	"ezBastion/cmd/ezb_srv/setup"
-
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
+	"log"
+	"os"
+	"path"
 )
 
 var (
-	exPath string
-	conf   models.Configuration
+	exePath string
+	conf confmanager.Configuration
+	err error
+)
+
+const (
+	VERSION         = "1.0.0"
+	SERVICENAME     = "ezb_srv"
+	SERVICEFULLNAME = "ezBastion PKI"
 )
 
 func init() {
-	ex, _ := exePath()
-	exPath = filepath.Dir(ex)
+	exePath, err = setupmanager.ExePath()
+	if err != nil {
+		log.Fatalf("Path error: %v", err)
+	}
 }
 
 func main() {
-
-	IsWindowsService, err := svc.IsWindowsService()
-	if err != nil {
-		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
-	}
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
-
-	if IsWindowsService {
-		conf, err := setup.CheckConfig()
-		if err == nil {
-			runService(conf.ServiceName, false)
+	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
+	confPath := path.Join(exePath, "conf/config.toml")
+	conf, err = confmanager.CheckConfig(confPath)
+	if err == nil {
+		IsWindowsService, err := svc.IsWindowsService()
+		if err != nil {
+			log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 		}
-		log.Fatal(err)
-		return
+		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, "log/ezb_srv.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+		if IsWindowsService {
+			servicemanager.RunService(SERVICENAME, false, mainService{})
+			return
+		}
 	}
-	app := cli.NewApp()
-	app.Name = "ezb_srv"
-	app.Version = "0.2.3"
-	app.Usage = "ezBastion frontend server."
 
-	app.Commands = []cli.Command{
-		{
-			Name:  "init",
-			Usage: "Genarate config file and PKI certificat.",
-			Action: func(c *cli.Context) error {
-				err := setup.Setup()
-				return err
-			},
-		}, {
-			Name:  "debug",
-			Usage: "Start ezb_srv in console.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				runService(conf.ServiceName, true)
-				return nil
-			},
-		}, {
-			Name:  "install",
-			Usage: "Add ezb_srv deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				err = installService(conf.ServiceName, conf.ServiceFullName)
-				if err != nil {
-					log.Fatalf("install ezb_srv service: %v", err)
-				}
-				return err
-			},
-		}, {
-			Name:  "remove",
-			Usage: "Remove ezb_srv deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				err = removeService(conf.ServiceName)
-				if err != nil {
-					log.Fatalf("remove ezb_srv service: %v", err)
-				}
-				return err
-			},
-		}, {
-			Name:  "start",
-			Usage: "Start ezb_srv deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				err = startService(conf.ServiceName)
-				if err != nil {
-					log.Fatalf("start ezb_srv service: %v", err)
-				}
-				return err
-			},
-		}, {
-			Name:  "stop",
-			Usage: "Stop ezb_srv deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				err = controlService(conf.ServiceName, svc.Stop, svc.Stopped)
-				if err != nil {
-					log.Fatalf("stop ezb_srv service: %v", err)
-				}
-				return err
-			},
-		},
-	}
+	app := cli.NewApp()
+	app.Name = SERVICENAME
+	app.Version = VERSION
+	app.Usage = SERVICEFULLNAME
+
+	app.Commands = ez_cli.EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath, mainService{})
+
 	cli.AppHelpTemplate = fmt.Sprintf(`
 
 	███████╗███████╗██████╗  █████╗ ███████╗████████╗██╗ ██████╗ ███╗   ██╗

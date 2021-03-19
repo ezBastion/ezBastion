@@ -17,6 +17,7 @@ package tool
 
 import (
 	"crypto/tls"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"path"
 
@@ -32,10 +33,10 @@ func Trace(l *models.EzbLogs, c *gin.Context) {
 		ep, _ := c.Get("exPath")
 		exPath := ep.(string)
 		cnf, _ := c.Get("configuration")
-		conf := cnf.(*models.Configuration)
-		fcert := path.Join(exPath, conf.PublicCert)
-		key := path.Join(exPath, conf.PrivateKey)
-		ca := path.Join(exPath, conf.CaCert)
+		conf := cnf.(*confmanager.Configuration)
+		fcert := path.Join(exPath, conf.TLS.PublicCert)
+		key := path.Join(exPath, conf.TLS.PrivateKey)
+		ca := path.Join(exPath, conf.EZBPKI.CaCert)
 
 		var log models.EzbLogs
 		cert, err := tls.LoadX509KeyPair(fcert, key)
@@ -43,6 +44,7 @@ func Trace(l *models.EzbLogs, c *gin.Context) {
 			fmt.Println(err)
 			return
 		}
+		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.Network.FQDN, conf.EZBDB.Network.Port)
 		client := resty.New()
 		client.SetRootCertificate(ca)
 		client.SetCertificates(cert)
@@ -50,7 +52,7 @@ func Trace(l *models.EzbLogs, c *gin.Context) {
 			_, err := client.R().
 				SetBody(l).
 				SetResult(&log).
-				Post(conf.EzbDB + "logs")
+				Post(EzbDB + "logs")
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -58,7 +60,7 @@ func Trace(l *models.EzbLogs, c *gin.Context) {
 			_, err := client.R().
 				SetBody(l).
 				SetResult(&log).
-				Put(conf.EzbDB + "logs")
+				Put(EzbDB + "logs")
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -74,10 +76,10 @@ func IncRequest(l *models.EzbWorkers, c *gin.Context) {
 		ep, _ := c.Get("exPath")
 		exPath := ep.(string)
 		cnf, _ := c.Get("configuration")
-		conf := cnf.(*models.Configuration)
-		fcert := path.Join(exPath, conf.PublicCert)
-		key := path.Join(exPath, conf.PrivateKey)
-		ca := path.Join(exPath, conf.CaCert)
+		conf := cnf.(*confmanager.Configuration)
+		fcert := path.Join(exPath, conf.TLS.PublicCert)
+		key := path.Join(exPath, conf.TLS.PrivateKey)
+		ca := path.Join(exPath, conf.EZBPKI.CaCert)
 
 		var wks models.EzbWorkers
 		cert, err := tls.LoadX509KeyPair(fcert, key)
@@ -85,13 +87,14 @@ func IncRequest(l *models.EzbWorkers, c *gin.Context) {
 			fmt.Println(err)
 			return
 		}
+		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.Network.FQDN, conf.EZBDB.Network.Port)
 		client := resty.New()
 		client.SetRootCertificate(ca)
 		client.SetCertificates(cert)
 		if l.ID != 0 {
 			_, err := client.R().
 				SetResult(&wks).
-				Put(fmt.Sprintf("%sworkers/inc/%d", conf.EzbDB, l.ID))
+				Put(fmt.Sprintf("%sworkers/inc/%d", EzbDB, l.ID))
 			if err != nil {
 				fmt.Println(err)
 			}

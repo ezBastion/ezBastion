@@ -12,23 +12,23 @@
 
 //     You should have received a copy of the GNU Affero General Public License
 //     along with ezBastion.  If not, see <https://www.gnu.org/licenses/>.
-
-package models
-
-import "ezBastion/pkg/confmanager"
-
-type Configuration struct {
-	Listen          string             `json:"listen"`
-	ScriptPath      string             `json:"scriptpath"`
-	JobPath         string             `json:"jobpath"`
-	Logger          confmanager.Logger `json:"logger"`
-	PrivateKey      string             `json:"privatekey"`
-	PublicCert      string             `json:"publiccert"`
-	CaCert          string             `json:"cacert"`
-	ServiceName     string             `json:"servicename"`
-	ServiceFullName string             `json:"servicefullname"`
-	EzbPki          string             `json:"ezb_pki"`
-	SAN             []string           `json:"san"`
-	LimitWarning    int                `json:"limitwarning"`
-	LimitMax        int                `json:"limitmax"`
-}
+//
+//package models
+//
+//import "ezBastion/pkg/confmanager"
+//
+//type Configuration struct {
+//	Listen          string             `json:"listen"`
+//	ScriptPath      string             `json:"scriptpath"`
+//	JobPath         string             `json:"jobpath"`
+//	Logger          confmanager.Logger `json:"logger"`
+//	PrivateKey      string             `json:"privatekey"`
+//	PublicCert      string             `json:"publiccert"`
+//	CaCert          string             `json:"cacert"`
+//	ServiceName     string             `json:"servicename"`
+//	ServiceFullName string             `json:"servicefullname"`
+//	EzbPki          string             `json:"ezb_pki"`
+//	SAN             []string           `json:"san"`
+//	LimitWarning    int                `json:"limitwarning"`
+//	LimitMax        int                `json:"limitmax"`
+//}

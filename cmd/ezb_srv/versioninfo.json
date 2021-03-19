@@ -1,16 +1,16 @@
 {
     "FixedFileInfo":  {
                           "FileVersion":  {
-                                              "Major":  0,
-                                              "Minor":  2,
-                                              "Patch":  3,
-                                              "Build":  897
+                                              "Major":  1,
+                                              "Minor":  0,
+                                              "Patch":  0,
+                                              "Build":  898
                                           },
                           "ProductVersion":  {
-                                                 "Major":  0,
-                                                 "Minor":  2,
-                                                 "Patch":  3,
-                                                 "Build":  897
+                                                 "Major":  1,
+                                                 "Minor":  0,
+                                                 "Patch":  0,
+                                                 "Build":  898
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Front microservice.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion front service.",
-                           "FileVersion":  "v0.2.3.897",
+                           "FileVersion":  "v1.0.0.898",
                            "InternalName":  "ezb_srv.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2021 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion SRV",
-                           "ProductVersion":  "v0.2.3.897",
+                           "ProductVersion":  "v1.0.0.898",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {
