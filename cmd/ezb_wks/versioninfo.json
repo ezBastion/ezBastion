@@ -1,16 +1,16 @@
 {
     "FixedFileInfo":  {
                           "FileVersion":  {
-                                              "Major":  0,
-                                              "Minor":  2,
-                                              "Patch":  1,
-                                              "Build":  714
+                                              "Major":  1,
+                                              "Minor":  0,
+                                              "Patch":  0,
+                                              "Build":  720
                                           },
                           "ProductVersion":  {
-                                                 "Major":  0,
-                                                 "Minor":  2,
-                                                 "Patch":  1,
-                                                 "Build":  714
+                                                 "Major":  1,
+                                                 "Minor":  0,
+                                                 "Patch":  0,
+                                                 "Build":  720
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Back microservice.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion worker service.",
-                           "FileVersion":  "v0.2.1.714",
+                           "FileVersion":  "v1.0.0.720",
                            "InternalName":  "ezb_wks.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2019 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion worker",
-                           "ProductVersion":  "v0.2.1.714",
+                           "ProductVersion":  "v1.0.0.720",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {
