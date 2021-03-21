@@ -20,6 +20,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -52,7 +53,7 @@ type Introspec struct {
 	UserGroups []string `json:"userGroups"`
 }
 
-func AuthJWT(storage cache.Storage, conf *models.Configuration, exPath string) gin.HandlerFunc {
+func AuthJWT(storage cache.Storage, conf *confmanager.Configuration, exPath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// tr, _ := c.MustGet("trace").(models.EzbLogs)
 		trace := c.MustGet("trace").(models.EzbLogs)
@@ -145,7 +146,7 @@ func Introspection(c *gin.Context, sub string, Account models.EzbAccounts) (err 
 	}
 	return errors.New("WRONG GROUP")
 }
-func getAccount(c *gin.Context, sub string, storage cache.Storage, conf *models.Configuration) (Account models.EzbAccounts, err error) {
+func getAccount(c *gin.Context, sub string, storage cache.Storage, conf *confmanager.Configuration) (Account models.EzbAccounts, err error) {
 	Account, err = models.GetAccount(storage, conf, sub)
 	if err != nil {
 		c.AbortWithError(http.StatusForbidden, errors.New("#J0006"))

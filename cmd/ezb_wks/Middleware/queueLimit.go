@@ -17,11 +17,10 @@ package Middleware
 
 import (
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"net/http"
 	"runtime"
-
-	"ezBastion/cmd/ezb_wks/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -34,8 +33,8 @@ func Limit(c *gin.Context) {
 	})
 	t := runtime.NumGoroutine()
 	fmt.Println("runtime ", t)
-	conf, _ := c.MustGet("conf").(models.Configuration)
-	lm := conf.LimitMax
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
+	lm := conf.EZBWKS.LimitMax
 	// 429 Too Many Requests
 	if lm > 0 && t > lm {
 		logg.Error("Too Many Requests ", t, " threads")
@@ -43,7 +42,7 @@ func Limit(c *gin.Context) {
 		c.AbortWithError(http.StatusTooManyRequests, errors.New("#L0001"))
 		return
 	}
-	lw := conf.LimitWarning
+	lw := conf.EZBWKS.LimitWarning
 	if lw > 0 && t > lw {
 		logg.Warning("Heavy load ", t, " threads")
 		c.Writer.Header().Set("X-ERROR", "L0002")

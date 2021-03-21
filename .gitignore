@@ -3,3 +3,6 @@
 *.crt
 *.log
 *.zip
+*.toml
+resource.syso
+/bin/allver.json

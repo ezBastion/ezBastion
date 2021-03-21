@@ -20,52 +20,28 @@
 package servicemanager
 
 import (
+	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"os"
-	"path/filepath"
+	"golang.org/x/sys/windows/svc/debug"
 	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sys/windows/svc"
-	eventlog "golang.org/x/sys/windows/svc/eventlog"
+	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 )
 
-// EventLog management
-var exPath string
-var err error
+var (
+	err  error
+	elog debug.Log
+	ms   MainService
+)
 
-func init() {
-	ex, _ := os.Executable()
-	exPath = filepath.Dir(ex)
-}
+type MyService struct{}
 
-func exePath() (string, error) {
-
-	prog := os.Args[0]
-	p, err := filepath.Abs(prog)
-	if err != nil {
-		return "", err
-	}
-	fi, err := os.Stat(p)
-	if err == nil {
-		if !fi.Mode().IsDir() {
-			return p, nil
-		}
-		err = fmt.Errorf("%s is directory", p)
-	}
-	if filepath.Ext(p) == "" {
-		p += ".exe"
-		fi, err := os.Stat(p)
-		if err == nil {
-			if !fi.Mode().IsDir() {
-				return p, nil
-			}
-			err = fmt.Errorf("%s is directory", p)
-		}
-	}
-	return "", err
+type MainService interface {
+	StartMainService(serverchan *chan bool)
 }
 
 // StartService starts the windows service targeted by name
@@ -83,7 +59,7 @@ func StartService(name string) error {
 		return fmt.Errorf("could not access service: %v", err)
 	}
 	defer s.Close()
-	err = s.Start("is", "manual-started")
+	err = s.Start("is", "auto-started")
 	if err != nil {
 		log.Errorln(fmt.Sprintf("could not start service %s, error : %s", name, err.Error()))
 		return fmt.Errorf("could not start service: %v", err)
@@ -91,7 +67,7 @@ func StartService(name string) error {
 	return nil
 }
 
-// ControlService controls the service targetede by name
+// ControlService controls the service targeted by name
 func ControlService(name string, c svc.Cmd, to svc.State) error {
 
 	m, err := mgr.Connect()
@@ -128,10 +104,9 @@ func ControlService(name string, c svc.Cmd, to svc.State) error {
 }
 
 // InstallService installs the service targeted by name
-func InstallService(name, desc string) error {
+func InstallService(name, desc, exePath string) error {
 	var errormsg string
-
-	exepath, err := exePath()
+	exeFullPath, err := setupmanager.ExeFullPath()
 	if err != nil {
 		errormsg = err.Error()
 		log.Errorln(errormsg)
@@ -151,7 +126,7 @@ func InstallService(name, desc string) error {
 		log.Errorln(errormsg)
 		return fmt.Errorf(errormsg)
 	}
-	s, err = m.CreateService(name, exepath, mgr.Config{DisplayName: desc}, "is", "auto-started")
+	s, err = m.CreateService(name, exeFullPath, mgr.Config{DisplayName: desc}, "is", "auto-started")
 	if err != nil {
 		errormsg = err.Error()
 		log.Errorln(errormsg)
@@ -202,4 +177,61 @@ func RemoveService(name string) error {
 		return fmt.Errorf(errormsg)
 	}
 	return nil
+}
+
+func (m *MyService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
+	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
+	changes <- svc.Status{State: svc.StartPending}
+
+	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
+	serverchan := make(chan bool)
+	go ms.StartMainService(&serverchan)
+loop:
+	for {
+		select {
+		case c := <-r:
+			switch c.Cmd {
+			case svc.Interrogate:
+				elog.Info(1, "Interrogate")
+				changes <- c.CurrentStatus
+
+				time.Sleep(100 * time.Millisecond)
+				changes <- c.CurrentStatus
+			case svc.Stop, svc.Shutdown:
+
+				close(serverchan)
+				break loop
+			default:
+				elog.Error(1, fmt.Sprintf("unexpected control request #%d", c))
+			}
+		}
+	}
+	changes <- svc.Status{State: svc.StopPending}
+	return
+}
+
+func RunService(name string, isDebug bool, MS MainService) {
+	var err error
+	if isDebug {
+		elog = debug.New(name)
+	} else {
+		elog, err = eventlog.Open(name)
+		if err != nil {
+			return
+		}
+	}
+	defer elog.Close()
+
+	elog.Info(1, fmt.Sprintf("starting %s service", name))
+	run := svc.Run
+	if isDebug {
+		run = debug.Run
+	}
+	ms = MS
+	err = run(name, &MyService{})
+	if err != nil {
+		elog.Error(1, fmt.Sprintf("%s service failed: %v", name, err))
+		return
+	}
+	elog.Info(1, fmt.Sprintf("%s service stopped", name))
 }

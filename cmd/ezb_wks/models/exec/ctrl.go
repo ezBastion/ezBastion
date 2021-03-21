@@ -18,6 +18,7 @@ package exec
 import (
 	"bytes"
 	"encoding/json"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -28,7 +29,6 @@ import (
 	"strings"
 	"time"
 
-	"ezBastion/cmd/ezb_wks/models"
 	"ezBastion/cmd/ezb_wks/models/tasks"
 
 	"github.com/gin-gonic/gin"
@@ -42,12 +42,12 @@ func dealwithErr(err error) {
 }
 
 var (
-	conf   models.Configuration
+	conf   confmanager.Configuration
 	xtrack string
 )
 
 func run(c *gin.Context) {
-	conf, _ = c.MustGet("conf").(models.Configuration)
+	conf, _ = c.MustGet("conf").(confmanager.Configuration)
 	polling := c.GetHeader("X-Polling")
 	xtrack = c.GetHeader("X-Track")
 	var params EzbParams
@@ -60,7 +60,7 @@ func run(c *gin.Context) {
 	for i, h := range params.Data {
 		psParams = fmt.Sprintf("%s -%s '%s' ", psParams, i, h)
 	}
-	psscript := filepath.Join(conf.ScriptPath, params.Meta.Job.Path)
+	psscript := filepath.Join(conf.EZBWKS.ScriptPath, params.Meta.Job.Path)
 	if polling == "true" {
 		runTask(c, psscript, psParams)
 	} else {
@@ -103,7 +103,7 @@ func runTask(c *gin.Context, psscript string, psParams string) {
 
 	t := time.Now()
 	taskID := fmt.Sprintf("%s%s", t.Format("20060102"), xtrack)
-	jobPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), t.Format("2006/01/02"), xtrack)
+	jobPath := path.Join(strings.Replace(conf.EZBWKS.JobPath, "\\", "/", -1), t.Format("2006/01/02"), xtrack)
 	if _, err := os.Stat(jobPath); os.IsNotExist(err) {
 		err = os.MkdirAll(jobPath, 0600)
 		if err != nil {

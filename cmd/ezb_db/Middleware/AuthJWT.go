@@ -20,10 +20,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
 
-	"ezBastion/cmd/ezb_db/configuration"
 	"ezBastion/cmd/ezb_db/models"
 
 	"net/http"
@@ -47,7 +47,7 @@ type Payload struct {
 	IAT int    `json:"iat"`
 }
 
-func AuthJWT(db *gorm.DB, conf configuration.Configuration) gin.HandlerFunc {
+func AuthJWT(db *gorm.DB, conf confmanager.Configuration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		logg := log.WithFields(log.Fields{"Middleware": "jwt"})

@@ -19,17 +19,17 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"ezBastion/pkg/confmanager"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"path"
-	"path/filepath"
 	"time"
 
 	"ezBastion/cmd/ezb_db/configuration"
 	"ezBastion/cmd/ezb_db/routes"
-	"ezBastion/cmd/ezb_db/setup"
 	"golang.org/x/sync/errgroup"
 
 	"ezBastion/cmd/ezb_db/Middleware"
@@ -43,7 +43,7 @@ import (
 
 var g errgroup.Group
 
-func routerJWT(db *gorm.DB, lic configuration.License, conf configuration.Configuration) http.Handler {
+func routerJWT(db *gorm.DB, lic configuration.License, conf confmanager.Configuration) http.Handler {
 	loggerJWT := log.WithFields(log.Fields{"module": "jwt", "type": "http"})
 	r := gin.Default()
 	r.Use(ginrus.Ginrus(loggerJWT, time.RFC3339, true))
@@ -71,13 +71,10 @@ func routerPKI(db *gorm.DB, lic configuration.License) http.Handler {
 	routes.Routes(r)
 	return r
 }
-func mainGin(serverchan *chan bool) {
-	ex, _ := os.Executable()
-	exPath = filepath.Dir(ex)
-	conf, err := setup.CheckConfig()
-	if err != nil {
-		panic(err)
-	}
+// Must implement Mainservice interface from servicemanager package
+type mainService struct{}
+func (sm mainService) StartMainService(serverchan *chan bool) {
+
 
 	log.WithFields(log.Fields{"module": "main", "type": "log"})
 	log.Debug("loglevel: ", conf.Logger.LogLevel)
@@ -85,7 +82,7 @@ func mainGin(serverchan *chan bool) {
 	lic := configuration.License{}
 
 	gin.SetMode(gin.ReleaseMode)
-	db, err := configuration.InitDB(conf, exPath)
+	db, err := configuration.InitDB(conf, exePath)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
@@ -94,7 +91,7 @@ func mainGin(serverchan *chan bool) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	caCert, err := ioutil.ReadFile(path.Join(exPath, conf.CaCert))
+	caCert, err := ioutil.ReadFile(path.Join(exePath, conf.EZBPKI.CaCert))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,20 +99,18 @@ func mainGin(serverchan *chan bool) {
 	caCertPool.AppendCertsFromPEM(caCert)
 
 	/* listner jwt */
-	if conf.ListenJWT == "" {
-		conf.ListenJWT = "localhost:6000"
-	}
+	listenJWT := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkJWT.FQDN,conf.EZBDB.NetworkJWT.Port)
+
 	tlsConfigJWT := &tls.Config{}
 	serverJWT := &http.Server{
-		Addr:      conf.ListenJWT,
+		Addr:      listenJWT,
 		TLSConfig: tlsConfigJWT,
 		Handler:   routerJWT(db, lic, conf),
 	}
 	/* listner jwt */
 	/* listner pki */
-	if conf.ListenPKI == "" {
-		conf.ListenPKI = "localhost:6001"
-	}
+
+	listenPKI := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkPKI.FQDN,conf.EZBDB.NetworkPKI.Port)
 
 	tlsConfigPKI := &tls.Config{
 		ClientCAs:  caCertPool,
@@ -124,18 +119,18 @@ func mainGin(serverchan *chan bool) {
 	}
 	tlsConfigPKI.BuildNameToCertificate()
 	serverPKI := &http.Server{
-		Addr:      conf.ListenPKI,
+		Addr:      listenPKI,
 		TLSConfig: tlsConfigPKI,
 		Handler:   routerPKI(db, lic),
 	}
 	/* listner pki */
 
 	g.Go(func() error {
-		return serverJWT.ListenAndServeTLS(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+		return serverJWT.ListenAndServeTLS(path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 	})
 
 	g.Go(func() error {
-		return serverPKI.ListenAndServeTLS(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+		return serverPKI.ListenAndServeTLS(path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 	})
 	if err := g.Wait(); err != nil {
 		log.Fatal(err)

@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"strings"
-
-	"ezBastion/cmd/ezb_wks/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -27,8 +26,8 @@ func GetResult(c *gin.Context) {
 	})
 	logg.Debug("start GetResult")
 	uuid := c.Param("UUID")
-	conf, _ := c.MustGet("conf").(models.Configuration)
-	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
+	taskPath := path.Join(strings.Replace(conf.EZBWKS.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "output.json")
 	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("log file not found")
@@ -65,8 +64,8 @@ func GetStatus(c *gin.Context) {
 	})
 	uuid := c.Param("UUID")
 	logg.Debug("start GetStatus for uuid: ", uuid)
-	conf, _ := c.MustGet("conf").(models.Configuration)
-	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
+	taskPath := path.Join(strings.Replace(conf.EZBWKS.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "status.json")
 	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("log file not found")
@@ -97,8 +96,8 @@ func GetLog(c *gin.Context) {
 	})
 	logg.Debug("start GetLog")
 	uuid := c.Param("UUID")
-	conf, _ := c.MustGet("conf").(models.Configuration)
-	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
+	taskPath := path.Join(strings.Replace(conf.EZBWKS.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "trace.log")
 	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("#I0005 log file not found")

@@ -19,6 +19,7 @@ import (
 	"crypto/md5"
 	"crypto/tls"
 	"encoding/json"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"net/url"
 	"path"
@@ -56,7 +57,7 @@ func SendAction(c *gin.Context, storage cache.Storage) {
 	job := c.MustGet("job").(models.EzbJobs)
 	data := c.MustGet("params").(map[string]string)
 	worker := c.MustGet("worker").(models.EzbWorkers)
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	body := data["body"]
 	rawpath := c.Request.URL.EscapedPath()
 	rawquery := c.Request.URL.RawQuery
@@ -87,14 +88,14 @@ func SendAction(c *gin.Context, storage cache.Storage) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
