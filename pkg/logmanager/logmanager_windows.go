@@ -78,7 +78,7 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 		mWriter := io.MultiWriter(os.Stderr, lj)
 		log.SetOutput(mWriter)
 	}
-	log.Info("Log system initialized.")
+	log.Debug("Log system initialized.")
 
 	return nil
 

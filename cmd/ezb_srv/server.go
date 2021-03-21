@@ -17,6 +17,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os/signal"
 	"strings"
 	"time"
@@ -26,8 +27,6 @@ import (
 	"ezBastion/cmd/ezb_srv/ctrl"
 	"ezBastion/cmd/ezb_srv/middleware"
 	"ezBastion/cmd/ezb_srv/models"
-	"ezBastion/cmd/ezb_srv/setup"
-
 	"github.com/gin-contrib/location"
 
 	"net/http"
@@ -39,20 +38,13 @@ import (
 )
 
 var storage cache.Storage
+// Must implement Mainservice interface from servicemanager package
+type mainService struct{}
 
-func mainGin(serverchan *chan bool) {
-
-	conf, err := setup.CheckConfig()
-	if err != nil {
-		panic(err)
-	}
+func (sm mainService) StartMainService(serverchan *chan bool)  {
 
 	storage = memory.NewStorage()
-
-	if conf.Listen == "" {
-		conf.Listen = "localhost:6000"
-
-	}
+	listen := fmt.Sprintf("%s:%d", conf.EZBSRV.Network.FQDN,conf.EZBSRV.Network.Port)
 
 	/* gin */
 	gin.SetMode(gin.ReleaseMode)
@@ -62,10 +54,10 @@ func mainGin(serverchan *chan bool) {
 	r.OPTIONS("*a", func(c *gin.Context) {
 		c.AbortWithStatus(200)
 	})
-	r.Use(middleware.LoadConfig(&conf, exPath))
+	r.Use(middleware.LoadConfig(&conf, exePath))
 	r.Use(middleware.StartTrace)
 	r.Use(middleware.InternalWork(storage, &conf))
-	r.Use(middleware.AuthJWT(storage, &conf, exPath))
+	r.Use(middleware.AuthJWT(storage, &conf, exePath))
 	r.Use(middleware.Store(storage, &conf))
 	r.Use(middleware.RouteParser)
 	r.Use(middleware.GetParams(storage, &conf))
@@ -79,7 +71,7 @@ func mainGin(serverchan *chan bool) {
 
 	// log.Fatal(http.ListenAndServe(conf.Listen, r))
 	srv := &http.Server{
-		Addr:    conf.Listen,
+		Addr:    listen,
 		Handler: r,
 	}
 

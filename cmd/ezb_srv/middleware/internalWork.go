@@ -17,6 +17,7 @@ package middleware
 
 import (
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"net/http"
 	"net/url"
 	s "strings"
@@ -35,7 +36,7 @@ type formAuth struct {
 	Password  string `json:"password" form:"password"`
 }
 
-func InternalWork(storage cache.Storage, conf *models.Configuration) gin.HandlerFunc {
+func InternalWork(storage cache.Storage, conf *confmanager.Configuration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tr, _ := c.Get("trace")
 		trace := tr.(models.EzbLogs)
@@ -99,7 +100,7 @@ func InternalWork(storage cache.Storage, conf *models.Configuration) gin.Handler
 	}
 }
 
-func authorize(c *gin.Context, storage cache.Storage, conf *models.Configuration) (string, error) {
+func authorize(c *gin.Context, storage cache.Storage, conf *confmanager.Configuration) (string, error) {
 	var EndPoint string
 	trace := c.MustGet("trace").(models.EzbLogs)
 	logg := log.WithFields(log.Fields{

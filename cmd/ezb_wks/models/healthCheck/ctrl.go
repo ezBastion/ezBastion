@@ -17,6 +17,7 @@ package healthCheck
 
 import (
 	"crypto/sha256"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -24,8 +25,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-
-	"ezBastion/cmd/ezb_wks/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"
@@ -46,7 +45,7 @@ func getJobs(c *gin.Context) {
 }
 
 func getConf(c *gin.Context) {
-	conf, _ := c.MustGet("conf").(models.Configuration)
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
 	c.JSON(http.StatusOK, conf)
 }
 
@@ -68,12 +67,12 @@ func getLoad(c *gin.Context) {
 
 func getScripts(c *gin.Context) {
 	var scripts []wksScript
-	conf, _ := c.MustGet("conf").(models.Configuration)
-	err := filepath.Walk(conf.ScriptPath, func(path string, info os.FileInfo, err error) error {
+	conf, _ := c.MustGet("conf").(confmanager.Configuration)
+	err := filepath.Walk(conf.EZBWKS.ScriptPath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			var f wksScript
 			f.Name = info.Name()
-			f.Path = path[len(conf.ScriptPath):]
+			f.Path = path[len(conf.EZBWKS.ScriptPath):]
 			data, _ := ioutil.ReadFile(path)
 			f.Checksum = fmt.Sprintf("%x", sha256.Sum256(data))
 			scripts = append(scripts, f)

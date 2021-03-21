@@ -32,66 +32,66 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/urfave/cli"
 )
+// Must implement Mainservice interface from servicemanager package
+type mainService struct{}
 
+func (sm mainService) StartMainService(serverchan *chan bool)  {
+	caPath := path.Join(exePath, conf.EZBPKI.CaCert)
+	keyPath := path.Join(exePath, conf.EZBPKI.CaKey)
 
-
-
-
-func startRootCAServer(serverchan *chan bool) error {
-	caPublicKeyFile, err := ioutil.ReadFile(path.Join(exPath, "cert/"+conf.ServiceName+"-ca.crt"))
+	caPublicKeyFile, err := ioutil.ReadFile(caPath)
 	if err != nil {
-		cli.NewExitError(err, -1)
+		log.Fatal(err)
 	}
 	pemBlock, _ := pem.Decode(caPublicKeyFile)
-	if pemBlock == nil {
-		cli.NewExitError(err, -1)
+
+	if pemBlock == nil || pemBlock.Type != "CERTIFICATE" {
+		log.Fatal("failed to decode PEM block containing public key")
 	}
 	caCRT, err := x509.ParseCertificate(pemBlock.Bytes)
 	if err != nil {
-		cli.NewExitError(err, -1)
+		log.Fatal(err)
 	}
-	log.Println("Root CA loaded.")
+	log.Debug("Root CA loaded.")
 
 	fp := sha1.Sum(caCRT.Raw)
-	log.Printf("fingerprint, %v\n ", fp)
+	log.Debug("fingerprint, %v\n ", fp)
 
-	caPrivateKeyFile, err := ioutil.ReadFile(path.Join(exPath, "cert/"+conf.ServiceName+"-ca.key"))
+	caPrivateKeyFile, err := ioutil.ReadFile(keyPath)
 	if err != nil {
-		cli.NewExitError(err, -1)
+		log.Fatal(err)
 	}
 	pemBlock, _ = pem.Decode(caPrivateKeyFile)
-	if pemBlock == nil {
-		cli.NewExitError(err, -1)
+	if pemBlock == nil || pemBlock.Type != "EC PRIVATE KEY" {
+		log.Fatal("failed to decode PEM block containing private key")
 	}
-
+	log.Debug("Private key Decode.")
 	caPrivateKey, err := x509.ParseECPrivateKey(pemBlock.Bytes)
 	if err != nil {
-		cli.NewExitError(err, -1)
+		log.Fatal(err)
 	}
-	log.Println("Private key loaded.")
+	log.Debug("Private key loaded.")
 
-	listener, err := net.Listen("tcp", conf.Listen)
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", conf.EZBPKI.Network.FQDN, conf.EZBPKI.Network.Port))
 	if err != nil {
-		cli.NewExitError(err, -1)
+		log.Fatal(err)
 	}
-	log.Println("Listen at ", conf.Listen)
+	log.Println("Listen at ", fmt.Sprintf("%s:%d", conf.EZBPKI.Network.FQDN, conf.EZBPKI.Network.Port))
 	defer func() {
 		listener.Close()
-		fmt.Println("Listener closed")
+		log.Debug("Listener closed")
 	}()
 
 	for {
 
 		conn, err := listener.Accept()
 		if err != nil {
-			cli.NewExitError(err, -1)
+			log.Fatal(err)
 			break
 		}
 		go signconn(conn, caCRT, caPrivateKey)
 	}
-	return nil
 }
 
 func signconn(conn net.Conn, rootCert *x509.Certificate, privateKey *ecdsa.PrivateKey) error {

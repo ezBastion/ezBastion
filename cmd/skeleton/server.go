@@ -13,20 +13,18 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with ezBastion.  If not, see <https://www.gnu.org/licenses/>.
 
-package models
+package main
 
-import "ezBastion/pkg/confmanager"
+import (
+	log "github.com/sirupsen/logrus"
+)
 
-type Configuration struct {
-	Listen          string             `json:"listen"`
-	EzbDB           string             `json:"ezb_db"`
-	Logger          confmanager.Logger `json:"logger"`
-	CacheL1         int                `json:"cacheL1"`
-	PrivateKey      string             `json:"privatekey"`
-	PublicCert      string             `json:"publiccert"`
-	CaCert          string             `json:"cacert"`
-	ServiceName     string             `json:"servicename"`
-	ServiceFullName string             `json:"servicefullname"`
-	EzbPki          string             `json:"ezb_pki"`
-	SAN             []string           `json:"san"`
+
+
+
+// Must implement Mainservice interface from servicemanager package
+type mainService struct{}
+func (sm mainService) StartMainService(serverchan *chan bool) {
+
+	log.Println("Business MAIN here !!!")
 }

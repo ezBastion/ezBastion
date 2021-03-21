@@ -17,6 +17,7 @@ package configuration
 
 import (
 	"crypto/sha256"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"path"
 
@@ -41,13 +42,13 @@ func (*GormLogger) Print(v ...interface{}) {
 }
 
 /// InitDB create database schema.
-func InitDB(conf Configuration, exPath string) (*gorm.DB, error) {
+func InitDB(conf confmanager.Configuration, exePath string) (*gorm.DB, error) {
 	var db *gorm.DB
 	var err error
-	log.Debug("db: ", conf.DB)
-	switch DB := conf.DB; DB {
+	log.Debug("db: ", conf.EZBDB.DB)
+	switch DB := conf.EZBDB.DB; DB {
 	case "sqlite":
-		db, err = gorm.Open("sqlite3", path.Join(exPath, conf.SQLITE.DBPath))
+		db, err = gorm.Open("sqlite3", path.Join(exePath, conf.EZBDB.SQLITE.DBPath))
 
 		if err != nil {
 			fmt.Printf("sql.Open err: %s\n", err)
@@ -118,8 +119,8 @@ func InitDB(conf Configuration, exPath string) (*gorm.DB, error) {
 	if !db.HasTable(&m.EzbStas{}) {
 		db.CreateTable(&m.EzbStas{})
 		db.Model(&m.EzbStas{}).AddUniqueIndex("idx_stas_id", "id")
-		firstIAM := m.EzbStas{Name: "Default", Enable: true, Type: 0, Comment: "First IAM", EndPoint: conf.STA, Issuer: "changeME", Default: true}
-		db.FirstOrCreate(&firstIAM)
+		//firstIAM := m.EzbStas{Name: "Default", Enable: true, Type: 0, Comment: "First IAM", EndPoint: conf.STA, Issuer: "changeME", Default: true}
+		//db.FirstOrCreate(&firstIAM)
 	}
 	if !db.HasTable(&m.EzbBastions{}) {
 		db.CreateTable(&m.EzbBastions{})

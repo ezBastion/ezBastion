@@ -14,11 +14,11 @@ if ($repo) {
 
 function invoke-generate {
     if ($repo) {
-        upgrade-semver -file "./cmd/$($repo)"
+        upgrade-semver -file "./cmd/$($repo)" -appname $repo
         go generate "./cmd/$($repo)"  
     } else {
-        foreach ($f in $(Get-ChildItem "./cmd" -Directory )) {
-            upgrade-semver -file "./cmd/$($f.Name)"         
+        foreach ($f in $(Get-ChildItem "./cmd/ezb_*" -Directory )) {
+            upgrade-semver -file "./cmd/$($f.Name)" -appname $f.Name        
             go generate "./cmd/$($f.Name)"        
         }
     }
@@ -30,8 +30,9 @@ function invoke-build  {
 }
 
 function invoke-zip {
-    foreach ($f in $(Get-ChildItem "./bin" -Filter *.exe)) {
-        Compress-Archive -Path ".\bin\$($f.Name)" -DestinationPath ".\bin\$($f.BaseName).zip" -CompressionLevel Optimal -Force
+    $allver = Get-Content "./bin/allver.json" -Raw | ConvertFrom-Json
+    foreach ($f in $(Get-ChildItem "./bin/ezb_*" -Filter *.exe)) {
+        Compress-Archive -Path ".\bin\$($f.Name)" -DestinationPath ".\bin\$($f.BaseName)-$($allver.$($f.BaseName)).zip" -CompressionLevel Optimal -Force
     }
 
 }
@@ -46,8 +47,8 @@ function show-help {
 }
 
 function upgrade-semver {
-    param ($file)
-    $ver = $(Select-String -Path "$file\main.go" -Pattern "app.version.*""(\d\.\d.\d)"".*").Matches.Groups[1].Value
+    param ($file, $appname)
+    $ver = $(Select-String -Path "$file\main.go" -Pattern "VERSION.*""(\d\.\d.\d)"".*").Matches.Groups[1].Value
     $v = $ver.split(".")
     [int]$major = $v[0]
     [int]$minor = $v[1]
@@ -61,7 +62,15 @@ function upgrade-semver {
     $info.StringFileInfo.FileVersion = "v$($major).$($minor).$($patch).$($info.FixedFileInfo.FileVersion.Build)"
     $info.StringFileInfo.ProductVersion = $info.StringFileInfo.FileVersion
     $info | ConvertTo-json -depth 100 | Out-File "$file/versioninfo.json" -Encoding ascii
+    $allver = New-Object -TypeName PSCustomObject
+    if (Test-Path -Path "./bin/allver.json" ) {
+        $allver = Get-Content "./bin/allver.json" -Raw | ConvertFrom-Json
+    }
+    $allver | Add-Member -Name $appname -Value "$($major).$($minor).$($patch).$($info.FixedFileInfo.FileVersion.Build)" -MemberType NoteProperty -Force
+    $allver | ConvertTo-json -depth 10 | Out-File "./bin/allver.json" -Encoding ascii
 }
+
+
 
 Switch ($action)
 {

@@ -17,37 +17,77 @@ package setupmanager
 
 import (
 	"bufio"
+	"ezBastion/pkg/certmanager"
+	"ezBastion/pkg/confmanager"
 	"fmt"
-	"log"
+	"github.com/pelletier/go-toml"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net"
+
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-//CheckFolder
-func CheckFolder(exPath string) error {
+func ExeFullPath()	(string, error)  {
+	prog := os.Args[0]
+	p, err := filepath.Abs(prog)
+	if err != nil {
+		return "", err
+	}
+	fi, err := os.Stat(p)
+	if err == nil {
+		if !fi.Mode().IsDir() {
+			return p, nil
+		}
+		err = fmt.Errorf("%s is directory", p)
+	}
+	if filepath.Ext(p) == "" {
+		p += ".exe"
+		fi, err := os.Stat(p)
+		if err == nil {
+			if !fi.Mode().IsDir() {
+				return p, nil
+			}
+			err = fmt.Errorf("%s is directory", p)
+		}
+	}
+	return "", err
 
-	if _, err := os.Stat(path.Join(exPath, "cert")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "cert"), 0600)
-		if err != nil {
-			return err
-		}
-		log.Println("Make cert folder.")
+}
+
+func ExePath() (string, error) {
+	p, err := ExeFullPath()
+	if err != nil {
+		return  "", err
 	}
-	if _, err := os.Stat(path.Join(exPath, "log")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "log"), 0600)
-		if err != nil {
-			return err
+	return filepath.Dir(p), nil
+}
+
+//CheckFolder
+func CheckFolder(exePath string, SERVICENAME string) error {
+	folders := []string{"log", "cert", "conf"}
+	switch SERVICENAME {
+	case "ezb_db":
+		{
+			folders = append(folders, "db")
 		}
-		log.Println("Make log folder.")
+	case "ezb_wks":
+		{
+			folders = append(folders, "script", "job")
+		}
 	}
-	if _, err := os.Stat(path.Join(exPath, "conf")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "conf"), 0600)
-		if err != nil {
-			return err
+	for _, folder := range folders {
+		if _, err := os.Stat(path.Join(exePath, folder)); os.IsNotExist(err) {
+			err = os.MkdirAll(path.Join(exePath, folder), 0600)
+			if err != nil {
+				return err
+			}
+			log.Println("Create ", folder, " folder.")
 		}
-		log.Println("Make conf folder.")
 	}
 	return nil
 }
@@ -94,4 +134,59 @@ func AskForValue(s, def string, pattern string) string {
 		}
 		fmt.Printf("[%s] wrong format, must match (%s)\n", response, pattern)
 	}
+}
+
+func Setup(exePath, confPath, SERVICENAME string) error {
+	err := CheckFolder(exePath, SERVICENAME)
+	if err != nil {
+		return err
+	}
+	conf, err := confmanager.CheckConfig(confPath, exePath)
+	if err != nil {
+		log.Errorf("Setup error: %v", err)
+		c, _ := toml.Marshal(conf)
+		wferr := ioutil.WriteFile(confPath, c, 0600)
+		if wferr != nil {
+			log.Fatal(wferr)
+		}
+		log.Println("New ", confPath, " file created, please fill it.")
+		log.Println("Then, restart init to generate certificate.")
+		return err
+	}
+	keyFile := path.Join(exePath, conf.TLS.PrivateKey)
+	certFile := path.Join(exePath, conf.TLS.PublicCert)
+	caCert := path.Join(exePath, conf.EZBPKI.CaCert)
+	caKey := path.Join(exePath, conf.EZBPKI.CaKey)
+	_, ficacert := os.Stat(caCert)
+	_, ficakey := os.Stat(caKey)
+	_, fipriv := os.Stat(keyFile)
+	_, fipub := os.Stat(certFile)
+
+	if SERVICENAME == "ezb_pki" {
+		if os.IsNotExist(ficacert) || os.IsNotExist(ficakey) {
+			err := certmanager.NewRootCertificate(caCert, caKey, conf.TLS.SAN)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Root certificate saved at ", caCert)
+		}
+		return nil
+	} else {
+		if os.IsNotExist(ficacert) {
+			log.Fatalln("PKI public certificate not found")
+		}
+		if os.IsNotExist(fipriv) || os.IsNotExist(fipub) {
+			ezbPKI := fmt.Sprintf("%s:%d", conf.EZBPKI.Network.FQDN, conf.EZBPKI.Network.Port)
+			conn, err := net.Dial("tcp", ezbPKI)
+			if err != nil {
+				log.Fatalln("Failed to connect PKI at %s ", ezbPKI)
+			} else {
+				conn.Close()
+			}
+
+			request := certmanager.NewCertificateRequest("ezBastion", 730, conf.TLS.SAN)
+			certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert)
+		}
+	}
+	return nil
 }

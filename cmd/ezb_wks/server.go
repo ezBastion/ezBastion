@@ -19,6 +19,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -31,20 +32,15 @@ import (
 	"ezBastion/cmd/ezb_wks/models/healthCheck"
 	"ezBastion/cmd/ezb_wks/models/tasks"
 	"ezBastion/cmd/ezb_wks/models/wkslog"
-	"ezBastion/cmd/ezb_wks/setup"
-
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
-func mainGin(serverchan *chan bool) {
+// Must implement Mainservice interface from servicemanager package
+type mainService struct{}
 
-	conf, err := setup.CheckConfig()
-	if err != nil {
-		panic(err)
-	}
-
+func (sm mainService) StartMainService(serverchan *chan bool) {
 
 	log.Debug("start main")
 	gin.SetMode(gin.ReleaseMode)
@@ -57,12 +53,12 @@ func mainGin(serverchan *chan bool) {
 	wkslog.Routes(r)
 	exec.Routes(r)
 	tasks.Routes(r)
-	caCert, err := ioutil.ReadFile(path.Join(exPath, conf.CaCert))
+	caCert, err := ioutil.ReadFile(path.Join(exePath, conf.EZBPKI.CaCert))
 	if err != nil {
 		log.Fatal(err)
 
 	}
-
+	listen := fmt.Sprintf("%s:%d", conf.EZBWKS.Network.FQDN,conf.EZBWKS.Network.Port)
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 	tlsConfigPKI := &tls.Config{
@@ -72,13 +68,13 @@ func mainGin(serverchan *chan bool) {
 	}
 	tlsConfigPKI.BuildNameToCertificate()
 	srv := &http.Server{
-		Addr:      conf.Listen,
+		Addr:      listen,
 		TLSConfig: tlsConfigPKI,
 		Handler:   r,
 	}
 
 	go func() {
-		if err := srv.ListenAndServeTLS(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey)); err != nil {
+		if err := srv.ListenAndServeTLS(path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey)); err != nil {
 			log.Debug("listen: %s\n", err)
 		}
 	}()

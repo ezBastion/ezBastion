@@ -17,6 +17,7 @@ package middleware
 
 import (
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"net/http"
 	"strconv"
 
@@ -27,7 +28,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Store(storage cache.Storage, conf *models.Configuration) gin.HandlerFunc {
+func Store(storage cache.Storage, conf *confmanager.Configuration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		tr, _ := c.Get("trace")

@@ -18,6 +18,7 @@ package ctrl
 import (
 	"crypto/tls"
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -35,7 +36,7 @@ func GetTask(c *gin.Context) {
 	tasksID := c.MustGet("tasksid").(string)
 	tasksAction := c.MustGet("tasksaction").(string)
 	trace := c.MustGet("trace").(models.EzbLogs)
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	exPath := c.MustGet("exPath").(string)
 	tokenID := c.MustGet("tokenid").(string)
 	logg := log.WithFields(log.Fields{
@@ -54,13 +55,13 @@ func GetTask(c *gin.Context) {
 		return
 	}
 
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
-	pemFilePath := path.Join(exPath, conf.CaCert)
+	pemFilePath := path.Join(exPath, conf.EZBPKI.CaCert)
 	switch tasksAction {
 	case "status":
 		URL.Path = fmt.Sprintf("/tasks/status/%s", tasksID[4:])
@@ -172,7 +173,7 @@ func GetXtrack(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	param := c.MustGet("params").(string)
@@ -187,14 +188,14 @@ func GetXtrack(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
@@ -219,7 +220,7 @@ func GetLog(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	param := c.MustGet("params").(string)
@@ -234,14 +235,14 @@ func GetLog(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
@@ -266,7 +267,7 @@ func GetLoad(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	trace.Controller = "internal"
@@ -280,14 +281,14 @@ func GetLoad(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
@@ -311,7 +312,7 @@ func GetJobs(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	trace.Controller = "internal"
@@ -325,14 +326,14 @@ func GetJobs(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
@@ -363,7 +364,7 @@ func GetScripts(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	trace.Controller = "internal"
@@ -377,14 +378,14 @@ func GetScripts(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
@@ -409,7 +410,7 @@ func GetConf(c *gin.Context) {
 		"controller": "internal",
 		"xtrack":     trace.Xtrack,
 	})
-	conf := c.MustGet("configuration").(*models.Configuration)
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
 	trace.Controller = "internal"
@@ -423,14 +424,14 @@ func GetConf(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.PublicCert), path.Join(exPath, conf.PrivateKey))
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 	client := resty.New()
-	client.SetRootCertificate(path.Join(exPath, conf.CaCert))
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 	client.SetCertificates(cert)
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").

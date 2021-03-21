@@ -18,6 +18,7 @@ package middleware
 import (
 	"encoding/json"
 	"errors"
+	"ezBastion/pkg/confmanager"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -30,7 +31,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetParams(storage cache.Storage, conf *models.Configuration) gin.HandlerFunc {
+func GetParams(storage cache.Storage, conf *confmanager.Configuration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tr, _ := c.Get("trace")
 		trace := tr.(models.EzbLogs)

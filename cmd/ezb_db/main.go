@@ -18,119 +18,95 @@
 package main
 
 import (
-	"ezBastion/cmd/ezb_db/configuration"
-	"ezBastion/cmd/ezb_db/setup"
+	"ezBastion/cmd/ezb_db/admin"
+	"ezBastion/pkg/confmanager"
+	"ezBastion/pkg/ez_cli"
 	"ezBastion/pkg/logmanager"
+	"ezBastion/pkg/servicemanager"
+	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
+	"log"
+	"os"
+	"path"
 )
 
 var (
-	exPath string
-	conf   configuration.Configuration
+	exePath string
+	conf    confmanager.Configuration
+	err     error
 )
+
+const (
+	VERSION         = "1.0.0"
+	SERVICENAME     = "ezb_db"
+	SERVICEFULLNAME = "Manage ezBastion database."
+	CONFFILE        = "conf/config.toml"
+	LOGFILE         = "log/ezb_db.log"
+)
+
 func init() {
-	ex, _ := exePath()
-	exPath = filepath.Dir(ex)
-
-}
-func main() {
-
-	IsWindowsService, err := svc.IsWindowsService()
+	exePath, err = setupmanager.ExePath()
 	if err != nil {
-		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
+		log.Fatalf("Path error: %v", err)
 	}
+}
 
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, "log/ezb_db.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService )
-	if IsWindowsService {
-		conf, err := setup.CheckConfig()
-		if err == nil {
-			runService(conf.ServiceName, false)
+func main() {
+	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
+	confPath := path.Join(exePath, CONFFILE)
+	conf, err = confmanager.CheckConfig(confPath, exePath)
+	if err == nil {
+		IsWindowsService, err := svc.IsWindowsService()
+		if err != nil {
+			log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 		}
-		return
+		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, LOGFILE, conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+		if IsWindowsService {
+			servicemanager.RunService(SERVICENAME, false, mainService{})
+			return
+		}
 	}
-
 
 	app := cli.NewApp()
-	app.Name = "ezb_db"
-	app.Version = "0.3.0"
-	app.Usage = "Manage ezBastion database."
+	app.Name = SERVICENAME
+	app.Version = VERSION
+	app.Usage = SERVICEFULLNAME
+	app.Commands = ez_cli.EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath, mainService{})
 
-	app.Commands = []cli.Command{
-		{
-			Name:  "init",
-			Usage: "Genarate config file and PKI certificat.",
-			Action: func(c *cli.Context) error {
-				err := setup.Setup(true)
-				return err
-			},
-		}, {
-			Name:  "debug",
-			Usage: "Start ezb_db in console.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				runService(conf.ServiceName, true)
-				return nil
-			},
-		}, {
-			Name:  "install",
-			Usage: "Add ezb_db deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				return installService(conf.ServiceName, conf.ServiceFullName)
-			},
-		}, {
-			Name:  "remove",
-			Usage: "Remove ezb_db deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				return removeService(conf.ServiceName)
-			},
-		}, {
-			Name:  "start",
-			Usage: "Start ezb_db deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				return startService(conf.ServiceName)
-			},
-		}, {
-			Name:  "stop",
-			Usage: "Stop ezb_db deamon windows service.",
-			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig()
-				return controlService(conf.ServiceName, svc.Stop, svc.Stopped)
-			},
-		},
-		{
-			Name:  "newadmin",
-			Usage: "Add an admin account.",
-			Action: func(c *cli.Context) error {
-				err := setup.ResetPWD()
-				return err
-			},
-		},
-		{
-			Name:  "backup",
-			Usage: "Dump db in file.",
-			Action: func(c *cli.Context) error {
-				err := setup.DumpDB()
-				return err
-			},
-		},
-		{
-			Name:  "restore",
-			Usage: "Restore db from file.",
-			Action: func(c *cli.Context) error {
-				err := setup.RestoreDB()
-				return err
-			},
-		},
-	}
+	app.Commands = append(app.Commands, cli.Command{
+		Name:  "newadmin",
+		Usage: "Add an admin account.",
+		Action: func(c *cli.Context) error {
+			err := admin.ResetPWD(exePath, conf)
+			return err
+		}})
+	app.Commands = append(app.Commands, cli.Command{
+		Name: "backup",
+		Usage: "Dump db in file.",
+		Action: func(c *cli.Context) error {
+			err := admin.DumpDB(exePath, conf)
+			return err
+		}})
+	app.Commands = append(app.Commands, cli.Command{
+		Name: "restore",
+		Usage: "Restore db from file.",
+		Action: func(c *cli.Context) error {
+			err := admin.RestoreDB(exePath, conf)
+			return err
+		}})
+	app.Commands = append(app.Commands, cli.Command{
+		Name: "sta",
+		Usage: "Add First STA address.",
+		ArgsUsage: "\"https://sta.ezbastion.com:1443\" ",
+		Action: func(c *cli.Context) error {
+			if c.NArg() > 0 {
+				err := admin.FirstSTA(exePath, conf, c.Args().First())
+			return err
+			}
+			return fmt.Errorf("please provide STA url")
+		}	})
 
 	cli.AppHelpTemplate = fmt.Sprintf(`
 
