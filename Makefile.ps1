@@ -17,7 +17,7 @@ function invoke-generate {
         upgrade-semver -file "./cmd/$($repo)" -appname $repo
         go generate "./cmd/$($repo)"  
     } else {
-        foreach ($f in $(Get-ChildItem "./cmd" -Directory )) {
+        foreach ($f in $(Get-ChildItem "./cmd/ezb_*" -Directory )) {
             upgrade-semver -file "./cmd/$($f.Name)" -appname $f.Name        
             go generate "./cmd/$($f.Name)"        
         }
@@ -31,7 +31,7 @@ function invoke-build  {
 
 function invoke-zip {
     $allver = Get-Content "./bin/allver.json" -Raw | ConvertFrom-Json
-    foreach ($f in $(Get-ChildItem "./bin" -Filter *.exe)) {
+    foreach ($f in $(Get-ChildItem "./bin/ezb_*" -Filter *.exe)) {
         Compress-Archive -Path ".\bin\$($f.Name)" -DestinationPath ".\bin\$($f.BaseName)-$($allver.$($f.BaseName)).zip" -CompressionLevel Optimal -Force
     }
 
