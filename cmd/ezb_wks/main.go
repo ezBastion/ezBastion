@@ -43,7 +43,7 @@ const (
 	SERVICENAME     = "ezb_wks"
 	SERVICEFULLNAME = "ezBastion worker service."
 	CONFFILE        = "conf/config.toml"
-	LOGFILE         = "log/ezb_ezb_wks.log"
+	LOGFILE         = "log/ezb_wks.log"
 )
 
 func init() {
@@ -56,7 +56,7 @@ func init() {
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
 	confPath := path.Join(exePath, CONFFILE)
-	conf, err = confmanager.CheckConfig(confPath)
+	conf, err = confmanager.CheckConfig(confPath,  exePath)
 	if err == nil {
 		IsWindowsService, err := svc.IsWindowsService()
 		if err != nil {
@@ -74,7 +74,7 @@ func main() {
 	app.Version = VERSION
 	app.Usage = SERVICEFULLNAME
 
-	app.Commands = ez_cli.EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath, mainService{})
+	app.Commands = ez_cli.EZCli(conf.EZBWKS.ServiceName, SERVICEFULLNAME, exePath, confPath, mainService{})
 
 	cli.AppHelpTemplate = fmt.Sprintf(`
 

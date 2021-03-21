@@ -20,6 +20,7 @@
 package servicemanager
 
 import (
+	"ezBastion/pkg/setupmanager"
 	"fmt"
 	"golang.org/x/sys/windows/svc/debug"
 	"strings"
@@ -58,7 +59,7 @@ func StartService(name string) error {
 		return fmt.Errorf("could not access service: %v", err)
 	}
 	defer s.Close()
-	err = s.Start("is", "manual-started")
+	err = s.Start("is", "auto-started")
 	if err != nil {
 		log.Errorln(fmt.Sprintf("could not start service %s, error : %s", name, err.Error()))
 		return fmt.Errorf("could not start service: %v", err)
@@ -105,7 +106,12 @@ func ControlService(name string, c svc.Cmd, to svc.State) error {
 // InstallService installs the service targeted by name
 func InstallService(name, desc, exePath string) error {
 	var errormsg string
-
+	exeFullPath, err := setupmanager.ExeFullPath()
+	if err != nil {
+		errormsg = err.Error()
+		log.Errorln(errormsg)
+		return err
+	}
 	m, err := mgr.Connect()
 	if err != nil {
 		errormsg = err.Error()
@@ -120,7 +126,7 @@ func InstallService(name, desc, exePath string) error {
 		log.Errorln(errormsg)
 		return fmt.Errorf(errormsg)
 	}
-	s, err = m.CreateService(name, exePath, mgr.Config{DisplayName: desc}, "is", "auto-started")
+	s, err = m.CreateService(name, exeFullPath, mgr.Config{DisplayName: desc}, "is", "auto-started")
 	if err != nil {
 		errormsg = err.Error()
 		log.Errorln(errormsg)

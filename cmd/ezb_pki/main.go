@@ -40,6 +40,8 @@ const (
 	VERSION         = "1.0.0"
 	SERVICENAME     = "ezb_pki"
 	SERVICEFULLNAME = "ezBastion internal PKI"
+	CONFFILE        = "conf/config.toml"
+	LOGFILE         = "log/ezb_pki.log"
 )
 
 func init() {
@@ -51,14 +53,14 @@ func init() {
 
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
-	confPath := path.Join(exePath, "conf/config.toml")
-	conf, err = confmanager.CheckConfig(confPath)
+	confPath := path.Join(exePath, CONFFILE)
+	conf, err = confmanager.CheckConfig(confPath, exePath)
 	if err == nil {
 		IsWindowsService, err := svc.IsWindowsService()
 		if err != nil {
 			log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 		}
-		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, "log/ezb_pki.log", conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, LOGFILE, conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
 		if IsWindowsService {
 			servicemanager.RunService(SERVICENAME, false, mainService{})
 			return

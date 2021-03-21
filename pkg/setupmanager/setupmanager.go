@@ -32,7 +32,7 @@ import (
 	"strings"
 )
 
-func ExePath() (string, error) {
+func ExeFullPath()	(string, error)  {
 	prog := os.Args[0]
 	p, err := filepath.Abs(prog)
 	if err != nil {
@@ -41,7 +41,7 @@ func ExePath() (string, error) {
 	fi, err := os.Stat(p)
 	if err == nil {
 		if !fi.Mode().IsDir() {
-			return filepath.Dir(p), nil
+			return p, nil
 		}
 		err = fmt.Errorf("%s is directory", p)
 	}
@@ -50,37 +50,44 @@ func ExePath() (string, error) {
 		fi, err := os.Stat(p)
 		if err == nil {
 			if !fi.Mode().IsDir() {
-				return filepath.Dir(p), nil
+				return p, nil
 			}
 			err = fmt.Errorf("%s is directory", p)
 		}
 	}
 	return "", err
+
+}
+
+func ExePath() (string, error) {
+	p, err := ExeFullPath()
+	if err != nil {
+		return  "", err
+	}
+	return filepath.Dir(p), nil
 }
 
 //CheckFolder
-func CheckFolder(exPath string) error {
-
-	if _, err := os.Stat(path.Join(exPath, "cert")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "cert"), 0600)
-		if err != nil {
-			return err
+func CheckFolder(exePath string, SERVICENAME string) error {
+	folders := []string{"log", "cert", "conf"}
+	switch SERVICENAME {
+	case "ezb_db":
+		{
+			folders = append(folders, "db")
 		}
-		log.Println("Make cert folder.")
+	case "ezb_wks":
+		{
+			folders = append(folders, "script", "job")
+		}
 	}
-	if _, err := os.Stat(path.Join(exPath, "log")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "log"), 0600)
-		if err != nil {
-			return err
+	for _, folder := range folders {
+		if _, err := os.Stat(path.Join(exePath, folder)); os.IsNotExist(err) {
+			err = os.MkdirAll(path.Join(exePath, folder), 0600)
+			if err != nil {
+				return err
+			}
+			log.Println("Create ", folder, " folder.")
 		}
-		log.Println("Make log folder.")
-	}
-	if _, err := os.Stat(path.Join(exPath, "conf")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "conf"), 0600)
-		if err != nil {
-			return err
-		}
-		log.Println("Make conf folder.")
 	}
 	return nil
 }
@@ -130,11 +137,11 @@ func AskForValue(s, def string, pattern string) string {
 }
 
 func Setup(exePath, confPath, SERVICENAME string) error {
-	err := CheckFolder(exePath)
+	err := CheckFolder(exePath, SERVICENAME)
 	if err != nil {
 		return err
 	}
-	conf, err := confmanager.CheckConfig(confPath)
+	conf, err := confmanager.CheckConfig(confPath, exePath)
 	if err != nil {
 		log.Errorf("Setup error: %v", err)
 		c, _ := toml.Marshal(conf)
@@ -157,7 +164,7 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 
 	if SERVICENAME == "ezb_pki" {
 		if os.IsNotExist(ficacert) || os.IsNotExist(ficakey) {
-			err := certmanager.NewRootCertificate( caCert, caKey, conf.TLS.SAN )
+			err := certmanager.NewRootCertificate(caCert, caKey, conf.TLS.SAN)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -168,7 +175,7 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 		if os.IsNotExist(ficacert) {
 			log.Fatalln("PKI public certificate not found")
 		}
-		if  os.IsNotExist(fipriv) || os.IsNotExist(fipub) {
+		if os.IsNotExist(fipriv) || os.IsNotExist(fipub) {
 			ezbPKI := fmt.Sprintf("%s:%d", conf.EZBPKI.Network.FQDN, conf.EZBPKI.Network.Port)
 			conn, err := net.Dial("tcp", ezbPKI)
 			if err != nil {

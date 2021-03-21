@@ -22,6 +22,7 @@ type Configuration struct {
 	EZBDB  EZBDB  `toml:"ezb_db"`
 	EZBPKI EZBPKI `toml:"ezb_pki"`
 	EZBWKS EZBWKS `toml:"ezb_wks"`
+	EZBSTA EZBSTA `toml:"ezb_sta"`
 }
 
 type Logger struct {
@@ -38,19 +39,28 @@ type Network struct {
 
 type TLS struct {
 	SAN        []string `toml:"san" comment:"SAN (Subject Alternative Name) is a list of name that allows identities to be bound\n to the subject of the certificate. It can be a DNS name, an IP address or a NBIOS name."`
-	PrivateKey string   `toml:"privatekey" comment:"Private ECDA key, used to communicate with other ezBastion microservice and sign JWT tokens. Generate but not used by ezb_pki."`
-	PublicCert string   `toml:"publiccert" comment:"Public  ECDA certificate, used to communicate with other ezBastion microservice. Generate but not used by ezb_pki."`
+	PrivateKey string   `toml:"privatekey" comment:"Private ECDA key, used to communicate with other ezBastion microservice and sign JWT tokens. Generate but not used by ezb_pki.\nRelative path from ezBastion binaries."`
+	PublicCert string   `toml:"publiccert" comment:"Public  ECDA certificate, used to communicate with other ezBastion microservice. Generate but not used by ezb_pki.\nRelative path from ezBastion binaries."`
 }
 
 type EZBSRV struct {
 	Network Network `toml:"listener"`
 	CacheL1 int     `toml:"cacheL1" comment:"Cache memory duration in second. RAM cache for high performance, used to unload database.\n Longer value for less DB request but increase waiting time to apply modification coming from admin console."`
 }
-
-type EZBDB struct {
+type EZBSTA struct {
 	Network Network `toml:"listener"`
-	DB      string  `toml:"db" comment:"only [sqlite] available for the moment."`
-	SQLITE  SQLite  `toml:"sqlite"`
+	JWT     JWT     `toml:"jwt"`
+}
+type JWT struct {
+	Issuer   string `toml:"issuer" comment:" sta (Secure Token Authority) name, must be unique and set in ezb_admin"`
+	Audience string `toml:"audience" comment:"by default [ezBastion]"`
+	TTL      int    `toml:"ttl" comment:"Time to live of jwt token in second"`
+}
+type EZBDB struct {
+	NetworkPKI Network `toml:"listener-internal" comment:"Use only by ezb_srv with PKI authentication"`
+	NetworkJWT Network `toml:"listener-external" comment:"Use only by ezb_admin with JWT authentication"`
+	DB         string  `toml:"db" comment:"only [sqlite] available for the moment."`
+	SQLITE     SQLite  `toml:"sqlite"`
 	//MSSQL   MSSql   `toml:"mssql"`
 	//MYSQL   MYSql   `toml:"mysql"`
 }
@@ -63,10 +73,11 @@ type EZBPKI struct {
 
 type EZBWKS struct {
 	Network      Network `toml:"listener"`
-	ScriptPath   string  `toml:"scriptpath"`
-	JobPath      string  `toml:"jobpath"`
-	LimitWarning int     `toml:"limitwarning"`
-	LimitMax     int     `toml:"limitmax"`
+	ScriptPath   string  `toml:"scriptpath" comment:"Full path of root folder where jobs are will be created."`
+	JobPath      string  `toml:"jobpath" comment:"Full path of root folder where add your scripts."`
+	LimitWarning int     `toml:"limitwarning" comment:"Goroutine number before add warning in log file, 0 for ni limit"`
+	LimitMax     int     `toml:"limitmax" comment:"Goroutine number before reject api call with 429 <to many request>, 0 for ni limit"`
+	ServiceName  string  `toml:"name" comment:"Service name"`
 }
 
 type MSSql struct {

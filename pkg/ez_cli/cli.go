@@ -13,7 +13,7 @@ func EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath string, ms serviceman
 	ezcli := []cli.Command{
 		{
 			Name:  "init",
-			Usage: "Genarate config file and certificat.",
+			Usage: "Generate config file and certificate.",
 			Action: func(c *cli.Context) error {
 				err := setupmanager.Setup(exePath, confPath, SERVICENAME)
 				return err
