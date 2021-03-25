@@ -3,9 +3,9 @@ module ezBastion
 go 1.15
 
 require (
-	chavers.localhost/ezb_priv/tools v0.0.0
 	github.com/Showmax/go-fqdn v1.0.0
 	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
+	github.com/chavers/ezb_priv v0.0.0-20210325081957-37a1fc34c869 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
@@ -25,5 +25,3 @@ require (
 	golang.org/x/text v0.3.5
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
-
-replace chavers.localhost/ezb_priv/tools => C:\Users\chavers\go\src\chavers.localhost\ezb_priv\tools
