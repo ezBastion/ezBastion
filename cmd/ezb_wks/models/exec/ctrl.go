@@ -75,7 +75,8 @@ func runJob(c *gin.Context, psscript string, psParams string) {
 	})
 
 	logg.Debug("start")
-	cmd := exec.Command("powershell", "-NoLogo", "-NonInteractive", "-Command", "&{", psscript, " ", psParams, "}")
+	cmd := exec.Command("powershell", "-NoLogo", "-NonInteractive", "-File", "'", psscript, "' ", psParams)
+
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr

@@ -1,0 +1,477 @@
+<div class="page " data-ng-controller="ApiCtrl">
+    <script type="text/ng-template" id="helpApi.html">
+            <div class="modal-header">
+                <h3>Help title.</h3>
+            </div>
+            <div class="modal-body">
+                    help body
+            </div>
+        </script>
+    <script type="text/ng-template" id="helpAction.html">
+            <div class="modal-header">
+                <h3>Help title.</h3>
+            </div>
+            <div class="modal-body">
+                    help body
+            </div>
+        </script>
+
+    <data-ng-include src="'app/layout/modal.html'"></data-ng-include>
+    <div class="row">
+        <div class="col-md-4">
+            <!-- action tree -->
+            <section class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav-right pull-right list-unstyled">
+                        <li>
+                            <a ng-click="refreshTreeData()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-refresh"></i>
+                            </a>
+                            <!-- <a ng-click="helpApi()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-question"></i>
+                            </a> -->
+
+                        </li>
+                    </ul>
+                    <ul class="nav-left list-unstyled">
+                        <li>
+                            <i class="fa fa-globe"></i>
+                            <span>
+                                <strong>API url </strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body" ng-if="my_data">
+                    <abn-tree tree-data="my_data" tree-control="my_tree" icon-leaf="fa fa-file-code-o" on-select="my_tree_handler(branch)" expand-level="2"></abn-tree>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-8">
+            <!-- controller panel -->
+            <section class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav-right pull-right list-unstyled">
+                        <!-- <li ng-if="addToolTypeMessage">
+                            <a ng-click="addApiUrl(branch)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success" tooltip-popup-delay="1000"
+                                tooltip-placement="top" uib-tooltip="{{addToolTypeMessage}}" tooltip-append-to-body="true">
+                                <i class="glyphicon glyphicon-plus"></i>
+                            </a>
+                        </li> -->
+                        <li>
+                            <label ng-if="canDisable" class="ui-switch ui-switch-success ui-switch-sm">
+                                <input type="checkbox" ng-checked="branch.data.enable" ng-model="branch.data.enable" ng-click="statusBranch(branch)">
+                                <i></i>
+                            </label>
+                            &nbsp;
+                            <a ng-if="canDelete" ng-click="deleteBranch(branch)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-danger">
+                                <span class="glyphicon glyphicon-trash" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Delete" tooltip-append-to-body="true"></span>
+                            </a>
+                            <!-- <a ng-click="helpApi(branch.level)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-question"></i>
+                            </a> -->
+                        </li>
+                    </ul>
+                    <ul class="nav-left list-unstyled">
+                        <li>
+                            <i class="fa fa-rocket"></i>
+                            <span>
+                                <strong ng-if="!branch.level">Select API URL.</strong>
+                                <strong>
+                                    <span ng-if="branch.level == 4">(#{{branch.data.id}})</span> {{branch.label}} </strong>
+                                <small ng-if="branch.data.comment"> ({{branch.data.comment}})</small>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <!-- root -->
+                    <div uib-collapse="CTRLIsCollapsed">
+                        <small>Add a controller:</small>
+                        <form name="form_addController" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitAddNewController()">
+                            <div class="form-group">
+                                <label for="inputAddNameController" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputAddNameController" placeholder="short name" required pattern="^[a-zA-Z0-9-]+$"
+                                        ng-model="newController.name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAddDescriptionController" class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputAddDescriptionController" placeholder="description" ng-model="newController.comment">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAddVersionController" class="col-sm-2 control-label">Version</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">V</span>
+                                        <input type="number" class="form-control" id="inputAddVersionController" placeholder="Version" min="1" ng-model="newController.version">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_addController.$invalid">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- end root -->
+                    <!-- action list-->
+                    <div uib-collapse="ActionListIsCollapsed">
+                        <small>Edit controller:</small>
+                        <form name="form_EditController" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitEditController()">
+                            <div class="form-group">
+                                <label for="editNameController" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editNameController" placeholder="short name" required pattern="^[a-zA-Z0-9-]+$"
+                                        ng-model="editController.name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescriptionController" class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editDescriptionController" placeholder="description" ng-model="editController.comment">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddVersionController" class="col-sm-2 control-label">Version</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">V</span>
+                                        <input type="number" class="form-control" id="editAddVersionController" placeholder="Version" min="1" ng-model="editController.version">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_EditController.$invalid">Save</button>
+                            </div>
+                        </form>
+                        <div class="divider divider-dashed divider-lg pull-in"></div>
+                        <small>Add action:</small>
+                        <form name="form_addAction" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitAddNewAction()">
+                            <div class="form-group">
+                                <label for="inputNameAction" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputNameAction" placeholder="short name" required pattern="^[a-zA-Z0-9-]+$"
+                                        ng-model="newAction.name">
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="inputDescriptionAction" class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputDescriptionAction" placeholder="description" ng-model="new.data.comment">
+                                </div>
+                            </div> -->
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_addAction.$invalid">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- end action -->
+                    <!-- methode -->
+                    <div uib-collapse="MethodeIsCollapsed">
+                        <small>Edit action:</small>
+                        <form name="form_EditActionName" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitEditActionName()">
+                            <div class="form-group">
+                                <label for="editNameController" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="editNameController" placeholder="short name" required pattern="^[a-zA-Z0-9-]+$"
+                                        ng-model="newNameAction">
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_EditActionName.$invalid">Save</button>
+                            </div>
+                        </form>
+                        <div class="divider divider-dashed divider-lg pull-in"></div>
+                        <small>Add methode:</small>
+                        <form name="form_addMethode" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitAddActionMethode()">
+                            <div class="form-group">
+                                <label for="InputNewMethode" class="col-sm-2 control-label">Methode: </label>
+                                <span class="ui-select">
+                                    <select id="InputNewMethode" class="form-control" required ng-model="newMethode.ezbaccessid" ng-options="x.id as x.name for x in access track by x.id">
+                                    </select>
+                                </span>
+                                <span class="help-block">{{newMethode.ezbaccessid.comment}} </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputDescriptionAction" class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputDescriptionAction" placeholder="description" ng-model="newMethode.comment">
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_addMethode.$invalid">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- end methode -->
+                    <!-- action -->
+                    <div uib-collapse="ActionIsCollapsed">
+                        <div class="ui-tab-container ui-tab-horizontal">
+                            <uib-tabset justified="false" class="ui-tab">
+                                <uib-tab heading="METHODE">
+                                    <!-- <div class="panel panel-default"> -->
+                                    <!-- <div class="panel-heading">METHODE</div> -->
+                                    <!-- <div class="panel-body"> -->
+                                    <form name="form_EditMethode" class="form-horizontal ng-pristine ng-valid form-validation" role="form" novalidate data-ng-submit="submitEditActionMethode()">
+                                        <div class="form-group">
+                                            <label for="InputNewMethode" class="col-sm-2 control-label">Methode</label>
+                                            <div class="col-sm-10">
+                                                <span class="ui-select ">
+                                                    <select id="InputNewMethode" class="form-control" required ng-model="branch.data.access" ng-options="x.name for x in access track by x.id">
+                                                    </select>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inputDescriptionAction" class="col-sm-2 control-label">Description</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="inputDescriptionAction" placeholder="description" ng-model="branch.data.comment">
+                                            </div>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_EditMethode.$invalid">Save</button>
+                                        </div>
+                                    </form>
+
+                                </uib-tab>
+                                <uib-tab heading="ACCESS">
+                                    <form class="form-horizontal ng-pristine ng-valid" role="form" novalidate data-ng-submit="deprecated()">
+                                        <div class="form-group ">
+                                        <div class="col-xs-1">
+                                            <label class="ui-switch ui-switch-success  ui-switch-sm">
+                                                <input type="checkbox" ng-checked="branch.data.polling" ng-model="branch.data.polling">
+                                                <i></i>
+                                            </label>
+                                            </div>
+                                            <span  >Asynchronous polling</span>
+                                        </div>
+                                        <div class="form-group">
+                                        <div class="col-xs-1">
+                                            <label ng-if="canDisable" class="ui-switch ui-switch-success  ui-switch-sm">
+                                                <input type="checkbox" ng-checked="branch.data.anonymous" ng-model="branch.data.anonymous">
+                                                <i></i>
+                                            </label>
+                                            </div>
+                                            <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Anonymous API </span>
+                                        </div>
+                                        <div class="divider "></div>
+                                        <button type="submit" class="btn btn-success  btn-xs">Save</button>
+                                    </form> 
+                                    <!--
+                                    <h4><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Anonymous API <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h4>
+                                    <label ng-if="canDisable" class="ui-switch ui-switch-success ui-switch-sm">
+                                    <input type="checkbox" ng-checked="branch.data.anonymous" ng-model="branch.data.anonymous" ng-click="anonymousBranch(branch)">
+                                    <i></i>
+                                    </label>
+                                    -->
+                                </uib-tab>
+                                <uib-tab heading="PATH &amp; QUERY">
+
+                                    <form class="form-inline ng-pristine ng-valid" role="form" novalidate data-ng-submit="submitEditActionPathQuery()">
+                                        <div class="form-group text-success">
+                                            <label class="highlight colored" for="actionPath">{{branch.data.access.name}} {{bastion.fqdn}}/v{{branch.data.controllers.version}}/{{branch.data.controllers.name}}/{{branch.data.name}}/
+                                            </label>
+                                            <input type="text" class="form-control input-primary  " id="actionPath" placeholder="{name|s}/{id|i}" ng-model="branch.data.path">
+                                        </div>
+                                        <div class="form-group text-success">
+                                            <label class="highlight colored" for="actionQuery"> /? </label>
+                                            <input type="text" class="form-control input-round input-primary" id="actionQuery" placeholder="name=s&id=i" ng-model="branch.data.query">
+                                        </div>
+                                        <span class="help-block">Use "s" for type string and "i" for integer.</span>
+                                    </form>
+                                    <form class="form-horizontalng-pristine ng-valid" role="form" novalidate data-ng-submit="submitEditActionPathQuery()">
+
+                                        <div class="form-group  ">
+                                            <label class="text-success col-sm-2" for="actionConstant">Constant:</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="actionConstant" id="actionConstant" class="form-control input-primary " placeholder='{"key":"value","intkey":0}'
+                                                    ng-model="branch.data.constant"></textarea>
+                                                <span class="help-block">Somme static data to push. </span>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="divider divider-dashed divider-lg pull-in" ng-if="branch.data.access.id == 2 || branch.data.access.id == 3 || branch.data.access.id == 5 "></div> -->
+
+                                        <div class="form-group " ng-if="branch.data.access.id == 2 || branch.data.access.id == 3 || branch.data.access.id == 5 ">
+                                            <label class="text-success col-sm-2" for="actionBody">Json Body:</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="actionBody" id="actionBody" class="form-control input-primary " placeholder='{"name":"string","id":"integer"}'
+                                                    ng-model="branch.data.body"></textarea>
+                                                <span class="help-block">Request body format, to avoid injection. </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="divider"></div>
+
+                                        <button type="submit" class="btn btn-success  btn-xs">Save</button>
+                                    </form>
+                                    <!-- </div> -->
+                                    <!-- </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">TAG FILTER</div> -->
+                                </uib-tab>
+                                <uib-tab heading="WORKER TAG">
+
+                                    <script type="text/ng-template" id="autocomplete-template">
+                                <div class="autocomplete-template">
+                                    <span class="highlight colored" ng-bind-html="$highlight($getDisplayText())"></span>
+                                    <span>{{data.comment}}</span>
+                                </div>
+                              </script>
+                                    <!-- <div class="panel-body"> -->
+                                    <!-- add tag template ok bleue, disable red, no worker orange -->
+                                    <tags-input ng-model="branch.data.tags" display-property="name" add-on-paste="true" class="ui-tags-input" on-tag-added="addTag($tag)"
+                                        on-tag-removed="removeTag($tag)" min-length="1" max-length="10" allowed-tags-pattern="^[a-zA-Z0-9]+$"
+                                        placeholder="Add workers">
+                                        <auto-complete source="loadTags($query)" min-length="0" load-on-focus="true" load-on-empty="true" max-results-to-show="32"
+                                            display-property="name" template="autocomplete-template"></auto-complete>
+                                    </tags-input>
+                                    <span class="help-block">Worker list than match all tags. </span>
+                                    <ul>
+                                        <li ng-repeat="w in branch.data.workers">
+                                            <strong ng-class="w.enable ? '' : 'label label-danger'">{{w.name}}</strong>
+                                            <small>({{w.comment}})</small>
+                                        </li>
+                                    </ul>
+                                    <!-- </div> -->
+                                    <!-- </div>
+                        <div class="panel panel-default" ng-if="!branch.data.ezbjobsid">
+                            <div class="panel-heading">JOB</div>
+                            <div class="panel-body"> -->
+                                </uib-tab>
+                                <uib-tab heading="JOB" ng-if="!branch.data.ezbjobsid">
+
+                                    <form name="form_AddJob" class="form-horizontal  ng-valid form-validation" role="form" novalidate data-ng-submit="submitAddJob()">
+                                        <div class="form-group">
+                                            <label for="InputSelectJob" class="col-sm-2 control-label">Select a job</label>
+                                            <div class="col-sm-10">
+                                                <span class="nullable">
+                                                    <select id="InputSelectJob" ng-model="branch.data.jobs" class="form-control" ng-options="job.name for job in jobs">
+                                                        <option value="">-- new job --</option>
+                                                    </select>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="!branch.data.jobs.id">
+                                            <label for="inputNewJobName" class="col-sm-2 control-label">New job name</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="inputNewJobName" placeholder="short name" pattern="^[a-zA-Z0-9-]+$" ng-model="branch.data.jobs.name">
+                                            </div>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="!branch.data.jobs.name">Save</button>
+                                        </div>
+                                    </form>
+                                    <!-- </div> -->
+                                    <!-- </div> -->
+                                    <!-- </div> -->
+                                </uib-tab>
+                            </uib-tabset>
+                        </div>
+                    </div>
+                    <!-- end action -->
+                    <!-- job -->
+                    <div uib-collapse="JobIsCollapsed">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Job</div>
+                            <div class="panel-body">
+                                <form name="form_EditJob" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitEditJob()">
+                                    <div class="form-group">
+                                        <label for="InputJobName" class="col-sm-2 control-label">Name</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="InputJobName" required pattern="^[a-zA-Z0-9-]+$" placeholder="short name" ng-model="branch.data.name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="InputJobPath" class="col-sm-2 control-label">Path</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="InputJobPath" required placeholder="/the/folder/where/script/is/script.bin" ng-model="branch.data.path">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="InputJobComment" class="col-sm-2 control-label">Comment</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="InputJobComment" placeholder="comment" ng-model="branch.data.comment">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="InputJobChecksum" class="col-sm-2 control-label">Checksum</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="InputJobChecksum" placeholder="Script file checksum" ng-model="branch.data.checksum">
+                                            <span class="help-block">No checksum validation if empty. </span>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="form-group">
+                                        <label for="InputJobOutput" class="col-sm-2 control-label">Output</label>
+                                        <div class="col-sm-10">
+                                            <textarea id="InputJobOutput" class="form-control input-primary " placeholder='{"name":"string","id":"integer"}' ng-model="branch.data.output"></textarea>
+                                            <span class="help-block">Swagger json output. </span>
+                                        </div>
+                                    </div> -->
+                                    <div class="form-group">
+                                        <label for="InputJobCache" class="col-sm-2 control-label">Cache</label>
+                                        <div class="col-sm-10">
+                                            <input type="number" class="form-control" id="InputJobCache" placeholder="0" min="0" ng-model="branch.data.cache">
+                                            <span class="help-block">Cache duration in second, 0 to disable. </span>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="form-group">
+                                        <dl class="dl-horizontal">
+                                            <dt>Asynchronous</dt>
+                                            <dd>
+                                                <label class="ui-checkbox">
+                                                    <input type="checkbox" class="form-control" id="InputJobCache" ng-model="branch.data.async">
+                                                    <span>Check for long job duration.</span>
+                                                </label>
+
+                                            </dd>
+                                        </dl>
+                                    </div> -->
+                                    <div class="btn-group">
+                                        <button type="submit" class="btn btn-success  btn-xs" data-ng-disabled="form_EditJob.$invalid">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">INFO</div>
+                            <div class="panel-body">
+                                <h4>Variables sent to script:</h4>
+                                <dl class="dl-horizontal">
+                                    <dt>tokenid:</dt>
+                                    <dd>string</dd>
+                                    <dt>methode:</dt>
+                                    <dd>{{pb.data.access.name.toLowerCase()}}</dd>
+                                    <dt>tag:</dt>
+                                    <dd>{{tagList}}</dd>
+                                    <dt>path:</dt>
+                                    <dd>{{pathList}}</dd>
+                                    <dt>version:</dt>
+                                    <dd>{{pb.data.controllers.version}}</dd>
+                                    <dt>query:</dt>
+                                    <dd>{{queryList}}</dd>
+                                    <dt ng-if="pb.data.access.id == 2 || pb.data.access.id == 3 || pb.data.access.id == 5 ">body:</dt>
+                                    <dd ng-if="pb.data.access.id == 2 || pb.data.access.id == 3 || pb.data.access.id == 5 ">{{pb.data.body}}</dd>
+                                    <dt>constant:</dt>
+                                    <dd>{{pb.data.constant}}</dd>
+                                </dl>
+                                <h4>Collections:
+                                    <span class="badge badge-info">{{pb.data.collections.length || 0}}</span>
+                                </h4>
+                                <ul>
+                                    <li ng-repeat="c in pb.data.collections">
+                                        <strong ng-class="c.enable ? '' : 'label label-danger'">{{c.name}}</strong> (
+                                        <small>{{c.comment}}</small>)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end job -->
+                    <!-- </div> -->
+            </section>
+            </div>
+        </div>
+    </div>

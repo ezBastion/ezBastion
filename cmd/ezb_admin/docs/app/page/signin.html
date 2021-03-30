@@ -1,0 +1,42 @@
+<div class="page-signin">
+
+    <div class="signin-header">
+        <div class="container text-center">
+            <section class="logo">
+                    
+                <a href="#!/"><img src="/assets/images/ezblogo.png" width="1000" ></a>
+            </section>
+        </div>
+    </div>
+
+    <div class="main-body">
+        <div class="container">
+            <div class="form-container">
+                <form class="form-horizontal" ng-submit="loging(true)" >
+                    <fieldset>
+                        <div class="form-group">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-user"></span>
+                                </span>
+                                <input type="text" class="form-control" placeholder="Login" ng-model="user.name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                </span>
+                                <input type="password" class="form-control" placeholder="password" ng-model="user.pwd">
+                            </div>
+                        </div>                       
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary btn-lg btn-block" value="Log in" >
+                        </div>
+                    </fieldset>
+                </form>                
+            </div>
+        </div>
+    </div>
+</div>

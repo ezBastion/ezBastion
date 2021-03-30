@@ -1,0 +1,142 @@
+<div class="page page-dashboard" data-ng-controller="DashboardCtrl">
+
+    <div class="row">
+        <div class="text-center">
+            <!-- Stats -->
+            <div class="col-lg-3 col-sm-6 col-xs-6">
+                <div class="panel mini-box">
+                    <span class="btn-icon btn-icon-round btn-icon-lg-alt bg-success">
+                        <span class="fa fa-rocket"></span>
+                    </span>
+                    <div class="box-info">
+                        <p class="size-h2">{{apiNB.total || 0}} <span class="badge badge-danger">{{apiNB.disable || 0}}</span>
+                            
+                        </p>
+                        <p class="text-muted">
+                            <span data-translate="Api"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-xs-6">
+                <div class="panel mini-box">
+                    <span class="btn-icon btn-icon-round btn-icon-lg-alt bg-info">
+                        <i class="fa fa-users"></i>
+                    </span>
+                    <div class="box-info">
+                            <p class="size-h2">{{accountsNB.total || 0}} <span class="badge badge-danger">{{accountsNB.disable || 0}}</span>
+                        </p>
+                        <p class="text-muted">
+                            <span data-translate="Tokens"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-xs-6">
+                <div class="panel mini-box">
+                    <span class="btn-icon btn-icon-round btn-icon-lg-alt bg-warning">
+                        <i class="glyphicon glyphicon-tower"></i>
+                    </span>
+                    <div class="box-info">
+                            <p class="size-h2">{{bastionsNB.total || 0}} <span class="badge badge-danger">{{bastionsNB.disable || 0}}</span>
+                        </p>
+                        <p class="text-muted">
+                            <span data-translate="Bastions"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6  col-xs-6">
+                <div class="panel mini-box">
+                    <span class="btn-icon btn-icon-round btn-icon-lg-alt bg-primary">
+                        <i class="fa fa-wrench"></i>
+                    </span>
+                    <div class="box-info">
+                            <p class="size-h2">{{workersNB.total || 0}} <span class="badge badge-danger">{{workersNB.disable || 0}}</span>
+                        </p>
+                        <p class="text-muted">
+                            <span data-translate="Workers"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- end stats -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="panel panel-default panel-minimal">
+            <div class="panel-body">
+                <div data-echarts data-options="bar1.options" style="height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Datepicker -->
+        <section class="panel panel-default">
+            <div class="panel-heading">
+                <strong>
+                    <span class="glyphicon glyphicon-filter"></span> History</strong>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="input-group ui-datepicker">
+                            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popupDate.opened" min-date="minDate"
+                                max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true"
+                                close-text="Close" current-text='Current' minMode="month" />
+                            <span class="input-group-addon" ng-click="openDateFilter()">
+                                <i class="fa fa-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- end Datepicker -->
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default panel-minimal">
+                <!-- <div class="divider divider-md"></div> -->
+                <!-- <div class="panel-heading">Bastion</div> -->
+                <div class="panel-body">
+                    <div data-echarts data-options="pieBastion.options" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default panel-minimal">
+                <!-- <div class="divider divider-md"></div> -->
+                <!-- <div class="panel-heading">Token</div> -->
+                <div class="panel-body">
+                    <div data-echarts data-options="pieToken.options" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default panel-minimal">
+                <!-- <div class="divider divider-md"></div> -->
+                <!-- <div class="panel-heading">Controller</div> -->
+                <div class="panel-body">
+                    <div data-echarts data-options="pieController.options" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default panel-minimal">
+                <!-- <div class="divider divider-md"></div> -->
+                <!-- <div class="panel-heading">Action</div> -->
+                <div class="panel-body">
+                    <div data-echarts data-options="pieAction.options" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>

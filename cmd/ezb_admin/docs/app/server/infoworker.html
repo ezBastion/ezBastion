@@ -1,0 +1,58 @@
+<script type="text/ng-template" id="autocomplete-template">
+    <div class="autocomplete-template">
+        <span class="highlight colored" ng-bind-html="$highlight($getDisplayText())"></span>
+        <span class="text-primary" ng-if="data.comment">({{data.comment}})</span>
+    </div>
+</script>
+
+<script type="text/ng-template" id="infoworkermodal.html">
+    <div class="modal-header">
+        <h3> {{item.name}} @ {{item.fqdn}} </h3>
+    </div>
+    <div class="modal-body">
+        <div class="ui-tab-container ui-tab-horizontal">
+            <uib-tabset justified="false" class="ui-tab">
+                <uib-tab heading="Tags">
+                    <tags-input ng-model="item.tags" display-property="name" add-on-paste="true" class="ui-tags-input" on-tag-added="addTag($tag)"
+                        on-tag-removed="removeTag($tag)" min-length="1" max-length="10" allowed-tags-pattern="^[a-zA-Z0-9]+$" placeholder="Add tags">
+                        <auto-complete source="loadTags($query)" min-length="0" load-on-focus="true" load-on-empty="true" max-results-to-show="32"
+                            display-property="name" template="autocomplete-template"></auto-complete>
+                    </tags-input>
+                </uib-tab>
+                <uib-tab heading="Jobs" ng-hide="true">
+                    <h4>Comming soon.</h4>
+                    <ul>
+                        <li>list script + checksum</li>
+                        <li>compare checksumm / db + action update db</li>
+                        <li>with tag: use/unuse</li>
+                    </ul>
+                </uib-tab>
+                <uib-tab heading="Health" ng-hide="true">
+                    <h4>Comming soon.</h4>
+                    <ul>
+                        <li>cpu / mem load</li>
+                        <li>runas</li>                    
+                        <li>start date</li>
+                        <li>last request date</li>
+                        <li>running job</li>
+                        <ul>
+                            <li>job id</li>
+                            <li>/jobs/status/ID</li>
+                            <li>/jobs/log/id</li>
+                        </ul>
+                    </ul>
+                </uib-tab>
+                <uib-tab heading="Log" ng-hide="true">
+                    <h4>Comming soon.</h4>
+                    <ul>
+                        <li>last 200 events</li>
+                        <li>download log file by day</li>
+                    </ul>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="cancel()">Close</button>
+    </div>
+</script>

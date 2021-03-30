@@ -5,4 +5,5 @@
 *.zip
 *.toml
 resource.syso
-/bin/allver.json
+/bin
+!/bin/allver.json

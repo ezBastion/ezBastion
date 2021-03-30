@@ -23,6 +23,7 @@ type Configuration struct {
 	EZBPKI EZBPKI `toml:"ezb_pki"`
 	EZBWKS EZBWKS `toml:"ezb_wks"`
 	EZBSTA EZBSTA `toml:"ezb_sta"`
+	EZBADM EZBADM `toml:"ezb_adm"`
 }
 
 type Logger struct {
@@ -43,8 +44,14 @@ type TLS struct {
 	PublicCert string   `toml:"publiccert" comment:"Public  ECDA certificate, used to communicate with other ezBastion microservice. Generate but not used by ezb_pki.\nRelative path from ezBastion binaries."`
 }
 
+type EZBADM struct {
+	Network Network `toml:"listener"`
+
+}
+
 type EZBSRV struct {
 	Network Network `toml:"listener"`
+	ExternalURL string `toml:"externalurl" comment:"ezBastion URL used by API clients. From front of DNS alias, VIP, load balancing... Like https://myserviceapi.corporate.com/"`
 	CacheL1 int     `toml:"cacheL1" comment:"Cache memory duration in second. RAM cache for high performance, used to unload database.\n Longer value for less DB request but increase waiting time to apply modification coming from admin console."`
 }
 type EZBSTA struct {

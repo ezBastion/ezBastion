@@ -1,0 +1,47 @@
+<div class="page" data-ng-controller="TagsCtrl">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav-right pull-right list-unstyled">
+                        <li>
+
+                            <a ng-click="refresh()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-refresh"></i>
+                            </a>
+                            <!-- <a ng-click="help()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-question"></i>
+                            </a> -->
+                        </li>
+                    </ul>
+                    <ul class="nav-left list-unstyled">
+                        <li>
+                            <i class="fa fa-tags"></i>
+                            <span>
+                                <strong>TAGS</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body ">
+                    <form class="form-inline">
+                        <div class="form-group ">
+                            <button class="btn btn-danger" ng-click="removeTags()">Delete</button>
+                        </div>
+                        <div class="form-group pull-right">
+                            <input type="text" class="form-control input-round input-sm" ng-class="searchTag ? 'bg-primary' : ''" placeholder="Search."
+                                ng-model="searchTag">
+                            <span class="icon glyphicon glyphicon-filter"></span>
+                        </div>
+                        <div class="divider divider-dashed divider-lg pull-in"></div>
+                        <label class="ui-checkbox " ng-repeat="t in tags | filter:searchTag">
+                            <input name="{{t.name}}" type="checkbox" ng-model="t.selected">
+                            <span class=" "><i class="fa fa-tag" aria-hidden="true"></i> {{t.name}}</span> 
+                        </label>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

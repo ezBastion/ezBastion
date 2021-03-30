@@ -1,0 +1,30 @@
+<data-ng-include src="'app/account/modal.html'"></data-ng-include>
+<div class="page" data-ng-controller="adCtrl">
+    <section class="panel panel-default">
+        <div class="panel-heading">
+            <ul class="nav-left list-unstyled">
+                <li>
+                    <i class="fa fa-server"></i>
+                    <span>
+                        <strong> Active directory</strong>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="ui-tab-container ui-tab-horizontal">
+                <uib-tabset justified="false" class="ui-tab">
+                    <uib-tab heading="ACCOUNT">
+                        <data-ng-include src="'app/account/user.html'" data-ng-controller="UserCtrl"></data-ng-include>
+                    </uib-tab>
+                    <uib-tab heading="GROUP">
+                        <data-ng-include src="'app/account/group.html'" data-ng-controller="GroupCtrl"></data-ng-include>
+                    </uib-tab>
+                    <!-- <uib-tab heading="OU">
+                        <data-ng-include src="'app/account/ou.html'" data-ng-controller="OuCtrl"></data-ng-include>
+                    </uib-tab> -->
+                </uib-tabset>
+            </div>
+        </div>
+    </section>
+</div>

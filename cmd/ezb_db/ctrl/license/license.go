@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	t "chavers.localhost/ezb_priv/tools"
+	t "github.com/chavers/ezb_priv/tools"
 
 	"ezBastion/cmd/ezb_db/models"
 
