@@ -1,0 +1,400 @@
+<script type="text/ng-template" id="GroupDeleteModal.html">
+    <div class="modal-header">
+        <h3>Delete Collection: {{item.name}}?</h3>
+    </div>
+    <div class="modal-body">
+        <h3><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> This will unlink {{item.actions.length || 0}} api for {{item.accounts.length || 0}} account and {{item.groups.length || 0}} group ! <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h3>
+        Api:
+        <div class="panel panel-default">
+            <div class="panel-body" data-slim-scroll data-scroll-height="150px">
+                <ul>
+                    <li ng-repeat="i in item.actions">
+                        {{i.access.name}} {{bastions[0].fqdn}}/v{{i.controllers.version}}/{{i.controllers.name}}/{{i.name}}/{{i.path}}                           
+                    </li>
+                </ul>
+            </div>
+        </div>
+        User:
+        <div class="panel panel-default">
+            <div class="panel-body" data-slim-scroll data-scroll-height="150px">
+                <ul>
+                    <li ng-repeat="i in item.accounts"><strong> {{i.name}}</strong> <small> ({{i.comment}})</small> </li>
+                </ul>
+            </div>
+        </div>
+        Group:
+        <div class="panel panel-default">
+            <div class="panel-body" data-slim-scroll data-scroll-height="150px">
+                <ul>
+                    <li ng-repeat="i in item.groups"><strong> {{i.name}}</strong> <small> ({{i.comment}})</small> </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <label class="ui-checkbox"><input  type="checkbox" ng-model='confirmed'><span>I'm sure!</span></label>
+        <button class="btn btn-danger" ng-click="ok()" data-ng-disabled='!confirmed' >Delete</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="DeleteModal.html">
+    <div class="modal-header">
+        <h3>Delete {{sectionName | lowercase }}.</h3>
+    </div>
+    <div class="modal-body">
+      
+            delete {{sectionName | lowercase}} <strong> {{name}} </strong> ?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Delete</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>        
+</script>
+
+<script type="text/ng-template" id="EditModal.html">
+    <div class="modal-header">
+        <h3>Edit {{sectionName | lowercase}}.</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal ng-pristine ng-valid" role="form">
+            <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputName" placeholder="Group name" ng-model="editItem.name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputProject" class="col-sm-2 control-label">Comment</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputProject" placeholder="Description" ng-model="editItem.comment">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="AddModal.html">
+    <div class="modal-header">
+        <h3>Add new {{sectionName | lowercase}}.</h3>
+    </div>
+    <div class="modal-body">
+            <form class="form-horizontal ng-pristine ng-valid" role="form">
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputName" placeholder="short name" ng-model="item.name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputDescription" placeholder="description"  ng-model="item.comment">
+                        </div>
+                    </div>
+                </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>        
+</script>
+
+<script type="text/ng-template" id="AddScriptModal.html">
+    <div class="modal-header">
+        <h3>Add new {{sectionName | lowercase}}.</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal ng-pristine ng-valid" role="form">
+            <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputName" placeholder="short name" ng-model="item.name">
+                </div>
+            </div>                       
+            <div class="form-group">
+                <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputDescription" placeholder="description"  ng-model="item.comment">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>        
+</script>
+
+<script type="text/ng-template" id="EditScriptModal.html">
+    <div class="modal-header">
+        <h3>Edit {{sectionName | lowercase}} {{item.name}} .</h3>
+    </div>
+    <div class="modal-body">
+        <form name="form_EditJob" class="form-horizontal ng-pristine ng-valid form-validation" role="form" >
+            <div class="form-group">
+                <label for="InputJobName" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="InputJobName" required pattern="^[a-zA-Z0-9-]+$" placeholder="short name" ng-model="item.name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="InputJobPath" class="col-sm-2 control-label">Path</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="InputJobPath" required placeholder="/the/folder/where/script/is/script.bin" ng-model="item.path">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="InputJobComment" class="col-sm-2 control-label">Comment</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="InputJobComment" placeholder="comment" ng-model="item.comment">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="InputJobChecksum" class="col-sm-2 control-label">Checksum</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="InputJobChecksum" placeholder="Script base64 checksum" ng-model="item.checksum">
+                    <span class="help-block">No checksum validation if empty. </span>
+                </div>
+            </div>
+            <!-- <div class="form-group">
+                <label for="InputJobOutput" class="col-sm-2 control-label">Output</label>
+                <div class="col-sm-10">
+                    <textarea id="InputJobOutput" class="form-control input-primary " placeholder='{"name":"string","id":"integer"}' ng-model="item.output"></textarea>
+                    <span class="help-block">Swagger json output. </span>
+                </div>
+            </div> -->
+            <div class="form-group">
+                <label for="InputJobCache" class="col-sm-2 control-label">Cache</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="InputJobCache" placeholder="0" min="0" ng-model="item.cache">
+                    <span class="help-block">Cache duration in second, 0 to disable. </span>
+                </div>
+            </div>
+            <!-- <div class="form-group">
+                <dl class="dl-horizontal">
+                    <dt>Asynchronous</dt>
+                    <dd>
+                        <label class="ui-checkbox">
+                            <input type="checkbox" class="form-control" id="InputJobCache" ng-model="item.async">
+                            <span>Check for long job duration.</span>
+                        </label>
+
+                    </dd>
+                </dl>
+            </div> -->
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>        
+</script>
+
+<script type="text/ng-template" id="ApiGroupInfoModal.html">
+    <div class="modal-header bg-primary clearfix" ng-class="item.enable ? 'bg-success' : 'bg-danger'">
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.comment }}</p>
+    </div>
+    <div class="modal-body">            
+        <section>
+            <!-- <div class="ui-tab-container ui-tab-horizontal"> -->
+                <!-- <uib-tabset justified="false" class="ui-tab"> -->
+                    <!-- API -->
+                    <!-- <uib-tab heading="Api - {{item.actions.length}}"> -->
+                        <form class="form-inline" id="thformapi" ng-if="dataReady">
+                            <div class="form-group ">
+                                <input type="text" id="thapi"
+                                    ng-model="apiToAdd"
+                                    uib-typeahead="a.api for a in apiList | filter:{api:$viewValue} | limitTo:10"
+                                    typeahead-on-select="addApi($item, $model, $label); apiToAdd = null;"
+                                    typeahead-editable="false"
+                                    typeahead-min-length="0"
+                                    class="form-control"
+                                    placeholder="Api to link">
+                            </div> {{apiList.length ||0 }}
+                            <div class="form-group pull-right" >
+                                <input type="text" class="form-control input-round input-sm" ng-class="searchApi.value ? 'bg-primary' : ''" placeholder="Search." ng-model="searchApi.value" >
+                                <span class="icon glyphicon glyphicon-filter"></span>
+                            </div>
+                        </form>   
+                        
+                        <div class="panel panel-default" >
+                            <div class="panel-body" data-slim-scroll data-scroll-height="400px">
+                                
+                                <div class="table-responsive">
+                                    <table class="table ">
+                                        <thead>
+                                            <tr>
+                                                <th>Methode</th>
+                                                <th>Version</th>
+                                                <th>Ctrl</th>
+                                                <th>Action</th>
+                                                <th>Path</th>
+                                                <th>Job</th>
+                                                <th>Tag</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-if="dataReady">
+                                            <tr ng-repeat="s in item.actions | filter:searchApi.value" ng-class="s.deprecated ? 'danger' : ''" >
+                                                <td  tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{s.access.comment}}" tooltip-append-to-body="true">
+                                                    <span ng-class="s.access.enable ? '' : 'label label-danger'" >
+                                                        {{s.access.name}} 
+                                                 </span>                                                
+                                                </td>
+                                                <td>
+                                                    <span  >
+                                                        V{{s.controllers.version}}
+                                                    </span>                                                
+                                                </td>
+                                                <td tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{s.controllers.comment}}" tooltip-append-to-body="true">
+                                                    <span ng-class="s.enable ? '' : 'label label-danger'" >
+                                                        {{s.controllers.name}}
+                                                    </span>                                                
+                                                </td>
+                                                <td tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{s.comment}}" tooltip-append-to-body="true">
+                                                <span ng-class="s.enable ? '' : 'label label-danger'" >
+                                                        {{s.name}}
+                                                    </span>                                                
+                                                </td>
+                                                <td >
+                                                <span ng-class="s.enable ? '' : 'label label-danger'" >
+                                                        {{s.path}}
+                                                    </span>                                                
+                                                </td>
+                                                <td tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{s.jobs.comment}}" tooltip-append-to-body="true">
+                                                <span ng-class="s.jobs.enable ? '' : 'label label-danger'" >
+                                                        {{s.jobs.name}}
+                                                    </span>                                                
+                                                </td>                                                    
+                                                <td>
+                                                    <span ng-repeat="t in s.tags"><span  class="label label-primary" >{{t.name}} </span>&nbsp;</span>
+                                                </td>        
+                                                <td>
+                                                    <a ng-click="removeApi(s)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-danger">
+                                                        <span class="fa fa-unlink" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Unlink" tooltip-append-to-body="true"></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </uib-tab> -->
+                    <!-- END API -->
+                    <!-- ACCOUNT -->
+                    <!-- <uib-tab heading="Account - {{groupAccounts.length}}">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text"
+                                    ng-model="accountToAdd"
+                                    uib-typeahead="acc.name for acc in Accounts | filter:{name:$viewValue} | limitTo:8"
+                                    typeahead-on-select="addAccount($item, $model, $label); accountToAdd = null;"
+                                    typeahead-editable="false"
+                                    typeahead-min-length="0"
+                                    class="form-control"
+                                    placeholder="Account to link">
+                            </div>
+                            <div class="form-group pull-right" >
+                                <input type="text" class="form-control input-round input-sm" ng-class="searchAccount ? 'bg-primary' : ''" placeholder="Search." ng-model="searchAccount" >
+                                <span class="icon glyphicon glyphicon-filter"></span>
+                            </div>
+                        </form>
+                        <div class="panel panel-default">
+                            <div class="panel-body" data-slim-scroll data-scroll-height="400px">
+                                <div class="table-responsive">
+                                    <table class="table ">
+                                        <thead>
+
+                                            <tr>
+                                                <th> Account</th>
+                                                <th class="hidden-xs"> Project</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="s in groupAccounts | orderBy:'name' | filter:searchAccount"  >
+                                                <td > <span  ng-class="s.account.enable ? '' : 'label label-danger'" >{{ s.account.name }} </span></td>
+                                                <td class="hidden-xs">
+                                                    <span tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{s.account.project}}" tooltip-append-to-body="true">
+                                                        {{ s.account.project | limitTo: 30 }}
+                                                        <span ng-if="s.account.project.length > 30">...</span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a ng-click="removeAccount(s)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-danger">
+                                                        <span class="fa fa-unlink" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Unlink" tooltip-append-to-body="true"></span>
+                                                    </a>
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab> -->
+                    <!-- END ACCOUNT -->
+                    <!-- VIEW GROUP -->
+                    <!-- <uib-tab heading="Result API - {{viewgroup.length}}">
+                        <form class="form-inline" >
+                            <div class="row" >
+                                <div class="col-sm-8">
+                                    <h4>Actual Api list calculated by Database View.</h4>
+                                </div>
+                                <div class="col-sm-4 ">
+                                    <div class="form-group " >
+                                        <input type="text" class="form-control input-round input-sm " ng-class="searchviewgroup ? 'bg-primary' : ''" placeholder="Search." ng-model="searchviewgroup" >
+                                        <span class="icon glyphicon glyphicon-filter"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="panel panel-default">
+                            <div class="panel-body" data-slim-scroll data-scroll-height="300px">
+                                <div class="table-responsive">
+                                    <table class="table ">
+                                        <thead>
+                                            <tr>
+                                                <th>api</th>
+                                                <th>access</th>
+                                                <th>runas</th>
+                                                <th>action</th>
+                                                <th>env</th>
+                                                <th>site</th>
+                                                <th>type</th>
+
+                                                <th class="hidden-xs"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="va in viewgroup | filter:searchviewgroup ">
+                                                <td>{{va.api}}</td>
+                                                <td>{{va.access}}</td>
+                                                <td>{{va.runas}}</td>
+                                                <td>{{va.action}}</td>
+                                                <td>{{va.env}}</td>
+                                                <td>{{va.site}}</td>
+                                                <td>{{va.type}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab> -->
+                    <!-- END VIEW GROUP -->
+                <!-- </uib-tabset> -->
+            <!-- </div> -->
+        </section>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">close</button>
+    </div>
+</script>

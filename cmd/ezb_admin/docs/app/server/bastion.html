@@ -1,0 +1,63 @@
+<section class="panel panel-default" >
+    <div class="panel-heading">
+        <ul class="nav-right pull-right list-unstyled">
+            <li>
+                <a ng-click="refreshBastion()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <!-- <a ng-click="help()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                    <i class="fa fa-question"></i>
+                </a> -->
+            </li>
+        </ul>
+        <ul class="nav-left list-unstyled">
+            <li>
+                <i class="glyphicon glyphicon-tower"></i>
+                <span>
+                    <strong> Bastion</strong>
+                </span>
+            </li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal ng-pristine ng-valid" role="form" novalidate data-ng-submit="editBastion()">
+            <div class="form-group  ">
+                <label for="name" class="col-sm-2 control-label">
+                    Name
+                </label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control input-primary  " id="name" placeholder="short name" ng-model="bastion.name">
+                </div>
+            </div>
+            <div class="form-group  ">
+                <label for=" enable" class="col-sm-2 control-label">
+                    Enable
+                </label>
+                <div class="col-sm-10">
+                    <label class="ui-switch ui-switch-success ui-switch-sm">
+                        <input type="checkbox" ng-checked="bastion.enable" ng-model="bastion.enable">
+                        <i></i>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group  ">
+                <label for=" fqdn" class="col-sm-2 control-label">
+                    Fqdn
+                </label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control input-primary  " id="fqdn" placeholder="short name" ng-model="bastion.fqdn">
+                </div>
+            </div>
+            <div class="form-group  ">
+                <label for="comment" class="col-sm-2 control-label">
+                    Comment
+                </label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control input-primary  " id="comment" placeholder="short name" ng-model="bastion.comment">
+                </div>
+            </div>
+            <div class="divider"></div>
+            <button type="submit" class="btn btn-success  btn-xs">Save</button>
+        </form>
+    </div>
+</section>

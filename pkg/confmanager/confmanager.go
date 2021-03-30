@@ -16,6 +16,7 @@
 package confmanager
 
 import (
+	"fmt"
 	"github.com/Showmax/go-fqdn"
 	toml "github.com/pelletier/go-toml"
 	"io/ioutil"
@@ -51,6 +52,7 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBSRV.Network.FQDN = fqdn
 		conf.EZBSRV.Network.Port = 5000
 		conf.EZBSRV.CacheL1 = 600
+		conf.EZBSRV.ExternalURL = fmt.Sprintf("https://%s/", fqdn)
 		conf.EZBWKS.Network.FQDN = fqdn
 		conf.EZBWKS.Network.Port = 5100
 		conf.EZBSTA.Network.FQDN = fqdn
@@ -62,6 +64,8 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBWKS.JobPath = path.Join(exePath, "job")
 		conf.EZBWKS.LimitMax = 0
 		conf.EZBWKS.LimitWarning = 0
+		conf.EZBADM.Network.FQDN = fqdn
+		conf.EZBADM.Network.Port = 8080
 		return conf, readerror
 	}
 	toml.Unmarshal(raw, &conf)

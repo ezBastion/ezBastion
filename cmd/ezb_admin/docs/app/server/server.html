@@ -1,0 +1,161 @@
+<div class="page" data-ng-controller="ServerCtrl">
+    <script type="text/ng-template" id="help.html">
+        <div class="modal-header">
+            <h3>Help title.</h3>
+        </div>
+        <div class="modal-body">
+                help body
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="DeleteModal.html">
+        <div class="modal-header">
+            <h3>Delete {{sectionName | lowercase }}.</h3>
+        </div>
+        <div class="modal-body">
+
+                delete {{sectionName | lowercase}} <strong> {{name}} </strong> ?
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" ng-click="ok()">Delete</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="AddModal.html">
+        <div class="modal-header">
+            <h3>Add new {{sectionName | lowercase}}.</h3>
+        </div>
+        <div class="modal-body">
+                <form class="form-horizontal ng-pristine ng-valid" role="form">
+                        <div class="form-group">
+                            <label for="inputName" class="col-sm-2 control-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputName" placeholder="short name" ng-model="item.name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputDescription" placeholder="description"  ng-model="item.comment">
+                            </div>
+                        </div>
+                    </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="EditModalIAM.html">
+    <div class="modal-header">
+        <h3>Edit {{sectionName | lowercase}}.</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal ng-valid  form-validation " role="form" name="formadd" novalidate data-ng-submit="ok()">
+            <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputName" required pattern="^[a-zA-Z0-9-_]+$" placeholder="Group name" ng-model="editItem.name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputComment" class="col-sm-2 control-label">Comment</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputComment" placeholder="Description" ng-model="editItem.comment">
+                </div>
+            </div>
+            <!-- <div class="form-group">
+                <label for="inputType" class="col-sm-2 control-label">Type</label>
+                <div class="col-sm-10 ">
+                    <span class="ui-select ">
+                        <select id="inputType" class="form-control" required ng-model="editItem.type" 
+                        ng-options="t.k as t.v for t in type  ">
+                        </select>
+                    </span>
+                </div>
+            </div> -->
+            <!-- <div class="form-group">
+                <label for="inputIssuer" class="col-sm-2 control-label">Issuer</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputIssuer" placeholder="JWT Issuer value" ng-model="editItem.issuer">
+                </div>
+            </div> -->
+            <div class="form-group">
+                <label for="inputAEP" class="col-sm-2 control-label">authorization endpoint</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputAEP" required placeholder="https://server.example.com/connect/authorize"
+                        ng-model="editItem.authorization_endpoint">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()" data-ng-disabled="formadd.$invalid">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+    </script>
+
+    <script type="text/ng-template" id="EditModalWorker.html">
+        <div class="modal-header">
+            <h3>Edit {{sectionName | lowercase}}.</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal ng-valid  form-validation " role="form" name="formadd" novalidate data-ng-submit="ok()">
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" required pattern="^[a-zA-Z0-9-_]+$" placeholder="Group name" ng-model="editItem.name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputProject" class="col-sm-2 control-label">Comment</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputProject" placeholder="Description" ng-model="editItem.comment">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputProject" class="col-sm-2 control-label">Fqdn</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputProject" required placeholder="https://localhost:5000" ng-model="editItem.fqdn">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()" data-ng-disabled="formadd.$invalid" >OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+
+    <section class="panel panel-default">
+        <div class="panel-heading">
+            <ul class="nav-left list-unstyled">
+                <li>
+                    <i class="fa fa-server"></i>
+                    <span>
+                        <strong> EZB servers</strong>
+                    </span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="panel-body">
+            <div class="ui-tab-container ui-tab-horizontal">
+                <uib-tabset justified="false" class="ui-tab">
+                    <uib-tab heading="Bastion">
+                        <data-ng-include src="'app/server/bastion.html'" data-ng-controller="BastionCtrl"></data-ng-include>
+                    </uib-tab>
+                    <uib-tab heading="Workers">
+                        <data-ng-include src="'app/server/worker.html'" data-ng-controller="WorkerCtrl"></data-ng-include>
+                    </uib-tab>
+                    <uib-tab heading="STA">
+                        <data-ng-include src="'app/server/sta.html'" data-ng-controller="StaCtrl"></data-ng-include>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </section>
+</div>

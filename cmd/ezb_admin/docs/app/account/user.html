@@ -1,0 +1,119 @@
+<!-- <div class="page" data-ng-controller="UserCtrl"> -->
+<!-- <data-ng-include src="'app/account/modal.html'"></data-ng-include> -->
+<script type="text/ng-template" id="help.html">
+        <div class="modal-header">
+            <h3>Active Directory user.</h3>
+        </div>
+        <div class="modal-body">
+                <p>Account who is granted by default, to use there Active Directory SamAccountName as token.</p>
+                <p>You can link a user to many API, using API group.</p>
+                <p>You can link a user to a service account, to provide specific token.</p>
+        </div>
+    </script>
+<section class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-heading">
+            <ul class="nav-right pull-right list-unstyled">
+                <li>
+                    <a ng-click="add()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                        <i class="glyphicon glyphicon-plus"></i>
+                    </a>
+                    <a ng-click="refresh()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                    <!-- <a ng-click="help()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                        <i class="fa fa-question"></i>
+                    </a> -->
+
+                </li>
+            </ul>
+            <ul class="nav-left list-unstyled">
+                <li>
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>
+                        <strong>AD User & computer</strong>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="table-filters">
+            <div class="row">
+                <div class="col-sm-4 col-xs-6">
+                    <form>
+                        <input type="text" placeholder="Search..." class="form-control" data-ng-model="searchKeywords" data-ng-keyup="search()">
+                    </form>
+                </div>
+                <div class="col-sm-3 col-xs-6 filter-result-info">
+                    <span>
+                        Showing {{filteredItems.length}}/{{items.length}} entries
+                    </span>
+                </div>
+            </div>
+        </div>
+        <section class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> Token</th>
+                        <th class="hidden-xs"> Real</th>
+                        <th class="hidden-xs"> Comment</th>
+                        <th> Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in currentPageItems | orderBy:'name' ">
+                        <td>
+                            <i  ng-class="item.isadmin ? 'fa fa-user-secret':'fa fa-user' "></i> {{ item.name }} </td>
+                        <td class="hidden-xs"> {{ item.real }} </td>
+                        <td class="hidden-xs">
+                            <span tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="{{item.comment}}" tooltip-append-to-body="true">
+                                {{ item.comment | limitTo: 20 }}
+                                <span ng-if="item.project.length > 20">...</span>
+                            </span>
+                        </td>
+                        <td>
+                            <label class="ui-switch ui-switch-success  ui-switch-sm" ng-hide="main.name.id == item.id">
+                                <input type="checkbox" ng-checked="item.enable" ng-model="item.enable" ng-click="status(item)">
+                                <i></i>
+                            </label>
+                            <span class="space hidden-xs"></span>
+                            <a ng-click="edit(item)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-info">
+                                <span class="glyphicon glyphicon-edit" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Edit" tooltip-append-to-body="true"></span>
+                            </a>
+                            <span class="space hidden-xs"></span>
+                            <a ng-click="info(item)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-primary">
+                                <span class="fa fa-cogs" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Info" tooltip-append-to-body="true"></span>
+                            </a>
+                            <span class="space hidden-xs"></span>
+                            <a ng-click="delete(item)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-danger" ng-hide="main.name.id == item.id">
+                                <span class="glyphicon glyphicon-trash" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Delete" tooltip-append-to-body="true"></span>
+                            </a>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <div class="panel-footer">
+        <footer class="table-footer">
+            <div class="row">
+                <div class="col-md-6 page-num-info">
+                    <span>
+                        Show
+                        <select data-ng-model="numPerPage" data-ng-options="num for num in numPerPageOpt" data-ng-change="onNumPerPageChange()">
+                        </select>
+                        entries per page
+                    </span>
+                </div>
+                <div class="col-md-6 text-right pagination-container">
+                    <ul uib-pagination class="pagination-sm" ng-model="currentPage" total-items="filteredItems.length" max-size="4" ng-change="select(currentPage)"
+                        items-per-page="numPerPage" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;" boundary-links="true"></ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+</section>
+<!-- </div> -->

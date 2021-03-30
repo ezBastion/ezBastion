@@ -39,11 +39,11 @@ var (
 )
 
 const (
-	VERSION         = "0.1.0" //use semver.org
-	SERVICENAME     = "ezb_???" // name used as windows service name
-	SERVICEFULLNAME = "ezBastion lorem ipsum." // windows service description
+	VERSION         = "1.0.0" //use semver.org
+	SERVICENAME     = "ezb_admin" // name used as windows service name
+	SERVICEFULLNAME = "ezBastion web admin console." // windows service description
 	CONFFILE        = "conf/config.toml" //config file path stay hardcoded
-	LOGFILE         = "log/ezb_???.log"  // static path too
+	LOGFILE         = "log/ezb_admin.log"  // static path too
 )
 
 func init() {
@@ -85,12 +85,12 @@ func main() {
 ███████╗███████╗██████╔╝██║  ██║███████║   ██║   ██║╚██████╔╝██║ ╚████║
 ╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
                                                                        
-                        ██████╗ ██████╗ ██████╗                        
-                        ╚════██╗╚════██╗╚════██╗                       
-                          ▄███╔╝  ▄███╔╝  ▄███╔╝                       
-                          ▀▀══╝   ▀▀══╝   ▀▀══╝                        
-                          ██╗     ██╗     ██╗                          
-                          ╚═╝     ╚═╝     ╚═╝                 
+							 █████╗ ██████╗ ███╗   ███╗                    
+							██╔══██╗██╔══██╗████╗ ████║                    
+							███████║██║  ██║██╔████╔██║                    
+							██╔══██║██║  ██║██║╚██╔╝██║                    
+							██║  ██║██████╔╝██║ ╚═╝ ██║                    
+							╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝                    
 																			  
 %s
 INFO:

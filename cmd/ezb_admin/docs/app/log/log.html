@@ -1,0 +1,32 @@
+<div class="page page-table" data-ng-controller="LogCtrl">
+    <section class="panel panel-default table-dynamic">
+        <div class="panel-heading">
+            <form class="form-inline">
+                <div class="form-group">
+                    <strong>
+                        <span class="fa fa-heartbeat"></span> Error Log</strong>
+                </div>
+                <div class="form-group pull-right">
+                    <select class="form-control" required="" ng-model="nberr.selected" ng-options="opt.val for opt in nberr.available track by opt.id">
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="panel-body" data-slim-scroll data-scroll-height="700px">
+            <div class="callout callout-danger" ng-repeat="err in errors | filter:main.lookfor">
+                <!-- add button to get log from bastion/worker in popup-->
+                <p class="size-h2">ERROR {{ err.status }}: {{ err.error }}
+                    <span class="size-h4">{{ err.date | date:"dd/MM/yyyy '@' h:mma":UTC }}</span>
+                </p>
+                <ul>
+                    <li>Token: {{err.token}}</li>
+                    <li>Ctrl: {{err.controller}}</li>
+                    <li>Action: {{err.action}}</li>
+                    <li>Bastion: {{err.bastion}}</li>
+                    <li>Url: {{err.url}}</li>
+                    <li>From: {{err.ipaddr}}</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>

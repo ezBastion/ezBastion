@@ -1,0 +1,83 @@
+<div class="page" data-ng-controller="SiteCtrl">
+    <script type="text/ng-template" id="help.html">
+            <div class="modal-header">
+                <h3>Sitefilter.</h3>
+            </div>
+            <div class="modal-body">
+                    <p> - Filters are used to enable/disable entier part of your bastion.</p>
+                    <p> - Site filter is used to enable/disable a subsystem.</p>
+                    <p> - You can use site to declare geographic place or software architecture:</p>
+                    <p>
+                        <ul>
+                            <li>Datacenter name.</li>
+                            <li>VMWare Vcenter name.</li>
+                            <li>Citrix xenapp farm name.</li>
+                            <li>...</li>
+                        </ul>
+                    </p>            </div>
+        </script>
+    <data-ng-include src="'app/layout/modal.html'"></data-ng-include>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav-right pull-right list-unstyled">
+                        <li>
+                            <a ng-click="add()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="glyphicon glyphicon-plus"></i>
+                            </a>
+                            <a ng-click="refresh()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-refresh"></i>
+                            </a>
+                            <!-- <a ng-click="help()" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-success">
+                                <i class="fa fa-question"></i>
+                            </a> -->
+                        </li>
+
+                    </ul>
+                    <ul class="nav-left list-unstyled">
+                        <li>
+                            <i class="fa fa-university"></i>
+                            <span>
+                                <strong>{{sectionName}}</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <section class="table-responsive">
+                        <table class="table table-striped ">
+                            <thead>
+                                <tr>
+                                    <th> {{sectionName}}</th>
+                                    <th> Action</th>
+                                    <th class="hidden-xs"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in items | filter:main.lookfor">
+                                    <td> {{ item.name | uppercase }} </td>
+                                    <td>
+                                        <label class="ui-switch ui-switch-success  ui-switch-sm">
+                                            <input type="checkbox" ng-checked="item.enable" ng-model="item.enable" ng-click="status(item)">
+                                            <i></i>
+                                        </label>
+                                        <span class="space"></span>
+                                        <a ng-click="edit(item)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-info">
+                                            <span class="glyphicon glyphicon-edit" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Edit" tooltip-append-to-body="true"></span>
+                                        </a>
+                                        <span class="space"></span>
+                                        <a ng-click="delete(item)" href="javascript:;" class="btn-icon-lined btn-icon-round btn-icon-sm btn-danger">
+                                            <span class="glyphicon glyphicon-trash" tooltip-popup-delay="1000" tooltip-placement="top" uib-tooltip="Delete" tooltip-append-to-body="true"></span>
+                                        </a>
+                                    </td>
+                                    <td class="hidden-xs"> {{ item.comment }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
