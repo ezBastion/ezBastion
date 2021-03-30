@@ -25,3 +25,5 @@ require (
 	golang.org/x/text v0.3.5
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
+
+replace github.com/chavers/ezb_priv => C:\Users\chavers\go\src\chavers.localhost\ezb_priv\tools
