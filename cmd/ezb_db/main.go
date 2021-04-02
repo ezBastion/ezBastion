@@ -41,7 +41,7 @@ var (
 const (
 	VERSION         = "1.0.0"
 	SERVICENAME     = "ezb_db"
-	SERVICEFULLNAME = "Manage ezBastion database."
+	SERVICEFULLNAME = "ezBastion database."
 	CONFFILE        = "conf/config.toml"
 	LOGFILE         = "log/ezb_db.log"
 )
