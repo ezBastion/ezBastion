@@ -171,6 +171,8 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 			log.Println("Root certificate saved at ", caCert)
 		}
 		return nil
+	} else if SERVICENAME == "ezb_setup" {
+		return nil
 	} else {
 		if os.IsNotExist(ficacert) {
 			log.Fatalln("PKI public certificate not found")

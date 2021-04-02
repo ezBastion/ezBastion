@@ -15,11 +15,13 @@ if ($repo) {
 function invoke-generate {
     if ($repo) {
         upgrade-semver -file "./cmd/$($repo)" -appname $repo
-        go generate "./cmd/$($repo)"  
+        go fmt "./cmd/$($repo)"
+        go generate "./cmd/$($repo)"
     } else {
         foreach ($f in $(Get-ChildItem "./cmd/ezb_*" -Directory )) {
-            upgrade-semver -file "./cmd/$($f.Name)" -appname $f.Name        
-            go generate "./cmd/$($f.Name)"        
+            upgrade-semver -file "./cmd/$($f.Name)" -appname $f.Name
+            go fmt "./cmd/$($f.Name)"
+            go generate "./cmd/$($f.Name)"
         }
     }
 }
