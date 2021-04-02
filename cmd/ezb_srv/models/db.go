@@ -42,7 +42,7 @@ func init() {
 	exPath = filepath.Dir(ex)
 }
 
-func GetViewApi(s cache.Storage, c *confmanager.Configuration, token, xtrack string) ([]ViewApi, error) {
+func GetViewApi(s cache.Storage, conf *confmanager.Configuration, token, xtrack string) ([]ViewApi, error) {
 	storage = s
 	var vapis []ViewApi
 	var vapisFiltred []ViewApi
@@ -60,14 +60,14 @@ func GetViewApi(s cache.Storage, c *confmanager.Configuration, token, xtrack str
 			return vapisFiltred, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			logg.Error("LoadX509KeyPair: ", err)
-			logg.Error("PublicCert:", c.TLS.PublicCert)
+			logg.Error("PublicCert:", conf.TLS.PublicCert)
 			return vapisFiltred, err
 		}
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		_, err = client.R().
@@ -85,7 +85,7 @@ func GetViewApi(s cache.Storage, c *confmanager.Configuration, token, xtrack str
 		if encErr != nil {
 			return vapisFiltred, encErr
 		}
-		storage.Set("ViewApi", byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		storage.Set("ViewApi", byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	if token == "" {
 		return vapisFiltred, nil
@@ -102,7 +102,7 @@ func GetViewApi(s cache.Storage, c *confmanager.Configuration, token, xtrack str
 	return vapisFiltred, nil
 }
 
-func GetApiPath(s cache.Storage, c *confmanager.Configuration) (apiPath []ApiPath, err error) {
+func GetApiPath(s cache.Storage, conf *confmanager.Configuration) (apiPath []ApiPath, err error) {
 	content := s.Get("apiPath")
 	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
@@ -113,14 +113,14 @@ func GetApiPath(s cache.Storage, c *confmanager.Configuration) (apiPath []ApiPat
 			return apiPath, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			fmt.Println(err)
 			return apiPath, err
 		}
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		_, err = client.R().
 			SetResult(&apiPath).
@@ -137,12 +137,12 @@ func GetApiPath(s cache.Storage, c *confmanager.Configuration) (apiPath []ApiPat
 		if encErr != nil {
 			return apiPath, encErr
 		}
-		s.Set("apiPath", byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		s.Set("apiPath", byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	return apiPath, nil
 }
 
-func GetAction(s cache.Storage, c *confmanager.Configuration, actionID int) (action EzbActions, err error) {
+func GetAction(s cache.Storage, conf *confmanager.Configuration, actionID int) (action EzbActions, err error) {
 	content := s.Get(fmt.Sprintf("action%d", actionID))
 	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
@@ -153,14 +153,14 @@ func GetAction(s cache.Storage, c *confmanager.Configuration, actionID int) (act
 			return action, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			fmt.Println(err)
 			return action, err
 		}
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		_, err = client.R().
 			SetResult(&action).
@@ -177,12 +177,12 @@ func GetAction(s cache.Storage, c *confmanager.Configuration, actionID int) (act
 		if encErr != nil {
 			return action, encErr
 		}
-		s.Set(fmt.Sprintf("action%d", actionID), byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		s.Set(fmt.Sprintf("action%d", actionID), byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	return action, nil
 }
 
-func GetAccount(s cache.Storage, c *confmanager.Configuration, userID string) (account EzbAccounts, err error) {
+func GetAccount(s cache.Storage, conf *confmanager.Configuration, userID string) (account EzbAccounts, err error) {
 	content := s.Get(fmt.Sprintf("account%s", userID))
 	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
@@ -193,14 +193,14 @@ func GetAccount(s cache.Storage, c *confmanager.Configuration, userID string) (a
 			return account, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			fmt.Println(err)
 			return account, err
 		}
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		_, err = client.R().
 			SetResult(&account).
@@ -218,12 +218,12 @@ func GetAccount(s cache.Storage, c *confmanager.Configuration, userID string) (a
 		if encErr != nil {
 			return account, encErr
 		}
-		s.Set(fmt.Sprintf("account%s", userID), byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		s.Set(fmt.Sprintf("account%s", userID), byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	return account, nil
 }
 
-func GetStas(s cache.Storage, c *confmanager.Configuration) (stas []EzbStas, err error) {
+func GetStas(s cache.Storage, conf *confmanager.Configuration) (stas []EzbStas, err error) {
 	content := s.Get("stas")
 	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
@@ -234,14 +234,14 @@ func GetStas(s cache.Storage, c *confmanager.Configuration) (stas []EzbStas, err
 			return stas, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			fmt.Println(err)
 			return stas, err
 		}
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		_, err = client.R().
 			SetResult(&stas).
@@ -258,12 +258,12 @@ func GetStas(s cache.Storage, c *confmanager.Configuration) (stas []EzbStas, err
 		if encErr != nil {
 			return stas, encErr
 		}
-		s.Set("stas", byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		s.Set("stas", byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	return stas, nil
 }
 
-func GetWorkers(s cache.Storage, c *confmanager.Configuration) (workers []EzbWorkers, err error) {
+func GetWorkers(s cache.Storage, conf *confmanager.Configuration) (workers []EzbWorkers, err error) {
 	content := s.Get("workers")
 	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
@@ -274,14 +274,14 @@ func GetWorkers(s cache.Storage, c *confmanager.Configuration) (workers []EzbWor
 			return workers, err
 		}
 	} else {
-		cert, err := tls.LoadX509KeyPair(path.Join(exPath, c.TLS.PublicCert), path.Join(exPath, c.TLS.PrivateKey))
+		cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
 		if err != nil {
 			fmt.Println(err)
 			return workers, err
 		}
 		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
-		client.SetRootCertificate(path.Join(exPath, c.EZBPKI.CaCert))
+		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
 		_, err = client.R().
 			SetResult(&workers).
@@ -298,7 +298,7 @@ func GetWorkers(s cache.Storage, c *confmanager.Configuration) (workers []EzbWor
 		if encErr != nil {
 			return workers, encErr
 		}
-		s.Set("workers", byteCtrl.Bytes(), time.Duration(c.EZBSRV.CacheL1)*time.Second)
+		s.Set("workers", byteCtrl.Bytes(), time.Duration(conf.EZBSRV.CacheL1)*time.Second)
 	}
 	return workers, nil
 }
