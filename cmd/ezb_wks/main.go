@@ -56,7 +56,7 @@ func init() {
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
 	confPath := path.Join(exePath, CONFFILE)
-	conf, err = confmanager.CheckConfig(confPath,  exePath)
+	conf, err = confmanager.CheckConfig(confPath, exePath)
 	if err == nil {
 		IsWindowsService, err := svc.IsWindowsService()
 		if err != nil {

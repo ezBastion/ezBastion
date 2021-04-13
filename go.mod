@@ -20,9 +20,11 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/urfave/cli v1.22.5
+	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20210314195730-07df6a141424
 	golang.org/x/text v0.3.5
+	gopkg.in/ini.v1 v1.62.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 

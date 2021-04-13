@@ -28,29 +28,27 @@ import (
 	"time"
 )
 
-
-
-
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
+
 func (sm mainService) StartMainService(serverchan *chan bool) {
-	listen := fmt.Sprintf("%s:%d", conf.EZBADM.Network.FQDN,conf.EZBADM.Network.Port)
+	listen := fmt.Sprintf("%s:%d", conf.EZBADM.Network.FQDN, conf.EZBADM.Network.Port)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(ginrus.Ginrus(log.StandardLogger(), time.RFC3339, true))
 
 	r.GET("/config.json", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ezb_db":fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkJWT.FQDN,conf.EZBDB.NetworkJWT.Port),"ezb_srv": conf.EZBSRV.ExternalURL })
-	} )
-	r.StaticFile("/favicon.ico", path.Join(exePath, "docs","favicon.ico"))
-	r.GET("/", func(c *gin.Context) {
-	 c.File(	path.Join(exePath, "docs","index.html"))
+		c.JSON(http.StatusOK, gin.H{"ezb_db": fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkJWT.FQDN, conf.EZBDB.NetworkJWT.Port), "ezb_srv": conf.EZBSRV.ExternalURL})
 	})
-	r.Static("/app", path.Join(exePath, "docs","app"))
-	r.Static("/assets", path.Join(exePath, "docs","assets"))
-	r.Static("/bower_components", path.Join(exePath, "docs","bower_components"))
-	r.Static("/scripts", path.Join(exePath, "docs","scripts"))
-	r.Static("/styles", path.Join(exePath, "docs","styles"))
+	r.StaticFile("/favicon.ico", path.Join(exePath, "docs", "favicon.ico"))
+	r.GET("/", func(c *gin.Context) {
+		c.File(path.Join(exePath, "docs", "index.html"))
+	})
+	r.Static("/app", path.Join(exePath, "docs", "app"))
+	r.Static("/assets", path.Join(exePath, "docs", "assets"))
+	r.Static("/bower_components", path.Join(exePath, "docs", "bower_components"))
+	r.Static("/scripts", path.Join(exePath, "docs", "scripts"))
+	r.Static("/styles", path.Join(exePath, "docs", "styles"))
 
 	srv := &http.Server{
 		Addr:    listen,
@@ -75,4 +73,3 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	}
 	log.Debug("Server exiting")
 }
-

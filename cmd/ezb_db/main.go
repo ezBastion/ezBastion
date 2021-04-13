@@ -83,30 +83,30 @@ func main() {
 			return err
 		}})
 	app.Commands = append(app.Commands, cli.Command{
-		Name: "backup",
+		Name:  "backup",
 		Usage: "Dump db in file.",
 		Action: func(c *cli.Context) error {
 			err := admin.DumpDB(exePath, conf)
 			return err
 		}})
 	app.Commands = append(app.Commands, cli.Command{
-		Name: "restore",
+		Name:  "restore",
 		Usage: "Restore db from file.",
 		Action: func(c *cli.Context) error {
 			err := admin.RestoreDB(exePath, conf)
 			return err
 		}})
 	app.Commands = append(app.Commands, cli.Command{
-		Name: "sta",
-		Usage: "Add First STA address.",
+		Name:      "sta",
+		Usage:     "Add First STA address.",
 		ArgsUsage: "\"https://sta.ezbastion.com:1443\" ",
 		Action: func(c *cli.Context) error {
 			if c.NArg() > 0 {
 				err := admin.FirstSTA(exePath, conf, c.Args().First())
-			return err
+				return err
 			}
 			return fmt.Errorf("please provide STA url")
-		}	})
+		}})
 
 	cli.AppHelpTemplate = fmt.Sprintf(`
 

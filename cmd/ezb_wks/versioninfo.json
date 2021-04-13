@@ -4,13 +4,13 @@
                                               "Major":  1,
                                               "Minor":  0,
                                               "Patch":  0,
-                                              "Build":  740
+                                              "Build":  749
                                           },
                           "ProductVersion":  {
                                                  "Major":  1,
                                                  "Minor":  0,
                                                  "Patch":  0,
-                                                 "Build":  740
+                                                 "Build":  749
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Back microservice.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion worker service.",
-                           "FileVersion":  "v1.0.0.740",
+                           "FileVersion":  "v1.0.0.749",
                            "InternalName":  "ezb_wks.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2019 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion worker",
-                           "ProductVersion":  "v1.0.0.740",
+                           "ProductVersion":  "v1.0.0.749",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {

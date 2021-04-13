@@ -33,7 +33,6 @@ var (
 	exePath string
 	conf    confmanager.Configuration
 	err     error
-
 )
 
 const (
