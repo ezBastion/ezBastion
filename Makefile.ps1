@@ -1,51 +1,51 @@
-param(
-    [Parameter(Position = 0, Mandatory = $true )]
-$action,
-    [Parameter(Position = 1, Mandatory = $false )]
-$repo
-)
 
-$RepoPath  = split-path -parent $MyInvocation.MyCommand.Definition
-cd $RepoPath
-$r = "..."
-if ($repo) {
-    $r = "$repo"
+
+$r = $(split-path -parent $MyInvocation.MyCommand.Definition)
+cd $r
+
+
+Register-ArgumentCompleter -CommandName do-gobuild -ParameterName repo -ScriptBlock {
+    $( Get-ChildItem -Directory .\cmd -Filter "ezb_*" ).Name | ForEach-Object {
+        $Text = $_
+
+        [System.Management.Automation.CompletionResult]::new(
+                $Text,
+                $_,
+                'ParameterValue',
+                "$_"
+        )
+    }
 }
 
-function invoke-generate {
+
+function do-gobuild  {
+    param(
+        [Parameter(Position = 0, Mandatory = $false )]
+        #[ValidateSet({[String[]] $( Get-ChildItem -Directory .\cmd -Filter "ezb_*" ).Name })]
+        [String]
+        $repo
+    )
     if ($repo) {
         upgrade-semver -file "./cmd/$($repo)" -appname $repo
         go fmt "./cmd/$($repo)"
         go generate "./cmd/$($repo)"
+        go build -o "./bin" "./cmd/$($repo)"
     } else {
         foreach ($f in $(Get-ChildItem "./cmd/ezb_*" -Directory )) {
             upgrade-semver -file "./cmd/$($f.Name)" -appname $f.Name
             go fmt "./cmd/$($f.Name)"
             go generate "./cmd/$($f.Name)"
+            go build -o "./bin" "./cmd/$($f.Name)"
         }
     }
 }
 
-function invoke-build  {
-    invoke-generate
-    go build -o "./bin" "./cmd/$r"
-}
-
-function invoke-zip {
+function do-gozip {
     $allver = Get-Content "./bin/allver.json" -Raw | ConvertFrom-Json
     foreach ($f in $(Get-ChildItem "./bin/ezb_*" -Filter *.exe)) {
         Compress-Archive -Path ".\bin\$($f.Name)" -DestinationPath ".\bin\$($f.BaseName)-$($allver.$($f.BaseName)).zip" -CompressionLevel Optimal -Force
     }
-
-}
-
-function show-help {
-    "update version & build all => powershell Makefile.ps1 build"
-    "update version & build one => powershell Makefile.ps1 build ezb_srv"
-    "update all binary version  => powershell Makefile.ps1 generate"
-    "update one binary version  => powershell Makefile.ps1 generate ezb_srv"
-    "make zip                   => powershell Makefile.ps1 compress"
-
+    $(Get-ChildItem "./bin/ezb_*" -Filter *.zip).Name
 }
 
 function upgrade-semver {
@@ -71,13 +71,10 @@ function upgrade-semver {
     $allver | Add-Member -Name $appname -Value "$($major).$($minor).$($patch).$($info.FixedFileInfo.FileVersion.Build)" -MemberType NoteProperty -Force
     $allver | ConvertTo-json -depth 10 | Out-File "./bin/allver.json" -Encoding ascii
 }
-
-
-
-Switch ($action)
+if (!($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq ''))
 {
-    generate { invoke-generate }
-    build { invoke-build }
-    compress { invoke-zip }
-    default { show-help  }
+    Write-Host -ForegroundColor Green "dot sourceing this file: [. $( $MyInvocation.MyCommand.Definition )]"
+    "build all: [do-gobuild]"
+    "build one: [do-gobuild ezb_*]"
+    "zip all ezBastion binary: [do-gozip]"
 }

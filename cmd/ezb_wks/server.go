@@ -58,7 +58,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 		log.Fatal(err)
 
 	}
-	listen := fmt.Sprintf("%s:%d", conf.EZBWKS.Network.FQDN,conf.EZBWKS.Network.Port)
+	listen := fmt.Sprintf("%s:%d", conf.EZBWKS.Network.FQDN, conf.EZBWKS.Network.Port)
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 	tlsConfigPKI := &tls.Config{

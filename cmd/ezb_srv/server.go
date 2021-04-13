@@ -38,13 +38,14 @@ import (
 )
 
 var storage cache.Storage
+
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
 
-func (sm mainService) StartMainService(serverchan *chan bool)  {
+func (sm mainService) StartMainService(serverchan *chan bool) {
 
 	storage = memory.NewStorage()
-	listen := fmt.Sprintf("%s:%d", conf.EZBSRV.Network.FQDN,conf.EZBSRV.Network.Port)
+	listen := fmt.Sprintf("%s:%d", conf.EZBSRV.Network.FQDN, conf.EZBSRV.Network.Port)
 
 	/* gin */
 	gin.SetMode(gin.ReleaseMode)

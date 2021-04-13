@@ -30,8 +30,8 @@ import (
 
 var (
 	exePath string
-	conf confmanager.Configuration
-	err error
+	conf    confmanager.Configuration
+	err     error
 )
 
 const (
@@ -40,7 +40,6 @@ const (
 	SERVICEFULLNAME = "ezBastion API gateway"
 	CONFFILE        = "conf/config.toml"
 	LOGFILE         = "log/ezb_srv.log"
-
 )
 
 func init() {

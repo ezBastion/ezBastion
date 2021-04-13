@@ -39,11 +39,11 @@ var (
 )
 
 const (
-	VERSION         = "1.0.0" //use semver.org
-	SERVICENAME     = "ezb_admin" // name used as windows service name
+	VERSION         = "1.0.0"                        //use semver.org
+	SERVICENAME     = "ezb_admin"                    // name used as windows service name
 	SERVICEFULLNAME = "ezBastion web admin console." // windows service description
-	CONFFILE        = "conf/config.toml" //config file path stay hardcoded
-	LOGFILE         = "log/ezb_admin.log"  // static path too
+	CONFFILE        = "conf/config.toml"             //config file path stay hardcoded
+	LOGFILE         = "log/ezb_admin.log"            // static path too
 )
 
 func init() {
@@ -56,7 +56,7 @@ func init() {
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
 	confPath := path.Join(exePath, CONFFILE)
-	conf, err = confmanager.CheckConfig(confPath,  exePath)
+	conf, err = confmanager.CheckConfig(confPath, exePath)
 	if err == nil {
 		IsWindowsService, err := svc.IsWindowsService()
 		if err != nil {
