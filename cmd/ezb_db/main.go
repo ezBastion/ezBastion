@@ -99,7 +99,7 @@ func main() {
 	app.Commands = append(app.Commands, cli.Command{
 		Name:      "sta",
 		Usage:     "Add First STA address.",
-		ArgsUsage: "\"https://sta.ezbastion.com:1443\" ",
+		ArgsUsage: "\"https://sta.ezbastion.com:1443/token\"",
 		Action: func(c *cli.Context) error {
 			if c.NArg() > 0 {
 				err := admin.FirstSTA(exePath, conf, c.Args().First())
