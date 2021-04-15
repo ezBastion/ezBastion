@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath string, ms servicemanager.MainService ) []cli.Command {
+func EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath string, ms servicemanager.MainService) []cli.Command {
 
 	ezcli := []cli.Command{
 		{

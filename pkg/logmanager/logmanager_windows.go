@@ -62,7 +62,7 @@ func SetLogLevel(LogLevel string, exPath string, fileName string, maxSize int, m
 
 	// Adding the method and line caller, easier to debug
 
-		log.SetReportCaller(!IsWindowsService)
+	log.SetReportCaller(!IsWindowsService)
 
 	abspathfilename := exPath + string(os.PathSeparator) + fileName
 	lj := &lumberjack.Logger{

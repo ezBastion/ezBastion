@@ -32,7 +32,7 @@ import (
 	"strings"
 )
 
-func ExeFullPath()	(string, error)  {
+func ExeFullPath() (string, error) {
 	prog := os.Args[0]
 	p, err := filepath.Abs(prog)
 	if err != nil {
@@ -62,7 +62,7 @@ func ExeFullPath()	(string, error)  {
 func ExePath() (string, error) {
 	p, err := ExeFullPath()
 	if err != nil {
-		return  "", err
+		return "", err
 	}
 	return filepath.Dir(p), nil
 }

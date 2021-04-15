@@ -195,6 +195,7 @@ func main() {
 			},
 		},
 	}
+
 	// ascii art url: http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=ezBastion
 	cli.AppHelpTemplate = fmt.Sprintf(`
 

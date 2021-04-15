@@ -27,5 +27,4 @@ require (
 	gopkg.in/ini.v1 v1.62.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
-
 replace github.com/chavers/ezb_priv => C:\Users\chavers\go\src\chavers.localhost\ezb_priv\

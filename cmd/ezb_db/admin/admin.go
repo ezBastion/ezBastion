@@ -32,7 +32,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func FirstSTA(exePath string, conf confmanager.Configuration, staUrl string	) error {
+func FirstSTA(exePath string, conf confmanager.Configuration, staUrl string) error {
 	var db *gorm.DB
 	db, err := configuration.InitDB(conf, exePath)
 	if err != nil {
