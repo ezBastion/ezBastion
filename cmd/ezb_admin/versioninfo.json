@@ -4,13 +4,13 @@
                                               "Major":  1,
                                               "Minor":  0,
                                               "Patch":  0,
-                                              "Build":  413
+                                              "Build":  414
                                           },
                           "ProductVersion":  {
                                                  "Major":  1,
                                                  "Minor":  0,
                                                  "Patch":  0,
-                                                 "Build":  413
+                                                 "Build":  414
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Community edition.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion admin console.",
-                           "FileVersion":  "v1.0.0.413",
+                           "FileVersion":  "v1.0.0.414",
                            "InternalName":  "ezb_adm.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2021 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion adm",
-                           "ProductVersion":  "v1.0.0.413",
+                           "ProductVersion":  "v1.0.0.414",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {

@@ -28,9 +28,9 @@ type Configuration struct {
 
 type Logger struct {
 	LogLevel   string `ini:"loglevel" json:"loglevel" toml:"loglevel" comment:"log output filter [debug | info | warning | error | critical]"`
-	MaxSize    int    `ini:"maxsize" json:"maxsize" toml:"maxsize" comment:"MaxSize is the maximum size in megabytes of the log file before it gets\n rotated. It defaults to 100 megabytes."`
-	MaxBackups int    `ini:"maxbackups" json:"maxbackups" toml:"maxbackups" comment:"Whenever a new logfile gets created, old log files may be deleted.\n The most recent files according to the encoded timestamp will be retained, up to a number equal\n to MaxBackups (or all of them if MaxBackups is 0)."`
-	MaxAge     int    `ini:"maxage" json:"maxage" toml:"maxage" comment:"MaxAge is the maximum number of days to retain old log files based on the\n timestamp encoded in their filename.  Note that a day is defined as 24 hours and may not\n exactly correspond to calendar days due to daylight savings, leap seconds, etc.\n The default is not to remove old log files based on age."`
+	MaxSize    int    `ini:"maxsize" json:"maxsize" toml:"maxsize" comment:"MaxSize is the maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes."`
+	MaxBackups int    `ini:"maxbackups" json:"maxbackups" toml:"maxbackups" comment:"Whenever a new logfile gets created, old log files may be deleted. The most recent files according to the encoded timestamp will be retained, up to a number equal to MaxBackups (or all of them if MaxBackups is 0)."`
+	MaxAge     int    `ini:"maxage" json:"maxage" toml:"maxage" comment:"MaxAge is the maximum number of days to retain old log files based on the timestamp encoded in their filename.  Note that a day is defined as 24 hours and may not exactly correspond to calendar days due to daylight savings, leap seconds, etc. The default is not to remove old log files based on age."`
 }
 
 type Network struct {
@@ -39,20 +39,19 @@ type Network struct {
 }
 
 type TLS struct {
-	SAN        []string `ini:"san" json:"san" toml:"san" comment:"SAN (Subject Alternative Name) is a list of name that allows identities to be bound\n to the subject of the certificate. It can be a DNS name, an IP address or a NBIOS name."`
-	PrivateKey string   `ini:"privatekey" json:"privatekey" toml:"privatekey" comment:"Private ECDA key, used to communicate with other ezBastion microservice and sign JWT tokens. Generate but not used by ezb_pki.\nRelative path from ezBastion binaries."`
-	PublicCert string   `ini:"publiccert" json:"publiccert" toml:"publiccert" comment:"Public  ECDA certificate, used to communicate with other ezBastion microservice. Generate but not used by ezb_pki.\nRelative path from ezBastion binaries."`
+	SAN        []string `ini:"san" json:"san" toml:"san" comment:"SAN (Subject Alternative Name) is a list of name that allows identities to be bound to the subject of the certificate. It can be a DNS name, an IP address or a NBIOS name."`
+	PrivateKey string   `ini:"privatekey" json:"privatekey" toml:"privatekey" comment:"Private ECDA key, used to communicate with other ezBastion microservice and sign JWT tokens. Generate but not used by ezb_pki.Relative path from ezBastion binaries."`
+	PublicCert string   `ini:"publiccert" json:"publiccert" toml:"publiccert" comment:"Public  ECDA certificate, used to communicate with other ezBastion microservice. Generate but not used by ezb_pki.Relative path from ezBastion binaries."`
 }
 
 type EZBADM struct {
 	Network Network `ini:"ezb_adm.listener" json:"listener" toml:"listener"`
-
 }
 
 type EZBSRV struct {
-	Network Network `ini:"ezb_srv.listener" json:"listener" toml:"listener"`
-	ExternalURL string `ini:"externalurl" json:"externalurl" toml:"externalurl" comment:"ezBastion URL used by API clients. From front of DNS alias, VIP, load balancing... Like https://myserviceapi.corporate.com/"`
-	CacheL1 int     `ini:"cacheL1" json:"cacheL1" toml:"cacheL1" comment:"Cache memory duration in second. RAM cache for high performance, used to unload database.\n Longer value for less DB request but increase waiting time to apply modification coming from admin console."`
+	Network     Network `ini:"ezb_srv.listener" json:"listener" toml:"listener"`
+	ExternalURL string  `ini:"externalurl" json:"externalurl" toml:"externalurl" comment:"ezBastion URL used by API clients. From front of DNS alias, VIP, load balancing... Like https://myserviceapi.corporate.com/"`
+	CacheL1     int     `ini:"cacheL1" json:"cacheL1" toml:"cacheL1" comment:"Cache memory duration in second. RAM cache for high performance, used to unload database. Longer value for less DB request but increase waiting time to apply modification coming from admin console."`
 }
 type EZBSTA struct {
 	Network Network `ini:"ezb_sta.listener" json:"listener" toml:"listener"`

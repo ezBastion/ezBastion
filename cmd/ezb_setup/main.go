@@ -130,11 +130,14 @@ func main() {
 					break
 				case "ini":
 					cfg := ini.Empty()
+
+					ini.PrettyFormat = false
 					err = ini.ReflectFrom(cfg, &conf)
 
 					if err != nil {
 						log.Fatal(30, err)
 					}
+
 					err = cfg.SaveTo(path.Join(exePath, "conf/config.ini"))
 					if err != nil {
 						log.Fatal(40, err)
@@ -170,6 +173,7 @@ func main() {
 						ChildSectionDelimiter:   ".",
 						SkipUnrecognizableLines: true,
 						KeyValueDelimiters:      "=",
+						IgnoreInlineComment:     true,
 					}
 
 					raw, err := ini.LoadSources(loadOptions, path.Join(exePath, "conf/config.ini"))
