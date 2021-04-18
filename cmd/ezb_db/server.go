@@ -71,10 +71,11 @@ func routerPKI(db *gorm.DB, lic configuration.License) http.Handler {
 	routes.Routes(r)
 	return r
 }
+
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
-func (sm mainService) StartMainService(serverchan *chan bool) {
 
+func (sm mainService) StartMainService(serverchan *chan bool) {
 
 	log.WithFields(log.Fields{"module": "main", "type": "log"})
 	log.Debug("loglevel: ", conf.Logger.LogLevel)
@@ -99,7 +100,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	caCertPool.AppendCertsFromPEM(caCert)
 
 	/* listner jwt */
-	listenJWT := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkJWT.FQDN,conf.EZBDB.NetworkJWT.Port)
+	listenJWT := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkJWT.FQDN, conf.EZBDB.NetworkJWT.Port)
 
 	tlsConfigJWT := &tls.Config{}
 	serverJWT := &http.Server{
@@ -110,7 +111,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	/* listner jwt */
 	/* listner pki */
 
-	listenPKI := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkPKI.FQDN,conf.EZBDB.NetworkPKI.Port)
+	listenPKI := fmt.Sprintf("%s:%d", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 
 	tlsConfigPKI := &tls.Config{
 		ClientCAs:  caCertPool,

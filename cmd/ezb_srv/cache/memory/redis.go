@@ -15,7 +15,6 @@
 
 package memory
 
-
 // var preffix = "_PAGE_CACHE_"
 
 // //Storage mecanism for caching strings in memory

@@ -15,7 +15,6 @@
 
 package cache
 
-
 import "time"
 
 //Storage mecanism for caching strings

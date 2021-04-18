@@ -31,12 +31,12 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-
 )
+
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
 
-func (sm mainService) StartMainService(serverchan *chan bool)  {
+func (sm mainService) StartMainService(serverchan *chan bool) {
 	caPath := path.Join(exePath, conf.EZBPKI.CaCert)
 	keyPath := path.Join(exePath, conf.EZBPKI.CaKey)
 

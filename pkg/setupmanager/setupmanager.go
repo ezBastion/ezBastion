@@ -32,7 +32,7 @@ import (
 	"strings"
 )
 
-func ExeFullPath()	(string, error)  {
+func ExeFullPath() (string, error) {
 	prog := os.Args[0]
 	p, err := filepath.Abs(prog)
 	if err != nil {
@@ -62,7 +62,7 @@ func ExeFullPath()	(string, error)  {
 func ExePath() (string, error) {
 	p, err := ExeFullPath()
 	if err != nil {
-		return  "", err
+		return "", err
 	}
 	return filepath.Dir(p), nil
 }
@@ -170,6 +170,8 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 			}
 			log.Println("Root certificate saved at ", caCert)
 		}
+		return nil
+	} else if SERVICENAME == "ezb_setup" {
 		return nil
 	} else {
 		if os.IsNotExist(ficacert) {

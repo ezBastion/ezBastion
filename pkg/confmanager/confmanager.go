@@ -52,14 +52,14 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBSRV.Network.FQDN = fqdn
 		conf.EZBSRV.Network.Port = 5000
 		conf.EZBSRV.CacheL1 = 600
-		conf.EZBSRV.ExternalURL = fmt.Sprintf("https://%s/", fqdn)
+		conf.EZBSRV.ExternalURL = fmt.Sprintf("http://%s:5000/", fqdn)
 		conf.EZBWKS.Network.FQDN = fqdn
 		conf.EZBWKS.Network.Port = 5100
 		conf.EZBSTA.Network.FQDN = fqdn
 		conf.EZBSTA.Network.Port = 1443
 		conf.EZBSTA.JWT.TTL = 1200
 		conf.EZBSTA.JWT.Audience = "ezBastion"
-		conf.EZBSTA.JWT.Issuer = "ezb_sta"
+		conf.EZBSTA.JWT.Issuer = "ezbastion"
 		conf.EZBWKS.ScriptPath = path.Join(exePath, "script")
 		conf.EZBWKS.JobPath = path.Join(exePath, "job")
 		conf.EZBWKS.LimitMax = 0

@@ -16,8 +16,8 @@
 package routes
 
 import (
-	"ezBastion/cmd/ezb_db/ctrl/accountactions"
 	"ezBastion/cmd/ezb_db/ctrl/access"
+	"ezBastion/cmd/ezb_db/ctrl/accountactions"
 	"ezBastion/cmd/ezb_db/ctrl/accounts"
 	"ezBastion/cmd/ezb_db/ctrl/actions"
 	"ezBastion/cmd/ezb_db/ctrl/api"

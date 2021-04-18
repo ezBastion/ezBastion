@@ -19,11 +19,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
-
-
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
+
 func (sm mainService) StartMainService(serverchan *chan bool) {
 
 	log.Println("Business MAIN here !!!")

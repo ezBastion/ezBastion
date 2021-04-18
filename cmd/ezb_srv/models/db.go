@@ -69,7 +69,7 @@ func GetViewApi(s cache.Storage, conf *confmanager.Configuration, token, xtrack 
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		_, err = client.R().
 			SetResult(&vapis).
 			Get(EzbDB + "accountactions")
@@ -118,7 +118,7 @@ func GetApiPath(s cache.Storage, conf *confmanager.Configuration) (apiPath []Api
 			fmt.Println(err)
 			return apiPath, err
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
@@ -158,7 +158,7 @@ func GetAction(s cache.Storage, conf *confmanager.Configuration, actionID int) (
 			fmt.Println(err)
 			return action, err
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
@@ -198,7 +198,7 @@ func GetAccount(s cache.Storage, conf *confmanager.Configuration, userID string)
 			fmt.Println(err)
 			return account, err
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
@@ -239,7 +239,7 @@ func GetStas(s cache.Storage, conf *confmanager.Configuration) (stas []EzbStas, 
 			fmt.Println(err)
 			return stas, err
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)
@@ -279,7 +279,7 @@ func GetWorkers(s cache.Storage, conf *confmanager.Configuration) (workers []Ezb
 			fmt.Println(err)
 			return workers, err
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
 		client.SetCertificates(cert)

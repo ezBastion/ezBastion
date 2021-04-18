@@ -44,7 +44,7 @@ func Trace(l *models.EzbLogs, c *gin.Context) {
 			fmt.Println(err)
 			return
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(ca)
 		client.SetCertificates(cert)
@@ -87,7 +87,7 @@ func IncRequest(l *models.EzbWorkers, c *gin.Context) {
 			fmt.Println(err)
 			return
 		}
-		EzbDB := fmt.Sprintf("https://%s:%d/",conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
+		EzbDB := fmt.Sprintf("https://%s:%d/", conf.EZBDB.NetworkPKI.FQDN, conf.EZBDB.NetworkPKI.Port)
 		client := resty.New()
 		client.SetRootCertificate(ca)
 		client.SetCertificates(cert)
