@@ -39,8 +39,12 @@ func FirstSTA(exePath string, conf confmanager.Configuration, staUrl string) err
 		log.Fatal(err)
 		panic(err)
 	}
-	firstIAM := m.EzbStas{Name: "Default", Enable: true, Type: 0, Comment: "First IAM", EndPoint: staUrl, Issuer: "changeME", Default: true}
-	db.FirstOrCreate(&firstIAM)
+	firstIAM := m.EzbStas{}
+	//Name: "Default", Enable: true, Type: 0, Comment: "First IAM", EndPoint: staUrl, Issuer: "changeME", Default: true}
+	db.FirstOrCreate(&firstIAM, m.EzbStas{Name: "Default", Enable: true, Type: 0, Comment: "First IAM", Default: true})
+	firstIAM.EndPoint = staUrl
+	firstIAM.Issuer = conf.EZBSTA.JWT.Issuer
+	db.Save(firstIAM)
 	fmt.Println("Sta added, you can login ezb_admin console.")
 	return nil
 }
