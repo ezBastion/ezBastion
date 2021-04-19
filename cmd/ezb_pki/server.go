@@ -23,6 +23,7 @@ import (
 	"crypto/x509"
 	"encoding/binary"
 	"encoding/pem"
+	"ezBastion/cmd/ezb_pki/Models"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -39,7 +40,11 @@ type mainService struct{}
 func (sm mainService) StartMainService(serverchan *chan bool) {
 	caPath := path.Join(exePath, conf.EZBPKI.CaCert)
 	keyPath := path.Join(exePath, conf.EZBPKI.CaKey)
-
+	db, err = InitDB(conf, exePath)
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
 	caPublicKeyFile, err := ioutil.ReadFile(caPath)
 	if err != nil {
 		log.Fatal(err)
@@ -84,7 +89,6 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	}()
 
 	for {
-
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Fatal(err)
@@ -121,8 +125,15 @@ func signconn(conn net.Conn, rootCert *x509.Certificate, privateKey *ecdsa.Priva
 		log.Println(err)
 		return err
 	}
+
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		log.Fatalf("Failed to generate serial number: %v", err)
+	}
+
 	clientCRTTemplate := &x509.Certificate{
-		SerialNumber:          big.NewInt(2),
+		SerialNumber:          serialNumber,
 		Signature:             clientCSR.Signature,
 		SignatureAlgorithm:    clientCSR.SignatureAlgorithm,
 		PublicKey:             clientCSR.PublicKey,
@@ -142,6 +153,19 @@ func signconn(conn net.Conn, rootCert *x509.Certificate, privateKey *ecdsa.Priva
 		return err
 	}
 
+	CSR := Models.CSREntry{}
+	result := db.First(&CSR, "uuid = ?", clientCSR.Subject.SerialNumber)
+	if result.RowsAffected == 0 {
+		CSR.UUID = clientCSR.Subject.SerialNumber
+		CSR.Signed = conf.EZBPKI.Autosign
+		CSR.Name = clientCSR.Subject.CommonName
+		CSR.SerialNumber = fmt.Sprintf("%x", serialNumber)
+		db.Create(&CSR)
+	}
+
+	if CSR.Signed == 0 {
+		return nil
+	}
 	writer := bufio.NewWriter(conn)
 
 	certHeader := make([]byte, 2)

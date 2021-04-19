@@ -1,4 +1,4 @@
-//go:generate goversioninfo
+//go:generate  goversioninfo -64 -platform-specific=false
 
 // This file is part of ezBastion.
 //     ezBastion is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import (
 	"ezBastion/pkg/servicemanager"
 	"ezBastion/pkg/setupmanager"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"log"
 	"os"
 	"path"
@@ -33,6 +34,7 @@ var (
 	exePath string
 	conf    confmanager.Configuration
 	err     error
+	db      *gorm.DB
 )
 
 const (
@@ -92,6 +94,22 @@ INFO:
 		https://www.ezbastion.com
 		support@ezbastion.com
 		`, cli.AppHelpTemplate)
+	app.Commands = append(app.Commands, cli.Command{
+		Name:      "sign",
+		Usage:     "sign a CSR",
+		ArgsUsage: "XXXXXXXXX",
+		Action: func(c *cli.Context) error {
+			if c.NArg() > 0 {
+				return nil
+			}
+			return fmt.Errorf("please provide CSR name")
+		}})
+	app.Commands = append(app.Commands, cli.Command{
+		Name:  "list",
+		Usage: "list all CSR",
+		Action: func(c *cli.Context) error {
+			return nil
+		}})
 
 	app.Run(os.Args)
 }

@@ -72,9 +72,10 @@ type EZBDB struct {
 }
 
 type EZBPKI struct {
-	Network Network `ini:"ezb_pki.listener" json:"listener" toml:"listener"`
-	CaCert  string  `ini:"cacert" json:"cacert" toml:"cacert" comment:"Root PKI public cert, must be copied on all ezBastion nodes"`
-	CaKey   string  `ini:"cakey" json:"cakey" toml:"cakey" comment:"Root PKI private key, do not share it. Must ne ONLY on PKI node"`
+	Network  Network `ini:"ezb_pki.listener" json:"listener" toml:"listener"`
+	CaCert   string  `ini:"cacert" json:"cacert" toml:"cacert" comment:"Root PKI public cert, must be copied on all ezBastion nodes"`
+	CaKey    string  `ini:"cakey" json:"cakey" toml:"cakey" comment:"Root PKI private key, do not share it. Must ne ONLY on PKI node"`
+	Autosign int     `ini:"autosign" json:"autosign" toml:"autosign" comment:"[0|1] 0: Store CSR until manually signature; 1: Accept and sign all CSRs"`
 }
 
 type EZBWKS struct {

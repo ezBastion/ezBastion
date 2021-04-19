@@ -75,6 +75,10 @@ func CheckFolder(exePath string, SERVICENAME string) error {
 		{
 			folders = append(folders, "db")
 		}
+	case "ezb_pki":
+		{
+			folders = append(folders, "db")
+		}
 	case "ezb_wks":
 		{
 			folders = append(folders, "script", "job")
@@ -187,7 +191,7 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 			}
 
 			request := certmanager.NewCertificateRequest("ezBastion", 730, conf.TLS.SAN)
-			certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert)
+			certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert, exePath)
 		}
 	}
 	return nil
