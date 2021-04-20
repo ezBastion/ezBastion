@@ -25,9 +25,13 @@ import (
 	"encoding/binary"
 	"encoding/pem"
 	"fmt"
+	uuid "github.com/satori/go.uuid"
+	"io"
+	"io/ioutil"
 	"math/big"
 	"net"
 	"os"
+	"path"
 	"time"
 )
 
@@ -75,11 +79,15 @@ func NewRootCertificate(caCert, caKey string, addresses []string) error {
 }
 
 func NewCertificateRequest(commonName string, duration int, addresses []string) *x509.CertificateRequest {
+	serial := uuid.NewV4()
+
 	certificate := x509.CertificateRequest{
 		Subject: pkix.Name{
 			Organization: []string{"ezBastion"},
 			CommonName:   commonName,
+			SerialNumber: serial.String(),
 		},
+
 		SignatureAlgorithm: x509.ECDSAWithSHA256,
 	}
 
@@ -94,16 +102,35 @@ func NewCertificateRequest(commonName string, duration int, addresses []string) 
 	return &certificate
 }
 
-func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFilename, caFileName string) error {
+func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFilename, caFileName, exePath string) error {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return fmt.Errorf("Failed to generate private key: %v", err)
 	}
 
-	derBytes, err := x509.CreateCertificateRequest(rand.Reader, certificate, priv)
-	if err != nil {
-		return err
+	caCSR := path.Join(exePath, "cert/ezbastion.csr")
+	var derBytes []byte
+	var block *pem.Block
+	if _, err := os.Stat(caCSR); os.IsNotExist(err) {
+		fmt.Println("file", caCSR, "not found")
+		derBytes, err = x509.CreateCertificateRequest(rand.Reader, certificate, priv)
+		if err != nil {
+			return err
+		}
+	} else {
+		raw, readerror := ioutil.ReadFile(caCSR)
+		if readerror != nil {
+			fmt.Println("err read file", err)
+			return err
+		}
+		block, _ = pem.Decode(raw)
+		if block == nil || block.Type != "CERTIFICATE REQUEST" {
+			fmt.Println("failed to decode PEM block containing public key")
+			return fmt.Errorf("failed to decode PEM block containing public key")
+		}
+		derBytes = block.Bytes
 	}
+
 	fmt.Println("Created Certificate Signing Request for client.")
 	conn, err := net.Dial("tcp", ezbpki)
 	if err != nil {
@@ -134,6 +161,13 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	// Read header containing the size of the ASN1 data.
 	certHeader := make([]byte, 2)
 	_, err = reader.Read(certHeader)
+	if err == io.EOF {
+		//save CSR
+		csrOut, _ := os.Create(caCSR)
+		pem.Encode(csrOut, &pem.Block{Type: "CERTIFICATE REQUEST", Bytes: derBytes})
+		csrOut.Close()
+		return nil
+	}
 	if err != nil {
 		return err
 	}
