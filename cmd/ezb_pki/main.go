@@ -15,6 +15,7 @@
 package main
 
 import (
+	"ezBastion/cmd/ezb_pki/Models"
 	"ezBastion/pkg/confmanager"
 	"ezBastion/pkg/ez_cli"
 	"ezBastion/pkg/logmanager"
@@ -49,6 +50,11 @@ func init() {
 	exePath, err = setupmanager.ExePath()
 	if err != nil {
 		log.Fatalf("Path error: %v", err)
+	}
+	db, err = InitDB(conf, exePath)
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -94,22 +100,86 @@ INFO:
 		https://www.ezbastion.com
 		support@ezbastion.com
 		`, cli.AppHelpTemplate)
+
 	app.Commands = append(app.Commands, cli.Command{
-		Name:      "sign",
-		Usage:     "sign a CSR",
-		ArgsUsage: "XXXXXXXXX",
-		Action: func(c *cli.Context) error {
-			if c.NArg() > 0 {
-				return nil
-			}
-			return fmt.Errorf("please provide CSR name")
-		}})
-	app.Commands = append(app.Commands, cli.Command{
-		Name:  "list",
-		Usage: "list all CSR",
-		Action: func(c *cli.Context) error {
-			return nil
-		}})
+		Name:  "cert",
+		Usage: "Certificate management",
+		Subcommands: []cli.Command{
+			{
+				Name:  "list",
+				Usage: "Show unaccepted certificate request.",
+				Flags: []cli.Flag{
+					cli.BoolFlag{
+						Name:  "all,a",
+						Usage: "Show all certificate.",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					csrs := []Models.CSREntry{}
+					db.Find(&csrs)
+					for _, csr := range csrs {
+						tag := "-"
+						if csr.Signed == 1 {
+							tag = "+"
+						}
+						if c.Bool("all") {
+							fmt.Println(tag, csr.Name, " (uuid) ", csr.UUID, "from", csr.CreatedAt.Format("2006-01-02T15:04:05-0700"))
+						} else {
+							if csr.Signed == 0 {
+								fmt.Println(tag, csr.Name, " (uuid) ", csr.UUID, "from", csr.CreatedAt.Format("2006-01-02T15:04:05-0700"))
+							}
+						}
+					}
+					return nil
+				},
+			},
+			{
+				Name:      "sign",
+				Usage:     "Set ready to sign a certificate request.",
+				ArgsUsage: "uuid",
+				Flags: []cli.Flag{
+					cli.BoolFlag{
+						Name:  "all,a",
+						Usage: "Accept all pending certificate request.",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Bool("all") {
+						db.Model(&Models.CSREntry{}).Where("signed = 0").Update("signed", 1)
+					} else {
+						if len(c.Args()) == 1 {
+							db.Model(&Models.CSREntry{}).Where("uuid= ?", c.Args().First()).Update("signed", 1)
+						}
+					}
+					return nil
+				},
+			},
+			{
+				Name:      "clean",
+				Usage:     "remove a certificate request",
+				ArgsUsage: "uuid",
+				Flags: []cli.Flag{
+					cli.BoolFlag{
+						Name:  "all,a",
+						Usage: "Remove all pending certificate request.",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Bool("all") {
+						db.Where("signed = 0").Delete(&Models.CSREntry{})
+					} else {
+						if len(c.Args()) == 1 {
+							db.Where("uuid= ?", c.Args().First()).Delete(&Models.CSREntry{})
+						}
+					}
+					return nil
+				},
+			},
+		},
+
+		// sign, clean, -a, revoke
+
+	})
 
 	app.Run(os.Args)
 }

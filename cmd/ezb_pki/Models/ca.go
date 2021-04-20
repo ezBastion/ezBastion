@@ -5,7 +5,7 @@ import (
 )
 
 type CSREntry struct {
-	gorm.Model
+	gorm.Model   `json:"-"`
 	UUID         string `gorm:"not null;unique;index:uuid" json:"uuid"`
 	Name         string `json:"name"`
 	Signed       int    `json:"signed"`

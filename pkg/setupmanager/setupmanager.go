@@ -20,6 +20,7 @@ import (
 	"ezBastion/pkg/certmanager"
 	"ezBastion/pkg/confmanager"
 	"fmt"
+	"github.com/Showmax/go-fqdn"
 	"github.com/pelletier/go-toml"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -189,8 +190,11 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 			} else {
 				conn.Close()
 			}
-
-			request := certmanager.NewCertificateRequest("ezBastion", 730, conf.TLS.SAN)
+			fqdn, err := fqdn.FqdnHostname()
+			if err != nil {
+				fqdn, _ = os.Hostname()
+			}
+			request := certmanager.NewCertificateRequest(fmt.Sprintf("%s@%s", SERVICENAME, fqdn), 730, conf.TLS.SAN)
 			certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert, exePath)
 		}
 	}

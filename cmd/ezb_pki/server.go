@@ -40,11 +40,7 @@ type mainService struct{}
 func (sm mainService) StartMainService(serverchan *chan bool) {
 	caPath := path.Join(exePath, conf.EZBPKI.CaCert)
 	keyPath := path.Join(exePath, conf.EZBPKI.CaKey)
-	db, err = InitDB(conf, exePath)
-	if err != nil {
-		log.Fatal(err)
-		panic(err)
-	}
+
 	caPublicKeyFile, err := ioutil.ReadFile(caPath)
 	if err != nil {
 		log.Fatal(err)
@@ -166,6 +162,8 @@ func signconn(conn net.Conn, rootCert *x509.Certificate, privateKey *ecdsa.Priva
 	if CSR.Signed == 0 {
 		return nil
 	}
+	CSR.SerialNumber = fmt.Sprintf("%x", serialNumber)
+	db.Save(&CSR)
 	writer := bufio.NewWriter(conn)
 
 	certHeader := make([]byte, 2)
