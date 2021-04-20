@@ -37,6 +37,7 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBWKS.ServiceName = "ezb_wks"
 		conf.EZBPKI.CaCert = "cert/ca.crt"
 		conf.EZBPKI.CaKey = "cert/ca.key"
+		conf.EZBPKI.Autosign = 1
 		conf.TLS.PrivateKey = "cert/ezbastion.key"
 		conf.TLS.PublicCert = "cert/ezbastion.crt"
 		conf.Logger.LogLevel = "info"

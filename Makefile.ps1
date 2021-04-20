@@ -64,12 +64,16 @@ function upgrade-semver {
     $info.StringFileInfo.FileVersion = "v$($major).$($minor).$($patch).$($info.FixedFileInfo.FileVersion.Build)"
     $info.StringFileInfo.ProductVersion = $info.StringFileInfo.FileVersion
     $info | ConvertTo-json -depth 100 | Out-File "$file/versioninfo.json" -Encoding ascii
+    # CRLF to LF
+    $(Get-Content -raw "$file/versioninfo.json").Replace("`r`n","`n")  | Set-Content -NoNewline -Force -Encoding ascii "$file/versioninfo.json"
     $allver = New-Object -TypeName PSCustomObject
     if (Test-Path -Path "./bin/allver.json" ) {
         $allver = Get-Content "./bin/allver.json" -Raw | ConvertFrom-Json
     }
     $allver | Add-Member -Name $appname -Value "$($major).$($minor).$($patch).$($info.FixedFileInfo.FileVersion.Build)" -MemberType NoteProperty -Force
     $allver | ConvertTo-json -depth 10 | Out-File "./bin/allver.json" -Encoding ascii
+    # CRLF to LF
+    $(Get-Content -raw "./bin/allver.json").Replace("`r`n","`n")  | Set-Content -NoNewline -Force -Encoding ascii "./bin/allver.json"
 }
 if (!($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq ''))
 {
