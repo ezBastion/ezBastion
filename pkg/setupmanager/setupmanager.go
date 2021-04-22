@@ -194,8 +194,8 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 			if err != nil {
 				fqdn, _ = os.Hostname()
 			}
-			request := certmanager.NewCertificateRequest(fmt.Sprintf("%s@%s", SERVICENAME, fqdn), 730, conf.TLS.SAN)
-			certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert, exePath)
+			request := certmanager.NewCertificateRequest(fmt.Sprintf("%s@%s", SERVICENAME, fqdn), conf.TLS.SAN)
+			return certmanager.Generate(request, ezbPKI, certFile, keyFile, caCert, exePath)
 		}
 	}
 	return nil

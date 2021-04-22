@@ -47,8 +47,14 @@ func NewRootCertificate(caCert, caKey string, addresses []string) error {
 		panic(err)
 	}
 
-	pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
-	keyOut.Close()
+	err = pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
+	if err != nil {
+		return err
+	}
+	err = keyOut.Close()
+	if err != nil {
+		return err
+	}
 
 	ca := &x509.Certificate{
 		SerialNumber: big.NewInt(1653),
@@ -72,13 +78,19 @@ func NewRootCertificate(caCert, caKey string, addresses []string) error {
 	}
 
 	certOut, err := os.Create(caCert)
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: caB})
-	certOut.Close()
+	err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: caB})
+	if err != nil {
+		return err
+	}
+	err = certOut.Close()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func NewCertificateRequest(commonName string, duration int, addresses []string) *x509.CertificateRequest {
+func NewCertificateRequest(commonName string, addresses []string) *x509.CertificateRequest {
 	serial := uuid.NewV4()
 
 	certificate := x509.CertificateRequest{
@@ -103,41 +115,88 @@ func NewCertificateRequest(commonName string, duration int, addresses []string) 
 }
 
 func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFilename, caFileName, exePath string) error {
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return fmt.Errorf("Failed to generate private key: %v", err)
-	}
 
+	var priv *ecdsa.PrivateKey
 	caCSR := path.Join(exePath, "cert/ezbastion.csr")
 	var derBytes []byte
-	var block *pem.Block
+
+	//did we have a private key ?
+	if _, err := os.Stat(keyFilename); os.IsNotExist(err) {
+		// generate private key
+		priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		if err != nil {
+			return fmt.Errorf("failed to generate private key: %v", err)
+		}
+		// open new key file
+		keyOut, err := os.OpenFile(keyFilename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		if err != nil {
+			return fmt.Errorf("failed to open key %v for writing: %v", keyFilename, err)
+		}
+		// convert EC to ASN.1
+		b, err := x509.MarshalECPrivateKey(priv)
+		if err != nil {
+			return fmt.Errorf("failed to marshal priv: %v", err)
+		}
+		// PEM encode to file
+		err = pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
+		if err != nil {
+			return err
+		}
+		err = keyOut.Close()
+		if err != nil {
+			return err
+		}
+	} else {
+
+		raw, err := ioutil.ReadFile(keyFilename)
+		if err != nil {
+			return err
+		}
+		var blockKey *pem.Block
+		blockKey, _ = pem.Decode(raw)
+		if blockKey == nil || blockKey.Type != "EC PRIVATE KEY" {
+			return fmt.Errorf("failed to decode PEM block containing private key")
+		}
+		priv, err = x509.ParseECPrivateKey(blockKey.Bytes)
+		if err != nil {
+			return err
+		}
+	}
+
 	if _, err := os.Stat(caCSR); os.IsNotExist(err) {
-		fmt.Println("file", caCSR, "not found")
+		//fmt.Println("file", caCSR, "not found")
 		derBytes, err = x509.CreateCertificateRequest(rand.Reader, certificate, priv)
 		if err != nil {
 			return err
 		}
 	} else {
+		var block *pem.Block
 		raw, readerror := ioutil.ReadFile(caCSR)
 		if readerror != nil {
-			fmt.Println("err read file", err)
 			return err
 		}
 		block, _ = pem.Decode(raw)
 		if block == nil || block.Type != "CERTIFICATE REQUEST" {
-			fmt.Println("failed to decode PEM block containing public key")
 			return fmt.Errorf("failed to decode PEM block containing public key")
 		}
-		derBytes = block.Bytes
+		pcr, err := x509.ParseCertificateRequest(block.Bytes)
+		if err != nil {
+			return err
+		}
+		err = pcr.CheckSignature()
+		if err != nil {
+			return err
+		}
+		derBytes = pcr.Raw
 	}
 
-	fmt.Println("Created Certificate Signing Request for client.")
+	//fmt.Println("Created Certificate Signing Request for client.")
 	conn, err := net.Dial("tcp", ezbpki)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	fmt.Println("Successfully connected to Root Certificate Authority.")
+	//fmt.Println("Successfully connected to Root Certificate Authority.")
 	writer := bufio.NewWriter(conn)
 	// Send two-byte header containing the number of ASN1 bytes transmitted.
 	header := make([]byte, 2)
@@ -155,7 +214,7 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	if err != nil {
 		return err
 	}
-	fmt.Println("Transmitted Certificate Signing Request to RootCA.")
+	//fmt.Println("Transmitted Certificate Signing Request to RootCA.")
 	// The RootCA will now send our signed certificate back for us to read.
 	reader := bufio.NewReader(conn)
 	// Read header containing the size of the ASN1 data.
@@ -164,8 +223,14 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	if err == io.EOF {
 		//save CSR
 		csrOut, _ := os.Create(caCSR)
-		pem.Encode(csrOut, &pem.Block{Type: "CERTIFICATE REQUEST", Bytes: derBytes})
-		csrOut.Close()
+		err := pem.Encode(csrOut, &pem.Block{Type: "CERTIFICATE REQUEST", Bytes: derBytes})
+		if err != nil {
+			return err
+		}
+		err = csrOut.Close()
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 	if err != nil {
@@ -178,7 +243,6 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	if err != nil {
 		return err
 	}
-	fmt.Println("Received new Certificate from RootCA.")
 	newCert, err := x509.ParseCertificate(certBytes)
 	if err != nil {
 		return err
@@ -197,7 +261,6 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	if err != nil {
 		return err
 	}
-	fmt.Println("Received Root Certificate from RootCA.")
 	rootCert, err := x509.ParseCertificate(rootCertBytes)
 	if err != nil {
 		return err
@@ -208,47 +271,52 @@ func Generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 		return err
 	}
 	// all good save the files
-	keyOut, err := os.OpenFile(keyFilename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		return fmt.Errorf("Failed to open key %v for writing: %v", keyFilename, err)
-	}
-	b, err := x509.MarshalECPrivateKey(priv)
-	if err != nil {
-		return fmt.Errorf("Failed to marshal priv: %v", err)
-	}
-	pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: b})
-	keyOut.Close()
 
 	certOut, err := os.Create(certFilename)
 	if err != nil {
-		return fmt.Errorf("Failed to open %v for writing: %v", certFilename, err)
+		return fmt.Errorf("failed to open %v for writing: %v", certFilename, err)
 	}
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
-	certOut.Close()
-
-	caOut, err := os.Create(caFileName)
+	err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
 	if err != nil {
-		return fmt.Errorf("Failed to open %v for writing: %v", caFileName, err)
+		return err
 	}
-	pem.Encode(caOut, &pem.Block{Type: "CERTIFICATE", Bytes: rootCertBytes})
-	caOut.Close()
+	err = certOut.Close()
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(caFileName); os.IsNotExist(err) {
+		caOut, err := os.Create(caFileName)
+		if err != nil {
+			return fmt.Errorf("failed to open %v for writing: %v", caFileName, err)
+		}
+		err = pem.Encode(caOut, &pem.Block{Type: "CERTIFICATE", Bytes: rootCertBytes})
+		if err != nil {
+			return err
+		}
+		err = caOut.Close()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func ValidateCertificate(newCert *x509.Certificate, rootCert *x509.Certificate) error {
+	// how to check key with openssl: 3 command below must have the same pubkey
+	//openssl req  -pubkey -in ezbastion.csr
+	//openssl x509 -pubkey -in ezbastion.crt
+	//openssl ec   -pubout -in ezbastion.key
+
 	roots := x509.NewCertPool()
 	roots.AddCert(rootCert)
 	verifyOptions := x509.VerifyOptions{
 		Roots:     roots,
 		KeyUsages: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
 	}
-
 	_, err := newCert.Verify(verifyOptions)
 	if err != nil {
-		fmt.Println("Failed to verify chain of trust.")
 		return err
 	}
-	fmt.Println("Successfully verified chain of trust.")
-
 	return nil
 }
