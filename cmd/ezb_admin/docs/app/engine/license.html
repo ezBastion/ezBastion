@@ -33,41 +33,7 @@
                             <uib-tab heading="Info">
                                 <h3> ezBastion
                                     <span class="highlight colored">{{level}}</span> edition.</h3>
-                                <div ng-if="license.level == 'ENT'">
-                                    <div ng-if="maxWorkers == 0">
-                                        <p>
-                                            <i class="fa fa-industry" aria-hidden="true"></i>
-                                            You are using {{usedWorkers}} workers.
-                                        </p>
-                                    </div>
-                                    <div ng-if="maxWorkers > 0">
-                                        <p>
-                                            <i class="fa fa-industry" aria-hidden="true"></i>
-                                            You are using {{usedWorkers}} of the {{maxWorkers}} workers available.
-                                        </p>
-                                        <uib-progressbar class=" progress-rounded  " max="maxWorkers" value="usedWorkers"
-                                            type="{{classWorkers.class}}">
-                                            <b>{{classWorkers.percent}}%</b>
-                                        </uib-progressbar>
-                                    </div>
-                                    <div class="divider divider-lg"></div>
-                                    <div ng-if="maxApi == 0">
-                                        <p>
-                                            <i class="fa fa-bolt" aria-hidden="true"></i>
-                                            You are using {{usedApi}} API.
-                                        </p>
-                                    </div>
-                                    <div ng-if="maxApi > 0">
-                                        <p>
-                                            <i class="fa fa-bolt" aria-hidden="true"></i>
-                                            You are using {{usedApi}} of the {{maxApi}} API available.
-                                        </p>
-                                        <uib-progressbar class="progress-rounded " max="maxApi" value="usedApi" type="{{classApi.class}}">
-                                            <b>{{classApi.percent}}%</b>
-                                        </uib-progressbar>
-                                    </div>
-                                </div>
-                                <!-- <div class="divider divider-lg"></div>
+                                <div class="divider divider-lg"></div>
                                 <p ng-if="license.level != 'LTE'">
                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                     Subscription advantage expire on
@@ -76,17 +42,24 @@
                                 <p ng-if="license.level == 'LTE'">
                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                     No Subscription advantage on lite version.
-                                </p> -->
-                                <div ng-if="license.level == 'LTE'">
+                                </p>
+                                <div class="divider divider-lg"></div>
+                                <div ng-if="license.level != 'ENT'">
                                     <p>
                                         <i class="fa fa-industry" aria-hidden="true"></i>
-                                        You are using {{usedWorkers}} workers.
+                                        You are using {{usedWorkers}} of the {{maxWorkers}} workers available.
                                     </p>
+                                    <uib-progressbar class=" progress-rounded  " max="maxWorkers" value="usedWorkers" type="{{classWorkers.class}}">
+                                        <b>{{classWorkers.percent}}%</b>
+                                    </uib-progressbar>
                                     <div class="divider divider-lg"></div>
                                     <p>
                                         <i class="fa fa-bolt" aria-hidden="true"></i>
-                                        You are using {{usedApi}} API.
+                                        You are using {{usedApi}} of the {{maxApi}} API available.
                                     </p>
+                                    <uib-progressbar class="progress-rounded " max="maxApi" value="usedApi" type="{{classApi.class}}">
+                                        <b>{{classApi.percent}}%</b>
+                                    </uib-progressbar>
                                 </div>
                             </uib-tab>
                             <uib-tab heading="Register / Upgrade">
@@ -98,16 +71,14 @@
                                 </div>
                                 <p>
                                     Enter this UUID on the
-                                    <a href="https://www.ezbastion.com/accounts/licenses/" target="_blank">register
-                                        page</a> to get or renew your license.
+                                    <a href="https://www.ezbastion.com/bastion" target="_blank">register page</a> to get or renew your license.
                                 </p>
-                                <form name="form_addLicense" class="form-horizontal ng-pristine ng-valid form-validation"
-                                    role="form" data-ng-submit="submitLicense()">
+                                <form name="form_addLicense" class="form-horizontal ng-pristine ng-valid form-validation" role="form" data-ng-submit="submitLicense()">
                                     <div class="form-group">
                                         <label for="inputAddNameController" class="col-sm-2 control-label">Key</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="inputAddNameController"
-                                                placeholder="license key" required ng-model="licensekey.key">
+                                            <input type="text" class="form-control" id="inputAddNameController" placeholder="license key" required 
+                                                ng-model="licensekey.key" >
                                         </div>
                                     </div>
                                     <div class="btn-group">
@@ -116,8 +87,10 @@
                                     </div>
                                 </form>
                                 <div class="divider divider-lg"></div>
-                                <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')"
-                                    close="closeAlert($index)">{{alert.msg}}</div>
+                                <div uib-alert
+                                ng-repeat="alert in alerts"
+                                ng-class="'alert-' + (alert.type || 'warning')"
+                                close="closeAlert($index)">{{alert.msg}}</div>
                             </uib-tab>
                             <uib-tab heading="node version" ng-hide="true">
                                 check all node version

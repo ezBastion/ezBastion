@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	VERSION         = "1.0.0"                        //use semver.org
+	VERSION         = "1.1.0"                        //use semver.org
 	SERVICENAME     = "ezb_admin"                    // name used as windows service name
 	SERVICEFULLNAME = "ezBastion web admin console." // windows service description
 	CONFFILE        = "conf/config.toml"             //config file path stay hardcoded
