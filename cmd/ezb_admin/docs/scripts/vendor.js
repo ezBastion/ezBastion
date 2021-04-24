@@ -344,13 +344,13 @@ c){var e=a|0,f=c;void 0===f&&(f=Math.min(b(a),3));Math.pow(10,f);return 1==e&&0=
 //# sourceMappingURL=angular.min.js.map
 
 /*
- AngularJS v1.6.7
- (c) 2010-2017 Google, Inc. http://angularjs.org
+ AngularJS v1.6.10
+ (c) 2010-2018 Google, Inc. http://angularjs.org
  License: MIT
 */
 (function(J,d){'use strict';function A(d){k&&d.get("$route")}function B(t,u,g){return{restrict:"ECA",terminal:!0,priority:400,transclude:"element",link:function(a,f,b,c,m){function v(){l&&(g.cancel(l),l=null);n&&(n.$destroy(),n=null);p&&(l=g.leave(p),l.done(function(a){!1!==a&&(l=null)}),p=null)}function E(){var b=t.current&&t.current.locals;if(d.isDefined(b&&b.$template)){var b=a.$new(),c=t.current;p=m(b,function(b){g.enter(b,null,p||f).done(function(b){!1===b||!d.isDefined(w)||w&&!a.$eval(w)||u()});
 v()});n=c.scope=b;n.$emit("$viewContentLoaded");n.$eval(k)}else v()}var n,p,l,w=b.autoscroll,k=b.onload||"";a.$on("$routeChangeSuccess",E);E()}}}function C(d,k,g){return{restrict:"ECA",priority:-400,link:function(a,f){var b=g.current,c=b.locals;f.html(c.$template);var m=d(f.contents());if(b.controller){c.$scope=a;var v=k(b.controller,c);b.controllerAs&&(a[b.controllerAs]=v);f.data("$ngControllerController",v);f.children().data("$ngControllerController",v)}a[b.resolveAs||"$resolve"]=c;m(a)}}}var x,
-y,F,G,z=d.module("ngRoute",[]).info({angularVersion:"1.6.7"}).provider("$route",function(){function t(a,f){return d.extend(Object.create(a),f)}function u(a,d){var b=d.caseInsensitiveMatch,c={originalPath:a,regexp:a},g=c.keys=[];a=a.replace(/([().])/g,"\\$1").replace(/(\/)?:(\w+)(\*\?|[?*])?/g,function(a,b,d,c){a="?"===c||"*?"===c?"?":null;c="*"===c||"*?"===c?"*":null;g.push({name:d,optional:!!a});b=b||"";return""+(a?"":b)+"(?:"+(a?b:"")+(c&&"(.+?)"||"([^/]+)")+(a||"")+")"+(a||"")}).replace(/([/$*])/g,
+y,F,G,z=d.module("ngRoute",[]).info({angularVersion:"1.6.10"}).provider("$route",function(){function t(a,f){return d.extend(Object.create(a),f)}function u(a,d){var b=d.caseInsensitiveMatch,c={originalPath:a,regexp:a},g=c.keys=[];a=a.replace(/([().])/g,"\\$1").replace(/(\/)?:(\w+)(\*\?|[?*])?/g,function(a,b,d,c){a="?"===c||"*?"===c?"?":null;c="*"===c||"*?"===c?"*":null;g.push({name:d,optional:!!a});b=b||"";return""+(a?"":b)+"(?:"+(a?b:"")+(c&&"(.+?)"||"([^/]+)")+(a||"")+")"+(a||"")}).replace(/([/$*])/g,
 "\\$1");c.regexp=new RegExp("^"+a+"$",b?"i":"");return c}x=d.isArray;y=d.isObject;F=d.isDefined;G=d.noop;var g={};this.when=function(a,f){var b;b=void 0;if(x(f)){b=b||[];for(var c=0,m=f.length;c<m;c++)b[c]=f[c]}else if(y(f))for(c in b=b||{},f)if("$"!==c.charAt(0)||"$"!==c.charAt(1))b[c]=f[c];b=b||f;d.isUndefined(b.reloadOnSearch)&&(b.reloadOnSearch=!0);d.isUndefined(b.caseInsensitiveMatch)&&(b.caseInsensitiveMatch=this.caseInsensitiveMatch);g[a]=d.extend(b,a&&u(a,b));a&&(c="/"===a[a.length-1]?a.substr(0,
 a.length-1):a+"/",g[c]=d.extend({redirectTo:a},u(c,b)));return this};this.caseInsensitiveMatch=!1;this.otherwise=function(a){"string"===typeof a&&(a={redirectTo:a});this.when(null,a);return this};k=!0;this.eagerInstantiationEnabled=function(a){return F(a)?(k=a,this):k};this.$get=["$rootScope","$location","$routeParams","$q","$injector","$templateRequest","$sce","$browser",function(a,f,b,c,m,k,u,n){function p(e){var h=q.current;(y=(s=C())&&h&&s.$$route===h.$$route&&d.equals(s.pathParams,h.pathParams)&&
 !s.reloadOnSearch&&!D)||!h&&!s||a.$broadcast("$routeChangeStart",s,h).defaultPrevented&&e&&e.preventDefault()}function l(){var e=q.current,h=s;if(y)e.params=h.params,d.copy(e.params,b),a.$broadcast("$routeUpdate",e);else if(h||e){D=!1;q.current=h;var H=c.resolve(h);n.$$incOutstandingRequestCount();H.then(w).then(z).then(function(c){return c&&H.then(A).then(function(c){h===q.current&&(h&&(h.locals=c,d.copy(h.params,b)),a.$broadcast("$routeChangeSuccess",h,e))})}).catch(function(b){h===q.current&&a.$broadcast("$routeChangeError",
@@ -362,23 +362,23 @@ function(a,d){if(0===d)c.push(a);else{var e=a.match(/(\w+)(?:[?*])?(.*)/),f=e[1]
 //# sourceMappingURL=angular-route.min.js.map
 
 /*
- AngularJS v1.6.7
- (c) 2010-2017 Google, Inc. http://angularjs.org
+ AngularJS v1.6.10
+ (c) 2010-2018 Google, Inc. http://angularjs.org
  License: MIT
 */
-(function(s,p){'use strict';var c="BUTTON A INPUT TEXTAREA SELECT DETAILS SUMMARY".split(" "),h=function(a,b){if(-1!==b.indexOf(a[0].nodeName))return!0};p.module("ngAria",["ng"]).info({angularVersion:"1.6.7"}).provider("$aria",function(){function a(a,c,n,k){return function(d,f,e){var g=e.$normalize(c);!b[g]||h(f,n)||e[g]||d.$watch(e[a],function(a){a=k?!a:!!a;f.attr(c,a)})}}var b={ariaHidden:!0,ariaChecked:!0,ariaReadonly:!0,ariaDisabled:!0,ariaRequired:!0,ariaInvalid:!0,ariaValue:!0,tabindex:!0,bindKeydown:!0,
-bindRoleForClick:!0};this.config=function(a){b=p.extend(b,a)};this.$get=function(){return{config:function(a){return b[a]},$$watchExpr:a}}}).directive("ngShow",["$aria",function(a){return a.$$watchExpr("ngShow","aria-hidden",[],!0)}]).directive("ngHide",["$aria",function(a){return a.$$watchExpr("ngHide","aria-hidden",[],!1)}]).directive("ngValue",["$aria",function(a){return a.$$watchExpr("ngValue","aria-checked",c,!1)}]).directive("ngChecked",["$aria",function(a){return a.$$watchExpr("ngChecked","aria-checked",
-c,!1)}]).directive("ngReadonly",["$aria",function(a){return a.$$watchExpr("ngReadonly","aria-readonly",c,!1)}]).directive("ngRequired",["$aria",function(a){return a.$$watchExpr("ngRequired","aria-required",c,!1)}]).directive("ngModel",["$aria",function(a){function b(b,k,d,f){return a.config(k)&&!d.attr(b)&&(f||!h(d,c))}function l(a,b){return!b.attr("role")&&b.attr("type")===a&&!h(b,c)}function m(a,b){var d=a.type,f=a.role;return"checkbox"===(d||f)||"menuitemcheckbox"===f?"checkbox":"radio"===(d||
-f)||"menuitemradio"===f?"radio":"range"===d||"progressbar"===f||"slider"===f?"range":""}return{restrict:"A",require:"ngModel",priority:200,compile:function(c,k){var d=m(k,c);return{post:function(f,e,g,c){function k(){return c.$modelValue}function h(a){e.attr("aria-checked",g.value==c.$viewValue)}function m(){e.attr("aria-checked",!c.$isEmpty(c.$viewValue))}var n=b("tabindex","tabindex",e,!1);switch(d){case "radio":case "checkbox":l(d,e)&&e.attr("role",d);b("aria-checked","ariaChecked",e,!1)&&f.$watch(k,
-"radio"===d?h:m);n&&e.attr("tabindex",0);break;case "range":l(d,e)&&e.attr("role","slider");if(a.config("ariaValue")){var p=!e.attr("aria-valuemin")&&(g.hasOwnProperty("min")||g.hasOwnProperty("ngMin")),q=!e.attr("aria-valuemax")&&(g.hasOwnProperty("max")||g.hasOwnProperty("ngMax")),r=!e.attr("aria-valuenow");p&&g.$observe("min",function(a){e.attr("aria-valuemin",a)});q&&g.$observe("max",function(a){e.attr("aria-valuemax",a)});r&&f.$watch(k,function(a){e.attr("aria-valuenow",a)})}n&&e.attr("tabindex",
-0)}!g.hasOwnProperty("ngRequired")&&c.$validators.required&&b("aria-required","ariaRequired",e,!1)&&g.$observe("required",function(){e.attr("aria-required",!!g.required)});b("aria-invalid","ariaInvalid",e,!0)&&f.$watch(function(){return c.$invalid},function(a){e.attr("aria-invalid",!!a)})}}}}}]).directive("ngDisabled",["$aria",function(a){return a.$$watchExpr("ngDisabled","aria-disabled",c,!1)}]).directive("ngMessages",function(){return{restrict:"A",require:"?ngMessages",link:function(a,b,c,h){b.attr("aria-live")||
-b.attr("aria-live","assertive")}}}).directive("ngClick",["$aria","$parse",function(a,b){return{restrict:"A",compile:function(l,m){var n=b(m.ngClick);return function(b,d,f){if(!h(d,c)&&(a.config("bindRoleForClick")&&!d.attr("role")&&d.attr("role","button"),a.config("tabindex")&&!d.attr("tabindex")&&d.attr("tabindex",0),a.config("bindKeydown")&&!f.ngKeydown&&!f.ngKeypress&&!f.ngKeyup))d.on("keydown",function(a){function c(){n(b,{$event:a})}var d=a.which||a.keyCode;32!==d&&13!==d||b.$apply(c)})}}}}]).directive("ngDblclick",
-["$aria",function(a){return function(b,l,m){!a.config("tabindex")||l.attr("tabindex")||h(l,c)||l.attr("tabindex",0)}}])})(window,window.angular);
+(function(s,p){'use strict';var c="BUTTON A INPUT TEXTAREA SELECT DETAILS SUMMARY".split(" "),h=function(a,b){if(-1!==b.indexOf(a[0].nodeName))return!0};p.module("ngAria",["ng"]).info({angularVersion:"1.6.10"}).provider("$aria",function(){function a(a,c,n,k){return function(d,f,e){var g=e.$normalize(c);!b[g]||h(f,n)||e[g]||d.$watch(e[a],function(a){a=k?!a:!!a;f.attr(c,a)})}}var b={ariaHidden:!0,ariaChecked:!0,ariaReadonly:!0,ariaDisabled:!0,ariaRequired:!0,ariaInvalid:!0,ariaValue:!0,tabindex:!0,
+bindKeydown:!0,bindRoleForClick:!0};this.config=function(a){b=p.extend(b,a)};this.$get=function(){return{config:function(a){return b[a]},$$watchExpr:a}}}).directive("ngShow",["$aria",function(a){return a.$$watchExpr("ngShow","aria-hidden",[],!0)}]).directive("ngHide",["$aria",function(a){return a.$$watchExpr("ngHide","aria-hidden",[],!1)}]).directive("ngValue",["$aria",function(a){return a.$$watchExpr("ngValue","aria-checked",c,!1)}]).directive("ngChecked",["$aria",function(a){return a.$$watchExpr("ngChecked",
+"aria-checked",c,!1)}]).directive("ngReadonly",["$aria",function(a){return a.$$watchExpr("ngReadonly","aria-readonly",c,!1)}]).directive("ngRequired",["$aria",function(a){return a.$$watchExpr("ngRequired","aria-required",c,!1)}]).directive("ngModel",["$aria",function(a){function b(b,k,d,f){return a.config(k)&&!d.attr(b)&&(f||!h(d,c))}function l(a,b){return!b.attr("role")&&b.attr("type")===a&&!h(b,c)}function m(a,b){var d=a.type,f=a.role;return"checkbox"===(d||f)||"menuitemcheckbox"===f?"checkbox":
+"radio"===(d||f)||"menuitemradio"===f?"radio":"range"===d||"progressbar"===f||"slider"===f?"range":""}return{restrict:"A",require:"ngModel",priority:200,compile:function(c,k){var d=m(k,c);return{post:function(f,e,g,c){function k(){return c.$modelValue}function h(a){e.attr("aria-checked",g.value==c.$viewValue)}function m(){e.attr("aria-checked",!c.$isEmpty(c.$viewValue))}var n=b("tabindex","tabindex",e,!1);switch(d){case "radio":case "checkbox":l(d,e)&&e.attr("role",d);b("aria-checked","ariaChecked",
+e,!1)&&f.$watch(k,"radio"===d?h:m);n&&e.attr("tabindex",0);break;case "range":l(d,e)&&e.attr("role","slider");if(a.config("ariaValue")){var p=!e.attr("aria-valuemin")&&(g.hasOwnProperty("min")||g.hasOwnProperty("ngMin")),q=!e.attr("aria-valuemax")&&(g.hasOwnProperty("max")||g.hasOwnProperty("ngMax")),r=!e.attr("aria-valuenow");p&&g.$observe("min",function(a){e.attr("aria-valuemin",a)});q&&g.$observe("max",function(a){e.attr("aria-valuemax",a)});r&&f.$watch(k,function(a){e.attr("aria-valuenow",a)})}n&&
+e.attr("tabindex",0)}!g.hasOwnProperty("ngRequired")&&c.$validators.required&&b("aria-required","ariaRequired",e,!1)&&g.$observe("required",function(){e.attr("aria-required",!!g.required)});b("aria-invalid","ariaInvalid",e,!0)&&f.$watch(function(){return c.$invalid},function(a){e.attr("aria-invalid",!!a)})}}}}}]).directive("ngDisabled",["$aria",function(a){return a.$$watchExpr("ngDisabled","aria-disabled",c,!1)}]).directive("ngMessages",function(){return{restrict:"A",require:"?ngMessages",link:function(a,
+b,c,h){b.attr("aria-live")||b.attr("aria-live","assertive")}}}).directive("ngClick",["$aria","$parse",function(a,b){return{restrict:"A",compile:function(l,m){var n=b(m.ngClick);return function(b,d,f){if(!h(d,c)&&(a.config("bindRoleForClick")&&!d.attr("role")&&d.attr("role","button"),a.config("tabindex")&&!d.attr("tabindex")&&d.attr("tabindex",0),a.config("bindKeydown")&&!f.ngKeydown&&!f.ngKeypress&&!f.ngKeyup))d.on("keydown",function(a){function c(){n(b,{$event:a})}var d=a.which||a.keyCode;32!==d&&
+13!==d||b.$apply(c)})}}}}]).directive("ngDblclick",["$aria",function(a){return function(b,l,m){!a.config("tabindex")||l.attr("tabindex")||h(l,c)||l.attr("tabindex",0)}}])})(window,window.angular);
 //# sourceMappingURL=angular-aria.min.js.map
 
 /*
- AngularJS v1.6.7
- (c) 2010-2017 Google, Inc. http://angularjs.org
+ AngularJS v1.6.10
+ (c) 2010-2018 Google, Inc. http://angularjs.org
  License: MIT
 */
 (function(S,q){'use strict';function Ea(a,b,c){if(!a)throw Pa("areq",b||"?",c||"required");return a}function Fa(a,b){if(!a&&!b)return"";if(!a)return b;if(!b)return a;V(a)&&(a=a.join(" "));V(b)&&(b=b.join(" "));return a+" "+b}function Qa(a){var b={};a&&(a.to||a.from)&&(b.to=a.to,b.from=a.from);return b}function W(a,b,c){var d="";a=V(a)?a:a&&C(a)&&a.length?a.split(/\s+/):[];t(a,function(a,f){a&&0<a.length&&(d+=0<f?" ":"",d+=c?b+a:a+b)});return d}function Ga(a){if(a instanceof A)switch(a.length){case 0:return a;
@@ -389,8 +389,8 @@ e=!a[c]||a[c+"-remove"]):-1===b&&(d="removeClass",e=a[c]||a[c+"-add"]);e&&(f[d].
 b){a.style[b[0]]=b[1]}function ca(a,b){return a?b?a+" "+b:a:b}function Ja(a,b,c){var d=Object.create(null),e=a.getComputedStyle(b)||{};t(c,function(a,b){var c=e[a];if(c){var l=c.charAt(0);if("-"===l||"+"===l||0<=l)c=Va(c);0===c&&(c=null);d[b]=c}});return d}function Va(a){var b=0;a=a.split(/\s*,\s*/);t(a,function(a){"s"===a.charAt(a.length-1)&&(a=a.substring(0,a.length-1));a=parseFloat(a)||0;b=b?Math.max(a,b):a});return b}function xa(a){return 0===a||null!=a}function Ka(a,b){var c=Q,d=a+"s";b?c+="Duration":
 d+=" linear all";return[c,d]}function La(){var a=Object.create(null);return{flush:function(){a=Object.create(null)},count:function(b){return(b=a[b])?b.total:0},get:function(b){return(b=a[b])&&b.value},put:function(b,c){a[b]?a[b].total++:a[b]={total:1,value:c}}}}function Ma(a,b,c){t(c,function(c){a[c]=ya(a[c])?a[c]:b.style.getPropertyValue(c)})}var Q,za,Y,Aa;void 0===S.ontransitionend&&void 0!==S.onwebkittransitionend?(Q="WebkitTransition",za="webkitTransitionEnd transitionend"):(Q="transition",za=
 "transitionend");void 0===S.onanimationend&&void 0!==S.onwebkitanimationend?(Y="WebkitAnimation",Aa="webkitAnimationEnd animationend"):(Y="animation",Aa="animationend");var qa=Y+"Delay",Ba=Y+"Duration",la=Q+"Delay",Na=Q+"Duration",Pa=q.$$minErr("ng"),Wa={transitionDuration:Na,transitionDelay:la,transitionProperty:Q+"Property",animationDuration:Ba,animationDelay:qa,animationIterationCount:Y+"IterationCount"},Xa={transitionDuration:Na,transitionDelay:la,animationDuration:Ba,animationDelay:qa},Ca,va,
-t,V,ya,Z,Da,ra,C,P,A,O;q.module("ngAnimate",[],function(){O=q.noop;Ca=q.copy;va=q.extend;A=q.element;t=q.forEach;V=q.isArray;C=q.isString;ra=q.isObject;P=q.isUndefined;ya=q.isDefined;Da=q.isFunction;Z=q.isElement}).info({angularVersion:"1.6.7"}).directive("ngAnimateSwap",["$animate","$rootScope",function(a,b){return{restrict:"A",transclude:"element",terminal:!0,priority:600,link:function(b,d,e,f,n){var G,l;b.$watchCollection(e.ngAnimateSwap||e["for"],function(e){G&&a.leave(G);l&&(l.$destroy(),l=null);
-if(e||0===e)l=b.$new(),n(l,function(b){G=b;a.enter(b,null,d)})})}}}]).directive("ngAnimateChildren",["$interpolate",function(a){return{link:function(b,c,d){function e(a){c.data("$$ngAnimateChildren","on"===a||"true"===a)}var f=d.ngAnimateChildren;C(f)&&0===f.length?c.data("$$ngAnimateChildren",!0):(e(a(f)(b)),d.$observe("ngAnimateChildren",e))}}}]).factory("$$rAFScheduler",["$$rAF",function(a){function b(a){d=d.concat(a);c()}function c(){if(d.length){for(var b=d.shift(),n=0;n<b.length;n++)b[n]();
+t,V,ya,Z,Da,ra,C,P,A,O;q.module("ngAnimate",[],function(){O=q.noop;Ca=q.copy;va=q.extend;A=q.element;t=q.forEach;V=q.isArray;C=q.isString;ra=q.isObject;P=q.isUndefined;ya=q.isDefined;Da=q.isFunction;Z=q.isElement}).info({angularVersion:"1.6.10"}).directive("ngAnimateSwap",["$animate","$rootScope",function(a,b){return{restrict:"A",transclude:"element",terminal:!0,priority:600,link:function(b,d,e,f,n){var G,l;b.$watchCollection(e.ngAnimateSwap||e["for"],function(e){G&&a.leave(G);l&&(l.$destroy(),l=
+null);if(e||0===e)l=b.$new(),n(l,function(b){G=b;a.enter(b,null,d)})})}}}]).directive("ngAnimateChildren",["$interpolate",function(a){return{link:function(b,c,d){function e(a){c.data("$$ngAnimateChildren","on"===a||"true"===a)}var f=d.ngAnimateChildren;C(f)&&0===f.length?c.data("$$ngAnimateChildren",!0):(e(a(f)(b)),d.$observe("ngAnimateChildren",e))}}}]).factory("$$rAFScheduler",["$$rAF",function(a){function b(a){d=d.concat(a);c()}function c(){if(d.length){for(var b=d.shift(),n=0;n<b.length;n++)b[n]();
 e||a(function(){e||c()})}}var d,e;d=b.queue=[];b.waitUntilQuiet=function(b){e&&e();e=a(function(){e=null;b();c()})};return b}]).provider("$$animateQueue",["$animateProvider",function(a){function b(a){if(!a)return null;a=a.split(" ");var b=Object.create(null);t(a,function(a){b[a]=!0});return b}function c(a,c){if(a&&c){var d=b(c);return a.split(" ").some(function(a){return d[a]})}}function d(a,b,c){return f[a].some(function(a){return a(b,c)})}function e(a,b){var c=0<(a.addClass||"").length,d=0<(a.removeClass||
 "").length;return b?c&&d:c||d}var f=this.rules={skip:[],cancel:[],join:[]};f.join.push(function(a,b){return!a.structural&&e(a)});f.skip.push(function(a,b){return!a.structural&&!e(a)});f.skip.push(function(a,b){return"leave"===b.event&&a.structural});f.skip.push(function(a,b){return b.structural&&2===b.state&&!a.structural});f.cancel.push(function(a,b){return b.structural&&a.structural});f.cancel.push(function(a,b){return 2===b.state&&a.structural});f.cancel.push(function(a,b){if(b.structural)return!1;
 var d=a.addClass,e=a.removeClass,f=b.addClass,sa=b.removeClass;return P(d)&&P(e)||P(f)&&P(sa)?!1:c(d,sa)||c(e,f)});this.$get=["$$rAF","$rootScope","$rootElement","$document","$$Map","$$animation","$$AnimateRunner","$templateRequest","$$jqLite","$$forceReflow","$$isDocumentHidden",function(b,c,f,s,y,sa,da,v,E,g,M){function x(){var a=!1;return function(b){a?b():c.$$postDigest(function(){a=!0;b()})}}function H(a,b,c){var h=[],d=k[c];d&&t(d,function(d){u.call(d.node,b)?h.push(d.callback):"leave"===c&&
@@ -434,257 +434,4 @@ O)(void 0),b(void 0))},cancel:function(){E||((d||O)(!0),b(!0))}});c.chain(e,b);r
 d.push(n.start());c.all(d,function(a){e.complete(a)});var e=new c({end:a(),cancel:a()});return e}}}else return d(a)}}]}])})(window,window.angular);
 //# sourceMappingURL=angular-animate.min.js.map
 
-!function(){angular.module("angular-jwt",["angular-jwt.options","angular-jwt.interceptor","angular-jwt.jwt","angular-jwt.authManager"]),angular.module("angular-jwt.authManager",[]).provider("authManager",function(){this.$get=["$rootScope","$injector","$location","jwtHelper","jwtInterceptor","jwtOptions",function(t,e,r,n,a,i){function o(t){var r=null;return r=Array.isArray(t)?e.invoke(t,this,{options:null}):t()}function u(t){if(Array.isArray(t)||angular.isFunction(t))return e.invoke(t,p,{});throw new Error("unauthenticatedRedirector must be a function")}function s(){var t=o(p.tokenGetter);return t?!n.isTokenExpired(t):void 0}function h(){t.isAuthenticated=!0}function c(){t.isAuthenticated=!1}function l(){t.$on("$locationChangeStart",function(){var e=o(p.tokenGetter);e&&(n.isTokenExpired(e)?t.$broadcast("tokenHasExpired",e):h())})}function d(){t.$on("unauthenticated",function(){u(p.unauthenticatedRedirector),c()})}function f(t,e){if(!e)return!1;var r=e.$$route?e.$$route:e.data;if(r&&r.requiresLogin===!0){var a=o(p.tokenGetter);(!a||n.isTokenExpired(a))&&(t.preventDefault(),u(p.unauthenticatedRedirector))}}var p=i.getConfig();t.isAuthenticated=!1;var g=e.has("$state")?"$stateChangeStart":"$routeChangeStart";return t.$on(g,f),{authenticate:h,unauthenticate:c,getToken:function(){return o(p.tokenGetter)},redirect:function(){return u(p.unauthenticatedRedirector)},checkAuthOnRefresh:l,redirectWhenUnauthenticated:d,isAuthenticated:s}}]}),angular.module("angular-jwt.interceptor",[]).provider("jwtInterceptor",function(){this.urlParam,this.authHeader,this.authPrefix,this.whiteListedDomains,this.tokenGetter;var t=this;this.$get=["$q","$injector","$rootScope","urlUtils","jwtOptions",function(e,r,n,a,i){function o(t){if(!a.isSameOrigin(t)&&!u.whiteListedDomains.length)throw new Error("As of v0.1.0, requests to domains other than the application's origin must be white listed. Use jwtOptionsProvider.config({ whiteListedDomains: [<domain>] }); to whitelist.");for(var e=a.urlResolve(t).hostname.toLowerCase(),r=0;r<u.whiteListedDomains.length;r++){var n=u.whiteListedDomains[r],i=n instanceof RegExp?n:new RegExp(n,"i");if(e.match(i))return!0}return a.isSameOrigin(t)?!0:!1}var u=angular.extend({},i.getConfig(),t);return{request:function(t){if(t.skipAuthorization||!o(t.url))return t;if(u.urlParam){if(t.params=t.params||{},t.params[u.urlParam])return t}else if(t.headers=t.headers||{},t.headers[u.authHeader])return t;var n=e.when(r.invoke(u.tokenGetter,this,{options:t}));return n.then(function(e){return e&&(u.urlParam?t.params[u.urlParam]=e:t.headers[u.authHeader]=u.authPrefix+e),t})},responseError:function(t){return 401===t.status&&n.$broadcast("unauthenticated",t),e.reject(t)}}}]}),angular.module("angular-jwt.jwt",[]).service("jwtHelper",["$window",function(t){this.urlBase64Decode=function(e){var r=e.replace(/-/g,"+").replace(/_/g,"/");switch(r.length%4){case 0:break;case 2:r+="==";break;case 3:r+="=";break;default:throw"Illegal base64url string!"}return t.decodeURIComponent(escape(t.atob(r)))},this.decodeToken=function(t){var e=t.split(".");if(3!==e.length)throw new Error("JWT must have 3 parts");var r=this.urlBase64Decode(e[1]);if(!r)throw new Error("Cannot decode the token");return angular.fromJson(r)},this.getTokenExpirationDate=function(t){var e=this.decodeToken(t);if("undefined"==typeof e.exp)return null;var r=new Date(0);return r.setUTCSeconds(e.exp),r},this.isTokenExpired=function(t,e){var r=this.getTokenExpirationDate(t);return e=e||0,null===r?!1:!(r.valueOf()>(new Date).valueOf()+1e3*e)}}]),angular.module("angular-jwt.options",[]).provider("jwtOptions",function(){var t={};this.config=function(e){t=e},this.$get=function(){function e(){this.config=angular.extend({},r,t)}var r={urlParam:null,authHeader:"Authorization",authPrefix:"Bearer ",whiteListedDomains:[],tokenGetter:function(){return null},loginPath:"/",unauthenticatedRedirectPath:"/",unauthenticatedRedirector:["$location",function(t){t.path(this.unauthenticatedRedirectPath)}]};return e.prototype.getConfig=function(){return this.config},new e}}),angular.module("angular-jwt.interceptor").service("urlUtils",function(){function t(t){var e=t;return r.setAttribute("href",e),e=r.href,r.setAttribute("href",e),{href:r.href,protocol:r.protocol?r.protocol.replace(/:$/,""):"",host:r.host,search:r.search?r.search.replace(/^\?/,""):"",hash:r.hash?r.hash.replace(/^#/,""):"",hostname:r.hostname,port:r.port,pathname:"/"===r.pathname.charAt(0)?r.pathname:"/"+r.pathname}}function e(e){var r=angular.isString(e)?t(e):e;return r.protocol===n.protocol&&r.host===n.host}var r=document.createElement("a"),n=t(window.location.href);return{urlResolve:t,isSameOrigin:e}})}();
-/**
- * @license AngularJS v1.7.8
- * (c) 2010-2018 Google, Inc. http://angularjs.org
- * License: MIT
- */
-(function(window, angular) {'use strict';
-
-/**
- * @ngdoc module
- * @name ngCookies
- * @description
- *
- * The `ngCookies` module provides a convenient wrapper for reading and writing browser cookies.
- *
- * See {@link ngCookies.$cookies `$cookies`} for usage.
- */
-
-
-angular.module('ngCookies', ['ng']).
-  info({ angularVersion: '1.7.8' }).
-  /**
-   * @ngdoc provider
-   * @name $cookiesProvider
-   * @description
-   * Use `$cookiesProvider` to change the default behavior of the {@link ngCookies.$cookies $cookies} service.
-   * */
-   provider('$cookies', [/** @this */function $CookiesProvider() {
-    /**
-     * @ngdoc property
-     * @name $cookiesProvider#defaults
-     * @description
-     *
-     * Object containing default options to pass when setting cookies.
-     *
-     * The object may have following properties:
-     *
-     * - **path** - `{string}` - The cookie will be available only for this path and its
-     *   sub-paths. By default, this is the URL that appears in your `<base>` tag.
-     * - **domain** - `{string}` - The cookie will be available only for this domain and
-     *   its sub-domains. For security reasons the user agent will not accept the cookie
-     *   if the current domain is not a sub-domain of this domain or equal to it.
-     * - **expires** - `{string|Date}` - String of the form "Wdy, DD Mon YYYY HH:MM:SS GMT"
-     *   or a Date object indicating the exact date/time this cookie will expire.
-     * - **secure** - `{boolean}` - If `true`, then the cookie will only be available through a
-     *   secured connection.
-     * - **samesite** - `{string}` - prevents the browser from sending the cookie along with cross-site requests.
-     *   Accepts the values `lax` and `strict`. See the [OWASP Wiki](https://www.owasp.org/index.php/SameSite)
-     *   for more info. Note that as of May 2018, not all browsers support `SameSite`,
-     *   so it cannot be used as a single measure against Cross-Site-Request-Forgery (CSRF) attacks.
-     *
-     * Note: By default, the address that appears in your `<base>` tag will be used as the path.
-     * This is important so that cookies will be visible for all routes when html5mode is enabled.
-     *
-     * @example
-     *
-     * ```js
-     * angular.module('cookiesProviderExample', ['ngCookies'])
-     *   .config(['$cookiesProvider', function($cookiesProvider) {
-     *     // Setting default options
-     *     $cookiesProvider.defaults.domain = 'foo.com';
-     *     $cookiesProvider.defaults.secure = true;
-     *   }]);
-     * ```
-     **/
-    var defaults = this.defaults = {};
-
-    function calcOptions(options) {
-      return options ? angular.extend({}, defaults, options) : defaults;
-    }
-
-    /**
-     * @ngdoc service
-     * @name $cookies
-     *
-     * @description
-     * Provides read/write access to browser's cookies.
-     *
-     * <div class="alert alert-info">
-     * Up until AngularJS 1.3, `$cookies` exposed properties that represented the
-     * current browser cookie values. In version 1.4, this behavior has changed, and
-     * `$cookies` now provides a standard api of getters, setters etc.
-     * </div>
-     *
-     * Requires the {@link ngCookies `ngCookies`} module to be installed.
-     *
-     * @example
-     *
-     * ```js
-     * angular.module('cookiesExample', ['ngCookies'])
-     *   .controller('ExampleController', ['$cookies', function($cookies) {
-     *     // Retrieving a cookie
-     *     var favoriteCookie = $cookies.get('myFavorite');
-     *     // Setting a cookie
-     *     $cookies.put('myFavorite', 'oatmeal');
-     *   }]);
-     * ```
-     */
-    this.$get = ['$$cookieReader', '$$cookieWriter', function($$cookieReader, $$cookieWriter) {
-      return {
-        /**
-         * @ngdoc method
-         * @name $cookies#get
-         *
-         * @description
-         * Returns the value of given cookie key
-         *
-         * @param {string} key Id to use for lookup.
-         * @returns {string} Raw cookie value.
-         */
-        get: function(key) {
-          return $$cookieReader()[key];
-        },
-
-        /**
-         * @ngdoc method
-         * @name $cookies#getObject
-         *
-         * @description
-         * Returns the deserialized value of given cookie key
-         *
-         * @param {string} key Id to use for lookup.
-         * @returns {Object} Deserialized cookie value.
-         */
-        getObject: function(key) {
-          var value = this.get(key);
-          return value ? angular.fromJson(value) : value;
-        },
-
-        /**
-         * @ngdoc method
-         * @name $cookies#getAll
-         *
-         * @description
-         * Returns a key value object with all the cookies
-         *
-         * @returns {Object} All cookies
-         */
-        getAll: function() {
-          return $$cookieReader();
-        },
-
-        /**
-         * @ngdoc method
-         * @name $cookies#put
-         *
-         * @description
-         * Sets a value for given cookie key
-         *
-         * @param {string} key Id for the `value`.
-         * @param {string} value Raw value to be stored.
-         * @param {Object=} options Options object.
-         *    See {@link ngCookies.$cookiesProvider#defaults $cookiesProvider.defaults}
-         */
-        put: function(key, value, options) {
-          $$cookieWriter(key, value, calcOptions(options));
-        },
-
-        /**
-         * @ngdoc method
-         * @name $cookies#putObject
-         *
-         * @description
-         * Serializes and sets a value for given cookie key
-         *
-         * @param {string} key Id for the `value`.
-         * @param {Object} value Value to be stored.
-         * @param {Object=} options Options object.
-         *    See {@link ngCookies.$cookiesProvider#defaults $cookiesProvider.defaults}
-         */
-        putObject: function(key, value, options) {
-          this.put(key, angular.toJson(value), options);
-        },
-
-        /**
-         * @ngdoc method
-         * @name $cookies#remove
-         *
-         * @description
-         * Remove given cookie
-         *
-         * @param {string} key Id of the key-value pair to delete.
-         * @param {Object=} options Options object.
-         *    See {@link ngCookies.$cookiesProvider#defaults $cookiesProvider.defaults}
-         */
-        remove: function(key, options) {
-          $$cookieWriter(key, undefined, calcOptions(options));
-        }
-      };
-    }];
-  }]);
-
-/**
- * @name $$cookieWriter
- * @requires $document
- *
- * @description
- * This is a private service for writing cookies
- *
- * @param {string} name Cookie name
- * @param {string=} value Cookie value (if undefined, cookie will be deleted)
- * @param {Object=} options Object with options that need to be stored for the cookie.
- */
-function $$CookieWriter($document, $log, $browser) {
-  var cookiePath = $browser.baseHref();
-  var rawDocument = $document[0];
-
-  function buildCookieString(name, value, options) {
-    var path, expires;
-    options = options || {};
-    expires = options.expires;
-    path = angular.isDefined(options.path) ? options.path : cookiePath;
-    if (angular.isUndefined(value)) {
-      expires = 'Thu, 01 Jan 1970 00:00:00 GMT';
-      value = '';
-    }
-    if (angular.isString(expires)) {
-      expires = new Date(expires);
-    }
-
-    var str = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-    str += path ? ';path=' + path : '';
-    str += options.domain ? ';domain=' + options.domain : '';
-    str += expires ? ';expires=' + expires.toUTCString() : '';
-    str += options.secure ? ';secure' : '';
-    str += options.samesite ? ';samesite=' + options.samesite : '';
-
-    // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
-    // - 300 cookies
-    // - 20 cookies per unique domain
-    // - 4096 bytes per cookie
-    var cookieLength = str.length + 1;
-    if (cookieLength > 4096) {
-      $log.warn('Cookie \'' + name +
-        '\' possibly not set or overflowed because it was too large (' +
-        cookieLength + ' > 4096 bytes)!');
-    }
-
-    return str;
-  }
-
-  return function(name, value, options) {
-    rawDocument.cookie = buildCookieString(name, value, options);
-  };
-}
-
-$$CookieWriter.$inject = ['$document', '$log', '$browser'];
-
-angular.module('ngCookies').provider('$$cookieWriter', /** @this */ function $$CookieWriterProvider() {
-  this.$get = $$CookieWriter;
-});
-
-
-})(window, window.angular);
+!function(){angular.module("angular-jwt",["angular-jwt.options","angular-jwt.interceptor","angular-jwt.jwt","angular-jwt.authManager"]),angular.module("angular-jwt.authManager",[]).provider("authManager",function(){this.$get=["$rootScope","$injector","$location","jwtHelper","jwtInterceptor","jwtOptions",function(t,e,r,n,a,i){function o(t){var r=null;return r=Array.isArray(t)?e.invoke(t,this,{options:null}):t()}function u(t){if(Array.isArray(t)||angular.isFunction(t))return e.invoke(t,w,{});throw new Error("unauthenticatedRedirector must be a function")}function s(){var t=o(w.tokenGetter);return t?!n.isTokenExpired(t):void 0}function h(){t.isAuthenticated=!0}function c(){t.isAuthenticated=!1}function l(){var e=o(w.tokenGetter);e&&(n.isTokenExpired(e)?t.$broadcast("tokenHasExpired",e):h())}function d(){if(e.has("$transitions")){var r=e.get("$transitions");r.onStart({},l)}else t.$on("$locationChangeStart",l)}function f(){t.$on("unauthenticated",function(){u(w.unauthenticatedRedirector),c()})}function g(t,e){if(!e)return!1;var r=e.$$route?e.$$route:e.data;r&&r.requiresLogin===!0&&!s()&&(t.preventDefault(),u(w.unauthenticatedRedirector))}function p(t){var e=t.to(),r=t.router.stateService;return e&&e.data&&e.data.requiresLogin===!0&&!s()?r.target(w.loginPath):void 0}var w=i.getConfig();if(t.isAuthenticated=!1,e.has("$transitions")){var v=e.get("$transitions");v.onStart({},p)}else{var m=e.has("$state")?"$stateChangeStart":"$routeChangeStart";t.$on(m,g)}return{authenticate:h,unauthenticate:c,getToken:function(){return o(w.tokenGetter)},redirect:function(){return u(w.unauthenticatedRedirector)},checkAuthOnRefresh:d,redirectWhenUnauthenticated:f,isAuthenticated:s}}]}),angular.module("angular-jwt.interceptor",[]).provider("jwtInterceptor",function(){this.urlParam,this.authHeader,this.authPrefix,this.whiteListedDomains,this.tokenGetter;var t=this;this.$get=["$q","$injector","$rootScope","urlUtils","jwtOptions",function(e,r,n,a,i){function o(t){if(!a.isSameOrigin(t)&&!u.whiteListedDomains.length)throw new Error("As of v0.1.0, requests to domains other than the application's origin must be white listed. Use jwtOptionsProvider.config({ whiteListedDomains: [<domain>] }); to whitelist.");for(var e=a.urlResolve(t).hostname.toLowerCase(),r=0;r<u.whiteListedDomains.length;r++){var n=u.whiteListedDomains[r];if(n instanceof RegExp){if(e.match(n))return!0}else if(e===n.toLowerCase())return!0}return a.isSameOrigin(t)?!0:!1}var u=angular.extend({},i.getConfig(),t);return{request:function(t){if(t.skipAuthorization||!o(t.url))return t;if(u.urlParam){if(t.params=t.params||{},t.params[u.urlParam])return t}else if(t.headers=t.headers||{},t.headers[u.authHeader])return t;var n=e.when(r.invoke(u.tokenGetter,this,{options:t}));return n.then(function(e){return e&&(u.urlParam?t.params[u.urlParam]=e:t.headers[u.authHeader]=u.authPrefix+e),t})},responseError:function(t){return void 0!==t&&401===t.status&&n.$broadcast("unauthenticated",t),e.reject(t)}}}]}),angular.module("angular-jwt.jwt",[]).service("jwtHelper",["$window",function(t){this.urlBase64Decode=function(e){var r=e.replace(/-/g,"+").replace(/_/g,"/");switch(r.length%4){case 0:break;case 2:r+="==";break;case 3:r+="=";break;default:throw"Illegal base64url string!"}return t.decodeURIComponent(escape(t.atob(r)))},this.decodeToken=function(t){var e=t.split(".");if(3!==e.length)throw new Error("JWT must have 3 parts");var r=this.urlBase64Decode(e[1]);if(!r)throw new Error("Cannot decode the token");return angular.fromJson(r)},this.getTokenExpirationDate=function(t){var e=this.decodeToken(t);if("undefined"==typeof e.exp)return null;var r=new Date(0);return r.setUTCSeconds(e.exp),r},this.isTokenExpired=function(t,e){var r=this.getTokenExpirationDate(t);return e=e||0,null===r?!1:!(r.valueOf()>(new Date).valueOf()+1e3*e)}}]),angular.module("angular-jwt.options",[]).provider("jwtOptions",function(){var t={};this.config=function(e){t=e},this.$get=function(){function e(){this.config=angular.extend({},r,t)}var r={urlParam:null,authHeader:"Authorization",authPrefix:"Bearer ",whiteListedDomains:[],tokenGetter:function(){return null},loginPath:"/",unauthenticatedRedirectPath:"/",unauthenticatedRedirector:["$location",function(t){t.path(this.unauthenticatedRedirectPath)}]};return e.prototype.getConfig=function(){return this.config},new e}}),angular.module("angular-jwt.interceptor").service("urlUtils",function(){function t(t){var e=t;return r.setAttribute("href",e),e=r.href,r.setAttribute("href",e),{href:r.href,protocol:r.protocol?r.protocol.replace(/:$/,""):"",host:r.host,search:r.search?r.search.replace(/^\?/,""):"",hash:r.hash?r.hash.replace(/^#/,""):"",hostname:r.hostname,port:r.port,pathname:"/"===r.pathname.charAt(0)?r.pathname:"/"+r.pathname}}function e(e){var r=angular.isString(e)?t(e):e;return r.protocol===n.protocol&&r.host===n.host}var r=document.createElement("a"),n=t(window.location.href);return{urlResolve:t,isSameOrigin:e}})}();

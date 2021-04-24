@@ -1,5 +1,5 @@
-<div class="page-signin">
-
+<div class="page-signin" data-ng-controller="AppCtrl">
+    <data-ng-include  src="'app/layout/modal.html'" ></data-ng-include>
     <div class="signin-header">
         <div class="container text-center">
             <section class="logo">
@@ -29,7 +29,7 @@
                                 </span>
                                 <input type="password" class="form-control" placeholder="password" ng-model="user.pwd">
                             </div>
-                        </div>                       
+                        </div>
                         <div class="form-group"></div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary btn-lg btn-block" value="Log in" >
