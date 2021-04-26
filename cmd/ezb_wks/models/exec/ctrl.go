@@ -56,27 +56,46 @@ func run(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "#E0002 bind parameters error", err)
 		return
 	}
-	psParams := fmt.Sprintf("-xtrack '%s' ", xtrack)
+
+	psParams := []string{fmt.Sprintf("xtrack=%s", xtrack)} //fmt.Sprintf("-xtrack '%s' ", xtrack)
 	for i, h := range params.Data {
-		psParams = fmt.Sprintf("%s -%s '%s' ", psParams, i, h)
+		psParams = append(psParams, fmt.Sprintf("%s=%s", i, h))
 	}
 	psscript := filepath.Join(conf.EZBWKS.ScriptPath, params.Meta.Job.Path)
+	if _, err := os.Stat(psscript); os.IsNotExist(err) {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	ps1, _ := filepath.Abs(psscript)
 	if polling == "true" {
-		runTask(c, psscript, psParams)
+		runTask(c, ps1, psParams)
 	} else {
-		runJob(c, psscript, psParams)
+		runJob(c, ps1, psParams)
 	}
 }
 
-func runJob(c *gin.Context, psscript string, psParams string) {
+func runJob(c *gin.Context, psscript string, Params []string) {
 	logg := log.WithFields(log.Fields{
 		"controller": "exec",
 		"xtrack":     xtrack,
 	})
-
+	conf, _ = c.MustGet("conf").(confmanager.Configuration)
 	logg.Debug("start")
-	cmd := exec.Command("powershell", "-NoLogo", "-NonInteractive", "-File", "'", psscript, "' ", psParams)
-
+	args := append([]string{conf.EZBWKS.ScriptInterpreter}, conf.EZBWKS.InterpreterParams...)
+	cmd := &exec.Cmd{
+		Path: conf.EZBWKS.ScriptInterpreter,
+		Args: append(args, filepath.Base(psscript)),
+	}
+	if filepath.Base(conf.EZBWKS.ScriptInterpreter) == conf.EZBWKS.ScriptInterpreter {
+		if lp, err := exec.LookPath(conf.EZBWKS.ScriptInterpreter); err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		} else {
+			cmd.Path = lp
+		}
+	}
+	cmd.Env = Params
+	cmd.Dir = filepath.Dir(psscript)
+	logg.Debug(cmd.String())
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -95,13 +114,13 @@ func runJob(c *gin.Context, psscript string, psParams string) {
 	}
 }
 
-func runTask(c *gin.Context, psscript string, psParams string) {
+func runTask(c *gin.Context, psscript string, psParams []string) {
 	tokenID := c.GetHeader("x-ezb-tokenid")
 	logg := log.WithFields(log.Fields{
 		"controller": "exec",
 		"xtrack":     xtrack,
 	})
-
+	conf, _ = c.MustGet("conf").(confmanager.Configuration)
 	t := time.Now()
 	taskID := fmt.Sprintf("%s%s", t.Format("20060102"), xtrack)
 	jobPath := path.Join(strings.Replace(conf.EZBWKS.JobPath, "\\", "/", -1), t.Format("2006/01/02"), xtrack)
@@ -114,29 +133,50 @@ func runTask(c *gin.Context, psscript string, psParams string) {
 		}
 	}
 
-	stdOUT := filepath.Join(jobPath, "output.json")
-	stdTrace := filepath.Join(jobPath, "trace.log")
-	statusFile := filepath.Join(jobPath, "status.json")
 	task := tasks.EzbTasks{}
 	task.UUID = taskID
 	task.TokenID = tokenID
 	task.CreateDate = time.Now()
 	task.UpdateDate = time.Now()
 	task.Parameters = psParams
-	cmd := exec.Command("powershell", "-NoLogo", "-NonInteractive", "-Command", "&{", psscript, " ", psParams, "} 1>", stdOUT, " *>", stdTrace)
+	args := append([]string{conf.EZBWKS.ScriptInterpreter}, conf.EZBWKS.InterpreterParams...)
+	cmd := &exec.Cmd{
+		Path: conf.EZBWKS.ScriptInterpreter,
+		Args: append(args, filepath.Base(psscript)),
+	}
+	if filepath.Base(conf.EZBWKS.ScriptInterpreter) == conf.EZBWKS.ScriptInterpreter {
+		if lp, err := exec.LookPath(conf.EZBWKS.ScriptInterpreter); err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		} else {
+			cmd.Path = lp
+		}
+	}
+	cmd.Env = psParams
+	cmd.Dir = filepath.Dir(psscript)
+	//cmd.ctx = ctx
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 	cmd.Start()
 	task.PID = cmd.Process.Pid
 	task.Status = tasks.TaksStatus(int(tasks.RUNNING))
 	c.JSON(http.StatusOK, task)
-	go waitTask(cmd, &task, statusFile)
+	go waitTask(cmd, &task, jobPath, &stdout, &stderr)
 }
 
-func waitTask(cmd *exec.Cmd, task *tasks.EzbTasks, statusFile string) {
+func waitTask(cmd *exec.Cmd, task *tasks.EzbTasks, jobPath string, stdout, stderr *bytes.Buffer) {
 	ta, _ := json.Marshal(task)
-	ioutil.WriteFile(statusFile, ta, 0600)
+	ioutil.WriteFile(filepath.Join(jobPath, "status.json"), ta, 0600)
 	cmd.Wait()
 	task.Status = tasks.TaksStatus(int(tasks.FINISH))
 	task.UpdateDate = time.Now()
 	ta, _ = json.Marshal(task)
-	ioutil.WriteFile(statusFile, ta, 0600)
+	ioutil.WriteFile(filepath.Join(jobPath, "status.json"), ta, 0600)
+	if stderr.Len() != 0 {
+		ioutil.WriteFile(filepath.Join(jobPath, "trace.log"), stderr.Bytes(), 0600)
+	}
+	if stdout.Len() != 0 {
+		ioutil.WriteFile(filepath.Join(jobPath, "output.json"), stdout.Bytes(), 0600)
+	}
 }

@@ -35,6 +35,8 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBPKI.Network.Port = 5010
 		conf.TLS.SAN = []string{fqdn}
 		conf.EZBWKS.ServiceName = "ezb_wks"
+		conf.EZBWKS.ScriptInterpreter = "powershell.exe"
+		conf.EZBWKS.InterpreterParams = []string{"-NoLogo", "-NonInteractive", "-File"}
 		conf.EZBPKI.CaCert = "cert/ca.crt"
 		conf.EZBPKI.CaKey = "cert/ca.key"
 		conf.EZBPKI.Autosign = 1

@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	VERSION         = "1.0.0"
+	VERSION         = "1.1.0"
 	SERVICENAME     = "ezb_pki"
 	SERVICEFULLNAME = "ezBastion internal PKI"
 	CONFFILE        = "conf/config.toml"
