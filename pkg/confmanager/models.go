@@ -79,12 +79,14 @@ type EZBPKI struct {
 }
 
 type EZBWKS struct {
-	Network      Network `ini:"ezb_wks.listener" json:"listener" toml:"listener"`
-	ScriptPath   string  `ini:"scriptpath" json:"scriptpath" toml:"scriptpath" comment:"Full path of root folder where jobs are will be created."`
-	JobPath      string  `ini:"jobpath" json:"jobpath" toml:"jobpath" comment:"Full path of root folder where add your scripts."`
-	LimitWarning int     `ini:"limitwarning" json:"limitwarning" toml:"limitwarning" comment:"Goroutine number before add warning in log file, 0 for ni limit"`
-	LimitMax     int     `ini:"limitmax" json:"limitmax" toml:"limitmax" comment:"Goroutine number before reject api call with 429 <to many request>, 0 for ni limit"`
-	ServiceName  string  `ini:"name" json:"name" toml:"name" comment:"Service name"`
+	Network           Network  `ini:"ezb_wks.listener" json:"listener" toml:"listener"`
+	ScriptPath        string   `ini:"scriptpath" json:"scriptpath" toml:"scriptpath" comment:"Full path of root folder where jobs are will be created."`
+	JobPath           string   `ini:"jobpath" json:"jobpath" toml:"jobpath" comment:"Full path of root folder where add your scripts."`
+	LimitWarning      int      `ini:"limitwarning" json:"limitwarning" toml:"limitwarning" comment:"Goroutine number before add warning in log file, 0 for ni limit"`
+	LimitMax          int      `ini:"limitmax" json:"limitmax" toml:"limitmax" comment:"Goroutine number before reject api call with 429 <to many request>, 0 for ni limit"`
+	ServiceName       string   `ini:"name" json:"name" toml:"name" comment:"Service name"`
+	ScriptInterpreter string   `ini:"interpreter" json:"interpreter" toml:"interpreter" comment:"Binary used to execute the script, like Python, Perl, Ruby, Powershell.exe, pwsh ... Can be the full path or look in the path."`
+	InterpreterParams []string `ini:"interpreterparams" json:"interpreterparams" toml:"interpreterparams" comment:"Static interpreter parameters need between binary and script file. Powershell EX: ['-NoLogo', '-NonInteractive', '-File']"`
 }
 
 type MSSql struct {

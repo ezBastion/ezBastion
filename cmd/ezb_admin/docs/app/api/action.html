@@ -214,7 +214,8 @@
                         <form name="form_addMethode" class="form-horizontal ng-pristine ng-valid form-validation"
                             role="form" data-ng-submit="submitAddActionMethode()">
                             <div class="form-group">
-                                <label for="InputNewMethode_form_addmethode" class="col-sm-2 control-label">Methode: </label>
+                                <label for="InputNewMethode_form_addmethode" class="col-sm-2 control-label">Methode:
+                                </label>
                                 <span class="ui-select">
                                     <select id="InputNewMethode_form_addmethode" class="form-control" required
                                         ng-model="newMethode.ezbaccessid"
@@ -275,37 +276,33 @@
 
                                 </uib-tab>
                                 <uib-tab heading="ACCESS">
-                                    <!-- <form class="form-inline ng-pristine ng-valid" role="form" novalidate data-ng-submit="deprecated()">
+                                    <form class="form-horizontal ng-pristine ng-valid" role="form" novalidate
+                                        data-ng-submit="deprecated()">
                                         <div class="form-group ">
-                                                <h4>supersede this API by:</h4>
-                                            <label for="deprecated " class="col-sm-4 control-label">
-                                                new api number or 0 if not deprecated
-                                            </label>
-                                            <div class="col-sm-8">
-                                                <input type="number" class="form-control input-primary" id="deprecated" min="1" ng-model="branch.data.deprecated">
-                                            </div>
-                                        </div>
-                                        <div class="divider divider-dashed divider-lg pull-in "></div>
-                                        <div class="form-group">
-                                                <h4><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Anonymous API <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h4>
-                                            <label for="" class="col-sm-4 control-label">No Token required to use it.</label>
-                                            <div class="col-sm-8">
-                                                <label class="ui-switch ui-switch-success  ui-switch-lg">
-                                                    <input type="checkbox" ng-checked="branch.data.anonymous" ng-model="branch.data.anonymous">
+                                            <div class="col-xs-1">
+                                                <label class="ui-switch ui-switch-success  ui-switch-sm">
+                                                    <input type="checkbox" ng-checked="branch.data.polling"
+                                                        ng-model="branch.data.polling">
                                                     <i></i>
                                                 </label>
                                             </div>
+                                            <span>Asynchronous polling</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-xs-1">
+                                                <label ng-if="canDisable"
+                                                    class="ui-switch ui-switch-success  ui-switch-sm">
+                                                    <input type="checkbox" ng-checked="branch.data.anonymous"
+                                                        ng-model="branch.data.anonymous">
+                                                    <i></i>
+                                                </label>
+                                            </div>
+                                            <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                                Anonymous API </span>
                                         </div>
                                         <div class="divider "></div>
                                         <button type="submit" class="btn btn-success  btn-xs">Save</button>
-                                    </form> -->
-                                    <h4><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Anonymous API <i
-                                            class="fa fa-exclamation-triangle" aria-hidden="true"></i></h4>
-                                    <label ng-if="canDisable" class="ui-switch ui-switch-success ui-switch-sm">
-                                        <input type="checkbox" ng-checked="branch.data.anonymous"
-                                            ng-model="branch.data.anonymous" ng-click="anonymousBranch(branch)">
-                                        <i></i>
-                                    </label>
+                                    </form>
                                 </uib-tab>
                                 <uib-tab heading="PATH &amp; QUERY">
 

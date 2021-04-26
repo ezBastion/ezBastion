@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"ezBastion/pkg/confmanager"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,6 +18,26 @@ import (
 	"golang.org/x/text/transform"
 )
 
+func getCharset(seeker io.ReadSeeker) (string, error) {
+	// At most the first 512 bytes of data are used:
+	// https://golang.org/src/net/http/sniff.go?s=646:688#L11
+	buff := make([]byte, 512)
+
+	_, err := seeker.Seek(0, io.SeekStart)
+	if err != nil {
+		return "", err
+	}
+
+	bytesRead, err := seeker.Read(buff)
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+
+	// Slice to remove fill-up zero values which cause a wrong content type detection in the next step
+	buff = buff[:bytesRead]
+
+	return http.DetectContentType(buff), nil
+}
 func GetResult(c *gin.Context) {
 	tokenID := c.GetHeader("x-ezb-tokenid")
 	xtrack := c.GetHeader("X-Track")
@@ -39,18 +60,37 @@ func GetResult(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, errors.New("#I0002"))
 		return
 	}
+	f, _ := os.Open(file)
+	rs := io.ReadSeeker(f)
+	charset, _ := getCharset(rs)
 
-	raw, _ := ioutil.ReadFile(file)
-	// Make an tranformer that converts MS-Win default to UTF8:
-	win16be := unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
-	// Make a transformer that is like win16be, but abides by BOM:
-	utf16bom := unicode.BOMOverride(win16be.NewDecoder())
+	logg.Debug(charset)
+	var decoded []byte
+	switch charset {
+	case "text/plain; charset=utf-16be":
+		raw, _ := ioutil.ReadFile(file)
+		// Make an tranformer that converts MS-Win default to UTF8:
+		win16be := unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
+		// Make a transformer that is like win16be, but abides by BOM:
+		utf16bom := unicode.BOMOverride(win16be.NewDecoder())
+		// Make a Reader that uses utf16bom:
+		unicodeReader := transform.NewReader(bytes.NewReader(raw), utf16bom)
+		decoded, _ = ioutil.ReadAll(unicodeReader)
+		break
+	case "text/plain; charset=utf-16le":
+		raw, _ := ioutil.ReadFile(file)
+		// Make an tranformer that converts MS-Win default to UTF8:
+		win16le := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
+		utf16bom := unicode.BOMOverride(win16le.NewDecoder())
+		// Make a Reader that uses utf16bom:
+		unicodeReader := transform.NewReader(bytes.NewReader(raw), utf16bom)
+		decoded, _ = ioutil.ReadAll(unicodeReader)
+		break
+	default:
+		decoded, _ = ioutil.ReadFile(file)
+		break
+	}
 
-	// Make a Reader that uses utf16bom:
-	unicodeReader := transform.NewReader(bytes.NewReader(raw), utf16bom)
-
-	// decode and print:
-	decoded, _ := ioutil.ReadAll(unicodeReader)
 	c.Data(http.StatusOK, "application/json", decoded)
 
 }

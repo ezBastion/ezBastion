@@ -11,10 +11,7 @@ type EzbTasks struct {
 	Status     string    `json:"status"`
 	TokenID    string    `json:"tokenid"`
 	PID        int       `json:"pid"`
-	Parameters string    `json:"parameters"`
-	// StatusURL  string    `json:"statusurl"`
-	// LogURL     string    `json:"logurl"`
-	// ResultURL  string    `json:"resulturl"`
+	Parameters []string  `json:"parameters"`
 }
 
 type taksStatus int

@@ -2,6 +2,15 @@
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
+## 1.1.0 - 2021-04-25
+**Interpreter compatibility**
+- Support Powershell core scripts (close #9)
+- Support Python scripts
+
+## 1.0.0 - 2021-03-20
+:warning: **BREAKING CHANGE** :warning:
+- Remove cli setup
+- Configuration file from Json to Toml
 
 ## 0.3.0 - 2019-11-10
 - Add command line option to create administrator account.
