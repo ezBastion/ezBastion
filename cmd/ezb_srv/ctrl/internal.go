@@ -25,7 +25,6 @@ import (
 	"path"
 
 	"ezBastion/cmd/ezb_srv/models"
-
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
@@ -180,7 +179,6 @@ func GetXtrack(c *gin.Context) {
 	trace.Controller = "internal"
 	trace.Action = "getxtrack"
 	var Url *url.URL
-	var respStruct map[string]interface{}
 	Url, err := url.Parse(worker.Fqdn)
 	Url.Path = fmt.Sprintf("/log/xtrack/%s", param)
 	if err != nil {
@@ -200,7 +198,6 @@ func GetXtrack(c *gin.Context) {
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
 		SetHeader("X-Track", trace.Xtrack).
-		SetResult(&respStruct).
 		Get(Url.String())
 	if err != nil {
 		log.Error(err)
@@ -208,9 +205,9 @@ func GetXtrack(c *gin.Context) {
 		return
 	}
 	if resp.StatusCode() < 300 {
-		c.JSON(resp.StatusCode(), respStruct)
+		c.Data(resp.StatusCode(), "application/json", resp.Body())
 	} else {
-		c.JSON(resp.StatusCode(), resp.String())
+		c.JSON(resp.StatusCode(), gin.H{"error": resp.String()})
 	}
 }
 
@@ -223,13 +220,11 @@ func GetLog(c *gin.Context) {
 	conf := c.MustGet("configuration").(*confmanager.Configuration)
 	worker := c.MustGet("worker").(models.EzbWorkers)
 	exPath := c.MustGet("exPath").(string)
-	param := c.MustGet("params").(string)
 	trace.Controller = "internal"
 	trace.Action = "getlog"
 	var Url *url.URL
-	var respStruct map[string]interface{}
 	Url, err := url.Parse(worker.Fqdn)
-	Url.Path = fmt.Sprintf("/log/last/%s", param)
+	Url.Path = "/log/last"
 	if err != nil {
 		logg.Error(err)
 		c.JSON(500, err)
@@ -247,7 +242,6 @@ func GetLog(c *gin.Context) {
 	resp, err := client.R().
 		SetHeader("Accept", "application/json").
 		SetHeader("X-Track", trace.Xtrack).
-		SetResult(&respStruct).
 		Get(Url.String())
 	if err != nil {
 		log.Error(err)
@@ -255,9 +249,9 @@ func GetLog(c *gin.Context) {
 		return
 	}
 	if resp.StatusCode() < 300 {
-		c.JSON(resp.StatusCode(), respStruct)
+		c.Data(resp.StatusCode(), "application/json", resp.Body())
 	} else {
-		c.JSON(resp.StatusCode(), resp.String())
+		c.JSON(resp.StatusCode(), gin.H{"error": resp.String()})
 	}
 }
 
@@ -403,7 +397,51 @@ func GetScripts(c *gin.Context) {
 		c.JSON(resp.StatusCode(), resp.String())
 	}
 }
-
+func GetVersion(c *gin.Context) {
+	trace := c.MustGet("trace").(models.EzbLogs)
+	logg := log.WithFields(log.Fields{
+		"controller": "internal",
+		"xtrack":     trace.Xtrack,
+	})
+	conf := c.MustGet("configuration").(*confmanager.Configuration)
+	worker := c.MustGet("worker").(models.EzbWorkers)
+	exPath := c.MustGet("exPath").(string)
+	trace.Controller = "internal"
+	trace.Action = "getload"
+	var Url *url.URL
+	var respStruct map[string]interface{}
+	Url, err := url.Parse(worker.Fqdn)
+	Url.Path = "/healthcheck/version"
+	if err != nil {
+		logg.Error(err)
+		c.JSON(500, err)
+		return
+	}
+	cert, err := tls.LoadX509KeyPair(path.Join(exPath, conf.TLS.PublicCert), path.Join(exPath, conf.TLS.PrivateKey))
+	if err != nil {
+		logg.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+	client := resty.New()
+	client.SetRootCertificate(path.Join(exPath, conf.EZBPKI.CaCert))
+	client.SetCertificates(cert)
+	resp, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetHeader("X-Track", trace.Xtrack).
+		SetResult(&respStruct).
+		Get(Url.String())
+	if err != nil {
+		log.Error(err)
+		c.JSON(500, err)
+		return
+	}
+	if resp.StatusCode() < 300 {
+		c.JSON(resp.StatusCode(), respStruct)
+	} else {
+		c.JSON(resp.StatusCode(), resp.String())
+	}
+}
 func GetConf(c *gin.Context) {
 	trace := c.MustGet("trace").(models.EzbLogs)
 	logg := log.WithFields(log.Fields{

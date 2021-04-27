@@ -21,6 +21,6 @@ func Routes(route *gin.Engine) {
 	r := route.Group("/log")
 	{
 		r.GET("/xtrack/:id", getXtrack)
-		r.GET("/last/:id", getLast)
+		r.GET("/last", getLast)
 	}
 }

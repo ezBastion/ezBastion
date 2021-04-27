@@ -21,9 +21,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ConfigMiddleware(conf confmanager.Configuration) gin.HandlerFunc {
+func ConfigMiddleware(conf confmanager.Configuration, version, logfile string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("conf", conf)
+		c.Set("version", version)
+		c.Set("logfile", logfile)
 		c.Next()
 	}
 }

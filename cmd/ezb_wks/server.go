@@ -46,7 +46,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(ginrus.Ginrus(log.StandardLogger(), time.RFC3339, true))
-	r.Use(Middleware.ConfigMiddleware(conf))
+	r.Use(Middleware.ConfigMiddleware(conf, VERSION, LOGFILE))
 	r.Use(Middleware.Limit)
 
 	healthCheck.Routes(r)

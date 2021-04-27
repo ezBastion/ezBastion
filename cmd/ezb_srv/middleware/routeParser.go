@@ -196,49 +196,22 @@ func RouteParser(c *gin.Context) {
 		// fmt.Println("routeparser ok use api: ", matchApiID)
 	}
 	if routeType == "internal" {
-
-		action := path[3]
-		trace.Action = action
-		if action == "log" {
-			cmd := path[4]
-			switch cmd {
-			case "xtrack":
-				c.Set("params", path[5])
-				break
-			case "last":
-				c.Set("params", path[5])
-				break
-			}
+		if len(path) == 6 && path[3] == "log" && path[4] == "xtrack" {
+			c.Set("params", path[5])
 		}
-		// switch action {
-		// case "log":
-		// 	switch cmd {
-		// 	case "xtrack":
-		// 		ctrl.GetXtrack()
-		// 		break
-		// 	case "last":
-		// 		ctrl.GetLog()
-		// 		break
-		// 	}
-		// 	break
-		// case "healthcheck":
-		// 	switch cmd {
-		// 	case "jobs":
-		// 		ctrl.GetJobs()
-		// 		break
-		// 	case "load":
-		// 		ctrl.GetLoad()
-		// 		break
-		// 	case "scripts":
-		// 		ctrl.GetScripts()
-		// 		break
-		// 	case "conf":
-		// 		ctrl.GetConf()
-		// 		break
 
-		// 	}
-		// 	break
-		// }
+		//action := path[3]
+		//trace.Action = action
+		//if action == "log" {
+		//	if path[4] == "xtrack"   {
+		//		if len(path) != 6 {
+		//			c.AbortWithError(http.StatusNotFound, errors.New("#P0007"))
+		//			return
+		//		}
+		//		c.Set("params", path[5])
+		//	}
+		//}
+
 		c.Set("trace", trace)
 	}
 	c.Next()

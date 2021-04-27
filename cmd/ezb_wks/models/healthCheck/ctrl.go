@@ -48,6 +48,10 @@ func getConf(c *gin.Context) {
 	conf, _ := c.MustGet("conf").(confmanager.Configuration)
 	c.JSON(http.StatusOK, conf)
 }
+func getVersion(c *gin.Context) {
+	version, _ := c.MustGet("version").(string)
+	c.JSON(http.StatusOK, gin.H{"version": version})
+}
 
 // func setConf(c *gin.Context)  {
 // 	conf, _ := c.MustGet("conf").(models.Configuration)
