@@ -17,16 +17,19 @@ package wkslog
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
+
+	"ezBastion/pkg/setupmanager"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -41,12 +44,11 @@ func dealwithErr(err error) {
 }
 func getXtrack(c *gin.Context) {
 	xtrack := c.Param("id")
-	ex, _ := os.Executable()
-	exPath := filepath.Dir(ex)
-	// t := time.Now().UTC()
-	// l := fmt.Sprintf("log/ezb_wks-%d%d.log", t.Year(), t.YearDay())
-	var logfile []string
-	err := filepath.Walk(path.Join(exPath, "/log"), func(path string, info os.FileInfo, err error) error {
+	var logs []Logs
+	exePath, _ := setupmanager.ExePath()
+	logfile, _ := c.MustGet("logfile").(string)
+
+	err := filepath.Walk(path.Join(exePath, logfile), func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			b, err := ioutil.ReadFile(path)
 			if err == nil {
@@ -59,7 +61,11 @@ func getXtrack(c *gin.Context) {
 						line := 1
 						for scanner.Scan() {
 							if strings.Contains(scanner.Text(), xtrack) {
-								logfile = append(logfile, scanner.Text())
+								c := Logs{}
+								err = json.Unmarshal(scanner.Bytes(), &c)
+								if err == nil && c.Xtrack == xtrack {
+									logs = append(logs, c)
+								}
 							}
 							line++
 						}
@@ -72,16 +78,25 @@ func getXtrack(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNoContent, err.Error())
 	}
-	if len(logfile) == 0 {
+	if len(logs) == 0 {
 		c.JSON(http.StatusNoContent, "x-track not found")
 	}
 
-	c.JSON(http.StatusOK, logfile)
+	c.JSON(http.StatusOK, logs)
 
 }
 func getLast(c *gin.Context) {
-	requestLogger := log.WithFields(log.Fields{"request_id": "request_id", "user_ip": "user_ip"})
-	requestLogger.Info("request done!")
-	c.JSON(http.StatusOK, "ret")
+
+	exePath, _ := setupmanager.ExePath()
+	logfile, _ := c.MustGet("logfile").(string)
+	file, _ := ioutil.ReadFile(path.Join(exePath, logfile))
+	file = bytes.ReplaceAll(file, []byte("\r"), []byte(""))
+	file = bytes.ReplaceAll(file, []byte("\n"), []byte(","))
+	file = file[:len(file)-1]
+	start := []byte("[")
+	end := []byte("]")
+	file = append(start, file...)
+	file = append(file, end...)
+	c.Data(http.StatusOK, "application/json", file)
 
 }

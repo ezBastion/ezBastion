@@ -24,5 +24,6 @@ func Routes(route *gin.Engine) {
 		r.GET("/load", getLoad)
 		r.GET("/scripts", getScripts)
 		r.GET("/conf", getConf)
+		r.GET("/version", getVersion)
 	}
 }

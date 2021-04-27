@@ -141,6 +141,9 @@ func sendAction(c *gin.Context) {
 			case "conf":
 				ctrl.GetConf(c)
 				break
+			case "version":
+				ctrl.GetVersion(c)
+				break
 			}
 			break
 		}

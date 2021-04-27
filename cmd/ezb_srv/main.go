@@ -35,7 +35,7 @@ var (
 )
 
 const (
-	VERSION         = "1.1.0"
+	VERSION         = "1.2.0"
 	SERVICENAME     = "ezb_srv"
 	SERVICEFULLNAME = "ezBastion API gateway"
 	CONFFILE        = "conf/config.toml"
