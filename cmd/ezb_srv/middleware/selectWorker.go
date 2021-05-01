@@ -30,6 +30,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	mutex sync.Mutex
+	wg    sync.WaitGroup
+)
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -46,8 +51,7 @@ func SelectWorker(conf *confmanager.Configuration) gin.HandlerFunc {
 		routeType, _ := c.MustGet("routeType").(string)
 
 		if routeType == "worker" {
-			ac, _ := c.Get("action")
-			action := ac.(models.EzbActions)
+			action := c.MustGet("action").(models.EzbActions)
 			workers := action.Workers
 			nbW := len(workers)
 			if nbW == 0 {
@@ -70,12 +74,11 @@ func SelectWorker(conf *confmanager.Configuration) gin.HandlerFunc {
 			}
 			if nbW > 1 {
 				var enableWorkers []models.EzbWorkers
-				//var keys []int
-				var wg sync.WaitGroup
+
 				for _, w := range workers {
 					if w.Enable {
 						wg.Add(1)
-						go checksumISok(&w, &action, &wg, &enableWorkers)
+						go checksumISok(w, action, &enableWorkers)
 					}
 				}
 				wg.Wait()
@@ -89,18 +92,18 @@ func SelectWorker(conf *confmanager.Configuration) gin.HandlerFunc {
 				// switch on config worker algo
 				switch conf.EZBSRV.LB {
 				case "rrb":
-					sort.Slice(workers, func(i, j int) bool {
-						return workers[i].LastRequest.Unix() < workers[j].LastRequest.Unix()
+					sort.SliceStable(enableWorkers, func(i, j int) bool {
+						return enableWorkers[i].LastRequest.Unix() < enableWorkers[j].LastRequest.Unix()
 					})
-					worker = workers[0]
+					worker = enableWorkers[0]
 					break
 				default:
 					//random
-					j := rand.Intn(len(workers))
-					if j < len(workers) {
-						worker = workers[j]
+					j := rand.Intn(len(enableWorkers))
+					if j < len(enableWorkers) {
+						worker = enableWorkers[j]
 					} else {
-						worker = workers[j-1]
+						worker = enableWorkers[j-1]
 					}
 					break
 				}
@@ -117,10 +120,13 @@ func SelectWorker(conf *confmanager.Configuration) gin.HandlerFunc {
 	}
 }
 
-func checksumISok(w *models.EzbWorkers, action *models.EzbActions, wg *sync.WaitGroup, enableWorkers *[]models.EzbWorkers) bool {
-	defer wg.Done()
+func checksumISok(w models.EzbWorkers, action models.EzbActions, enableWorkers *[]models.EzbWorkers) bool {
+
 	if action.Jobs.Checksum == "" {
-		*enableWorkers = append(*enableWorkers, *w)
+		mutex.Lock()
+		*enableWorkers = append(*enableWorkers, w)
+		mutex.Unlock()
+		wg.Done()
 		return true
 	}
 	/*
@@ -131,6 +137,9 @@ func checksumISok(w *models.EzbWorkers, action *models.EzbActions, wg *sync.Wait
 			Checksum string `json:checksum`
 		}
 	*/
-	*enableWorkers = append(*enableWorkers, *w)
+	mutex.Lock()
+	*enableWorkers = append(*enableWorkers, w)
+	mutex.Unlock()
+	wg.Done()
 	return true
 }
