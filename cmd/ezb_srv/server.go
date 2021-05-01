@@ -62,7 +62,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	r.Use(middleware.Store(storage, &conf))
 	r.Use(middleware.RouteParser)
 	r.Use(middleware.GetParams(storage, &conf))
-	r.Use(middleware.SelectWorker)
+	r.Use(middleware.SelectWorker(&conf))
 	r.Use(location.Default())
 	r.GET("*a", sendAction)
 	r.POST("*a", sendAction)
