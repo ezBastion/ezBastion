@@ -56,6 +56,7 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBSRV.Network.Port = 5000
 		conf.EZBSRV.CacheL1 = 600
 		conf.EZBSRV.ExternalURL = fmt.Sprintf("http://%s:5000/", fqdn)
+		conf.EZBSRV.LB = "rand"
 		conf.EZBWKS.Network.FQDN = fqdn
 		conf.EZBWKS.Network.Port = 5100
 		conf.EZBSTA.Network.FQDN = fqdn

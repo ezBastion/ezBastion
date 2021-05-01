@@ -52,6 +52,7 @@ type EZBSRV struct {
 	Network     Network `ini:"ezb_srv.listener" json:"listener" toml:"listener"`
 	ExternalURL string  `ini:"externalurl" json:"externalurl" toml:"externalurl" comment:"ezBastion URL used by API clients. From front of DNS alias, VIP, load balancing... Like https://myserviceapi.corporate.com/"`
 	CacheL1     int     `ini:"cacheL1" json:"cacheL1" toml:"cacheL1" comment:"Cache memory duration in second. RAM cache for high performance, used to unload database. Longer value for less DB request but increase waiting time to apply modification coming from admin console."`
+	LB          string  `ini:"loadbalancing" json:"loadbalancing" toml:"loadbalancing" comment:"[rand|rrb]Workers load balancing algorithms (random or round robin)"`
 }
 type EZBSTA struct {
 	Network Network `ini:"ezb_sta.listener" json:"listener" toml:"listener"`

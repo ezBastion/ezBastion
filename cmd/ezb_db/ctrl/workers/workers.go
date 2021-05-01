@@ -18,6 +18,7 @@ package workers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"ezBastion/cmd/ezb_db/models"
 
@@ -82,6 +83,7 @@ func Add(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	Raw.Register = time.Now()
 	var nbWorker int
 	db.Model(&models.EzbWorkers{}).Count(&nbWorker)
 	if nbWorker < wl || wl == 0 {
@@ -207,6 +209,7 @@ func IncRequest(c *gin.Context) {
 		return
 	}
 	Workers.Request++
+	Workers.LastRequest = time.Now()
 	db.Save(&Workers)
 	c.JSON(http.StatusOK, Workers)
 }
