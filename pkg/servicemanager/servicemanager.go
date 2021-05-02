@@ -126,7 +126,8 @@ func InstallService(name, desc, exePath string) error {
 		log.Errorln(errormsg)
 		return fmt.Errorf(errormsg)
 	}
-	s, err = m.CreateService(name, exeFullPath, mgr.Config{DisplayName: desc}, "is", "auto-started")
+	displayName := fmt.Sprintf("%s (%s)", desc, name)
+	s, err = m.CreateService(name, exeFullPath, mgr.Config{DisplayName: displayName, DelayedAutoStart: true, StartType: 2}, "is", "auto-started")
 	if err != nil {
 		errormsg = err.Error()
 		log.Errorln(errormsg)

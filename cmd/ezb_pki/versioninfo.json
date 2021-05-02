@@ -4,13 +4,13 @@
                                               "Major":  1,
                                               "Minor":  1,
                                               "Patch":  0,
-                                              "Build":  264
+                                              "Build":  265
                                           },
                           "ProductVersion":  {
                                                  "Major":  1,
                                                  "Minor":  1,
                                                  "Patch":  0,
-                                                 "Build":  264
+                                                 "Build":  265
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "All in one binary.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion pki service.",
-                           "FileVersion":  "v1.1.0.264",
+                           "FileVersion":  "v1.1.0.265",
                            "InternalName":  "ezb_pki.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2020 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion PKI",
-                           "ProductVersion":  "v1.1.0.264",
+                           "ProductVersion":  "v1.1.0.265",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {

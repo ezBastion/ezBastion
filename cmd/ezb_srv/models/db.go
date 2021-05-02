@@ -94,9 +94,6 @@ func GetViewApi(s cache.Storage, conf *confmanager.Configuration, token, xtrack 
 		if strings.ToUpper(vapis[i].Account) == strings.ToUpper(token) {
 			vapisFiltred = append(vapisFiltred, vapis[i])
 		}
-		if vapis[i].Accountid == 0 {
-			vapisFiltred = append(vapisFiltred, vapis[i])
-		}
 	}
 
 	return vapisFiltred, nil

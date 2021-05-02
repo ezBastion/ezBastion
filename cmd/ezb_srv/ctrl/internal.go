@@ -347,9 +347,11 @@ func GetJobs(c *gin.Context) {
 }
 
 type wksScript struct {
-	Name     string `json:"name"`
-	Path     string `json:"path"`
-	Checksum string `json:"checksum"`
+	Name       string `json:"name"`
+	Path       string `json:"path"`
+	Checksum   string `json:"checksum"`
+	WorkerName string `json:"workername"`
+	WorkerID   int    `json:"workerid"`
 }
 
 func GetScripts(c *gin.Context) {
@@ -390,6 +392,10 @@ func GetScripts(c *gin.Context) {
 		log.Error(err)
 		c.JSON(500, err)
 		return
+	}
+	for i, _ := range respStruct {
+		respStruct[i].WorkerID = worker.ID
+		respStruct[i].WorkerName = worker.Name
 	}
 	if resp.StatusCode() < 300 {
 		c.JSON(resp.StatusCode(), respStruct)

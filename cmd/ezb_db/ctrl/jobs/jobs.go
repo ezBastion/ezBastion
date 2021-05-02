@@ -50,7 +50,38 @@ func Update(c *gin.Context) {
 
 func Remove(c *gin.Context) {
 	var Raw models.EzbJobs
-	tools.Removeraw(c, &Raw)
+	var actions []models.EzbActions
+	db, err := tools.Getdbconn(c)
+	if err != "" {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	id := c.Param("id")
+	if tools.StrIsInt(id) == false {
+		c.JSON(http.StatusConflict, "WRONG PARAMETER")
+		return
+	}
+	if err := db.First(&Raw, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	if err := db.Where("ezb_jobs_id = ?", Raw.ID).Find(&actions).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	for _, action := range actions {
+		action.EzbJobsID = 0
+		if err := db.Save(&action).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+	if err := db.Delete(Raw).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusNoContent, "")
 }
 
 func Enable(c *gin.Context) {

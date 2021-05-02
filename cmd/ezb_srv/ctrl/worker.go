@@ -69,7 +69,7 @@ func SendAction(c *gin.Context, storage cache.Storage) {
 	params.Meta = meta
 
 	// worker.Request++
-	tool.IncRequest(&worker, c)
+	tool.IncRequest(c)
 	var respStruct interface{}
 	if action.Jobs.Cache > 0 && c.Request.Method == "GET" {
 		response, ok := models.GetResult(storage, key)

@@ -2,6 +2,11 @@
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
+## 1.2.1 - 2021-05-01
+- close #4
+- add worker round robin LB algorithm
+
+
 ## 1.2.0 - 2021-04-27
 - close #10
 - add worker management endpoint

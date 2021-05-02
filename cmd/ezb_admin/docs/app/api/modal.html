@@ -42,9 +42,8 @@
     <div class="modal-header">
         <h3>Delete {{sectionName | lowercase }}.</h3>
     </div>
-    <div class="modal-body">
-      
-            delete {{sectionName | lowercase}} <strong> {{name}} </strong> ?
+    <div class="modal-body">      
+        delete {{sectionName | lowercase}} <strong> {{name}} </strong> ?
     </div>
     <div class="modal-footer">
         <button class="btn btn-danger" ng-click="ok()">Delete</button>
@@ -78,6 +77,34 @@
     </div>
 </script>
 
+
+<script type="text/ng-template" id="checksum.html">
+    <div class="modal-header">
+        <h3>Scripts checksum by worker.</h3>
+        <p>{{script.path}}</p>
+    </div>
+    <div class="modal-body">    
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Worker</th>
+                    <th>Checksum</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="s in scripts | filter:{path: script.path} | orderBy:'workername'" ng-class="{'danger': s.checksum != script.checksum , 'success': s.checksum == script.checksum }"  >
+                <td>{{s.workername}}</td>
+                <td>{{s.checksum}}</td>
+            </tr>
+        </tbody>
+        </table>  
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="cancel()">Close</button>
+    </div>        
+</script>
+
 <script type="text/ng-template" id="AddModal.html">
     <div class="modal-header">
         <h3>Add new {{sectionName | lowercase}}.</h3>
@@ -106,20 +133,47 @@
 
 <script type="text/ng-template" id="AddScriptModal.html">
     <div class="modal-header">
-        <h3>Add new {{sectionName | lowercase}}.</h3>
+        <h3>Add new script.</h3>
+        <p>Search from all workers.</p>
     </div>
     <div class="modal-body">
         <form class="form-horizontal ng-pristine ng-valid" role="form">
+            <div class="form-group">
+                <label for="chooseScript" class="col-sm-2 control-label">Search</label>
+                <div class="col-sm-10">
+                    <input type="text" id="chooseScript"
+                    ng-model="scriptToAdd"
+                    uib-typeahead="(a.path +' ('+a.workername +')' ) for a in scripts | filter:$viewValue | limitTo:10"
+                    typeahead-on-select="addScript($item, $model, $label); "
+                    typeahead-editable="false"
+                    typeahead-min-length="0"
+                    class="form-control"
+                    placeholder="find script by name"
+                    autocomplete="off">
+                </div>
+            </div>                       
             <div class="form-group">
                 <label for="inputName" class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="inputName" placeholder="short name" ng-model="item.name">
                 </div>
-            </div>                       
+            </div>
             <div class="form-group">
                 <label for="inputDescription" class="col-sm-2 control-label">Description</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="inputDescription" placeholder="description"  ng-model="item.comment">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPath" class="col-sm-2 control-label">Path</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputPath" placeholder=""  ng-model="item.path">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputChecksum" class="col-sm-2 control-label">Checksum</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputChecksum" placeholder=""  ng-model="item.checksum">
                 </div>
             </div>
         </form>

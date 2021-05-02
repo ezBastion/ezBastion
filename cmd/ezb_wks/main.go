@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	VERSION         = "1.2.0"
+	VERSION         = "1.2.1"
 	SERVICENAME     = "ezb_wks"
 	SERVICEFULLNAME = "ezBastion worker service."
 	CONFFILE        = "conf/config.toml"

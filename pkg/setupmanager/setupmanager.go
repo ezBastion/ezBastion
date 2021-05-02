@@ -179,9 +179,7 @@ func Setup(exePath, confPath, SERVICENAME string) error {
 	} else if SERVICENAME == "ezb_setup" {
 		return nil
 	} else {
-		if os.IsNotExist(ficacert) {
-			log.Fatalln("PKI public certificate not found")
-		}
+
 		if os.IsNotExist(fipriv) || os.IsNotExist(fipub) {
 			ezbPKI := fmt.Sprintf("%s:%d", conf.EZBPKI.Network.FQDN, conf.EZBPKI.Network.Port)
 			conn, err := net.Dial("tcp", ezbPKI)

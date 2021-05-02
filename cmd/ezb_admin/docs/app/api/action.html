@@ -278,7 +278,7 @@
                                 <uib-tab heading="ACCESS">
                                     <form class="form-horizontal ng-pristine ng-valid" role="form" novalidate
                                         data-ng-submit="deprecated()">
-                                        <div class="form-group ">
+                                        <div class="form-group " ng-if="branch.data.access.id == 3">
                                             <div class="col-xs-1">
                                                 <label class="ui-switch ui-switch-success  ui-switch-sm">
                                                     <input type="checkbox" ng-checked="branch.data.polling"
@@ -503,7 +503,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">INFO</div>
                             <div class="panel-body">
-                                <h4>Variables sent to script:</h4>
+                                <h4>Variables sent to script environment:</h4>
                                 <dl class="dl-horizontal">
                                     <dt>tokenid:</dt>
                                     <dd>string</dd>
