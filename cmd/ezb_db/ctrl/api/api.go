@@ -72,14 +72,13 @@ func Find(c *gin.Context) {
 					} else if t == "s" {
 						a.RGX = fmt.Sprintf("%s/([a-z0-9A-Z-]+)", a.RGX)
 					} else {
-						// error
+						// error just trim other value
 					}
 
 				} else {
 					a.RGX = fmt.Sprintf("%s/%s", a.RGX, str)
 				}
 			}
-			a.URL = fmt.Sprintf("%s/%s", a.URL, r.Path)
 		}
 		a.RGX = fmt.Sprintf("%s$", a.RGX)
 		Ret = append(Ret, a)

@@ -3,14 +3,14 @@
                           "FileVersion":  {
                                               "Major":  1,
                                               "Minor":  1,
-                                              "Patch":  0,
-                                              "Build":  421
+                                              "Patch":  1,
+                                              "Build":  423
                                           },
                           "ProductVersion":  {
                                                  "Major":  1,
                                                  "Minor":  1,
-                                                 "Patch":  0,
-                                                 "Build":  421
+                                                 "Patch":  1,
+                                                 "Build":  423
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Community edition.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion SQLite service.",
-                           "FileVersion":  "v1.1.0.421",
+                           "FileVersion":  "v1.1.1.423",
                            "InternalName":  "ezb_db.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2019 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion db service",
-                           "ProductVersion":  "v1.1.0.421",
+                           "ProductVersion":  "v1.1.1.423",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {
