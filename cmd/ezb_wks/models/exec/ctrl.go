@@ -103,7 +103,7 @@ func runJob(c *gin.Context, psscript string, Params []string) {
 	if stderr.Len() != 0 {
 		errStr := stderr.String()
 		logg.Error("#E0001", errStr)
-		c.String(http.StatusInternalServerError, "#E0001 Powershell error: %s", errStr)
+		c.String(http.StatusInternalServerError, "#E0001 script error: %s", errStr)
 		return
 	}
 	if stdout.Len() != 0 {
