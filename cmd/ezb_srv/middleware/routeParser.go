@@ -140,7 +140,7 @@ func RouteParser(c *gin.Context) {
 		}
 		if len(matchApiID) == 0 {
 			logg.Error("NO API MATCH ", escapedPath)
-			c.AbortWithError(http.StatusForbidden, errors.New("#P0005"))
+			c.AbortWithError(http.StatusNotFound, errors.New("#P0005"))
 			return
 		}
 		if len(matchApiID) > 1 {

@@ -3,14 +3,14 @@
                           "FileVersion":  {
                                               "Major":  1,
                                               "Minor":  2,
-                                              "Patch":  1,
-                                              "Build":  953
+                                              "Patch":  2,
+                                              "Build":  954
                                           },
                           "ProductVersion":  {
                                                  "Major":  1,
                                                  "Minor":  2,
-                                                 "Patch":  1,
-                                                 "Build":  953
+                                                 "Patch":  2,
+                                                 "Build":  954
                                              },
                           "FileFlagsMask":  "3f",
                           "FileFlags ":  "00",
@@ -22,14 +22,14 @@
                            "Comments":  "Front microservice.",
                            "CompanyName":  "ezBastion",
                            "FileDescription":  "ezBastion front service.",
-                           "FileVersion":  "v1.2.1.953",
+                           "FileVersion":  "v1.2.2.954",
                            "InternalName":  "ezb_srv.exe",
                            "LegalCopyright":  "Copyleft (AGPL) 2021 ezBastion",
                            "LegalTrademarks":  "",
                            "OriginalFilename":  "main.go",
                            "PrivateBuild":  "",
                            "ProductName":  "ezBastion SRV",
-                           "ProductVersion":  "v1.2.1.953",
+                           "ProductVersion":  "v1.2.2.954",
                            "SpecialBuild":  ""
                        },
     "VarFileInfo":  {
