@@ -66,6 +66,8 @@ type EzbActions struct {
 	Anonymous   bool           `json:"anonymous"`
 	Controllers EzbControllers `json:"controllers"`
 	Polling     bool           `gorm:"not null;default:'0'" json:"polling"`
+	IsMocked    bool           `json:"isMocked"`
+	Mock        string         `json:"mock"`
 
 	// EzbAccessID      int              `gorm:"default:'0'" json:"ezbaccessid" sql:"type:int REFERENCES ezb_access(id)"`
 	// Access           EzbAccess        `json:"access" gorm:"ForeignKey:ID;AssociationForeignKey:EzbAccessID;association_autoupdate:false;association_autocreate:false;association_save_reference:false;"`

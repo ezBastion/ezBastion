@@ -2,11 +2,11 @@
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
-## 1.2.2 - 2021-05-02
+## 1.3.0 - 2021-05-03
+- close #12
+- Add mock api
 - import script from worker
 - get/show script checksum
-
-## 1.2.1 - 2021-04-25
 - fix Asynchronous polling check box
 
 ## 1.2.0 - 2021-04-25

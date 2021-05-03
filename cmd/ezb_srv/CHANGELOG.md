@@ -2,6 +2,10 @@
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
+## 1.3.0 - 2021-05-03
+- close #12
+- Add mock api
+
 ## 1.2.0 - 2021-04-27
 - close #10
 - add worker management endpoint

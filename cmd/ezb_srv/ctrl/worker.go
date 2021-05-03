@@ -71,6 +71,12 @@ func SendAction(c *gin.Context, storage cache.Storage) {
 	// worker.Request++
 	tool.IncRequest(c)
 	var respStruct interface{}
+	if action.IsMocked {
+		js := strings.NewReader(action.Mock)
+		json.NewDecoder(js).Decode(&respStruct)
+		c.JSON(200, respStruct)
+		return
+	}
 	if action.Jobs.Cache > 0 && c.Request.Method == "GET" {
 		response, ok := models.GetResult(storage, key)
 		if ok {
