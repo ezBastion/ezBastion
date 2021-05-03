@@ -52,6 +52,8 @@ type EzbActions struct {
 	Deprecated       int              `json:"deprecated" gorm:"not null; default:'0'"` //false or new action id
 	Anonymous        bool             `gorm:"not null;default:'0'" json:"anonymous"  `
 	Polling          bool             `gorm:"not null;default:'0'" json:"polling"`
+	IsMocked         bool             `json:"isMocked"`
+	Mock             string           `json:"mock"`
 }
 
 type EzbCollections struct {

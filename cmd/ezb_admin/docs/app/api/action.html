@@ -305,7 +305,6 @@
                                     </form>
                                 </uib-tab>
                                 <uib-tab heading="PATH &amp; QUERY">
-
                                     <form class="form-inline ng-pristine ng-valid" role="form" novalidate
                                         data-ng-submit="submitEditActionPathQuery()">
                                         <div class="form-group text-success">
@@ -360,6 +359,36 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">TAG FILTER</div> -->
                                 </uib-tab>
+                                <uib-tab heading="MOCK">
+                                    <form class="form-horizontal ng-pristine ng-valid" role="form" novalidate
+                                        data-ng-submit="deprecated()">
+                                        <div class="form-group ">
+                                            <div class="col-xs-1">
+                                                <label class="ui-switch ui-switch-success  ui-switch-sm">
+                                                    <input type="checkbox" ng-checked="branch.data.isMocked"
+                                                        ng-model="branch.data.isMocked">
+                                                    <i></i>
+                                                </label>
+                                            </div>
+                                            <span>Mock api</span>
+                                        </div>
+                                        <div class="form-group" ng-if="branch.data.isMocked">
+                                            <label class="text-success col-sm-2" for="actionBody">Json Mock:</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="actionBody" id="actionBody"
+                                                    class="form-control input-primary "
+                                                    placeholder='{"name":"string","id":"integer"}'
+                                                    ng-model="branch.data.mock"></textarea>
+                                                <span class="help-block">Return directly this json without runnning
+                                                    script.
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="divider "></div>
+                                        <button type="submit" class="btn btn-success  btn-xs">Save</button>
+                                    </form>
+                                </uib-tab>
+
                                 <uib-tab heading="WORKER TAG">
                                     <script type="text/ng-template" id="autocomplete-template">
                                         <div class="autocomplete-template">
@@ -391,7 +420,6 @@
                             <div class="panel-body"> -->
                                 </uib-tab>
                                 <uib-tab heading="JOB" ng-if="!branch.data.ezbjobsid">
-
                                     <form name="form_AddJob" class="form-horizontal  ng-valid form-validation"
                                         role="form" novalidate data-ng-submit="submitAddJob()">
                                         <div class="form-group">

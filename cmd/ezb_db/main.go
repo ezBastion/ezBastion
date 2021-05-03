@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	VERSION         = "1.1.3"
+	VERSION         = "1.2.0"
 	SERVICENAME     = "ezb_db"
 	SERVICEFULLNAME = "ezBastion database."
 	CONFFILE        = "conf/config.toml"
