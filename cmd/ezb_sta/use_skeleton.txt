@@ -1,0 +1,21 @@
+This is a default go project structure to add microservice in ezBastion.
+
+1/ copy/rename this folder in ezBastion/cmd using ezb_"Microservice trigram"
+
+2/ edit versioninfo.json to set:
+
+  - InternalName
+  - ProductName
+  - FileDescription
+version info will be upgraded by makefile at build process
+
+3/ edit main.go
+  - set constant line 42 to 46
+  - generate ascii art line 81.
+
+4/ edit server.go
+
+Add all your need as business code in the StartMainService methode. This is the entry point for this microservice code.
+
+5/ edit README and CHANGELOG
+
