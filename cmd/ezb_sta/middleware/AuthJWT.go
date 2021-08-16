@@ -49,6 +49,9 @@ func EzbAuthJWT(c *gin.Context) {
 			return
 		}
 		if strings.Compare(strings.ToLower(bearer[0]), "bearer") != 0 {
+			if strings.Compare(strings.ToLower(bearer[0]), "negotiate") == 0 {
+				return
+			}
 			logg.Error("bad Authorization #J0002: " + authHead)
 			c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0002"))
 			return

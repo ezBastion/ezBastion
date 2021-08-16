@@ -25,11 +25,11 @@ import (
 	"ezBastion/pkg/setupmanager"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"path"
-
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
+	"os"
+	"path"
+	"strings"
 )
 
 var (
@@ -51,10 +51,34 @@ func init() {
 	if err != nil {
 		log.Fatalf("Path error: %v", err)
 	}
+	// Get the current user
+	userdomain := os.Getenv("USERDNSDOMAIN")
+	cdomain := strings.Split(userdomain, ".")
+	b_dn := ""
+	for _, dcbloc := range cdomain {
+		if b_dn != "" {
+			b_dn += ","
+		}
+		b_dn += "dc=" + dcbloc
+	}
+	// Logonserver is like \\server, removing \\
+	dcname := os.Getenv("LOGONSERVER")
+	dcname = dcname[2 : len(dcname)-2]
+
+	/*cfg := &ldap.Config{
+		BaseDN:       b_dn,
+		BindDN:       "cn=LDAP viewer,ou=Services,ou=Accounts,dc=EZB,dc=local",
+		Port:         "389",
+		Host:         dcname,
+		BindPassword: "P@ssw0rd!EZB",
+		Filter:       "(uid=%s)",
+	}
+	*/
 }
 
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
+
 	confPath := path.Join(exePath, CONFFILE)
 	conf, err = confmanager.CheckConfig(confPath, exePath)
 	if err == nil {

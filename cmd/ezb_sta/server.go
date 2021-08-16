@@ -32,6 +32,12 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	// Pushing current conf to controllers
 	server := gin.Default()
 
+	if err != nil {
+		panic(err)
+	}
+	if err != nil {
+		panic(err)
+	}
 	server.Use(func(c *gin.Context) {
 		c.Set("configuration", conf)
 		c.Set("exPath", exePath)
@@ -48,9 +54,10 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	})
 
 	// Middleware
+	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthJWT)
 	server.Use(middleware.EzbAuthform)
-	server.Use(middleware.EzbAuthbasic)
+	server.Use(middleware.EzbAuthKerberos)
 	// token endpoint
 	server.POST("/token", ctrl.Createtoken)
 	//route.POST("/token", middleware.EzbCache)
