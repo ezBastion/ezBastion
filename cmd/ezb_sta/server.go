@@ -57,7 +57,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthJWT)
 	server.Use(middleware.EzbAuthform)
-	server.Use(middleware.EzbAuthKerberos)
+	server.Use(middleware.EzbAuthSSPI)
 	// token endpoint
 	server.POST("/token", ctrl.Createtoken)
 	//route.POST("/token", middleware.EzbCache)
