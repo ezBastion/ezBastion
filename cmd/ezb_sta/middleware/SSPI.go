@@ -62,6 +62,7 @@ func SspiHandler() gin.HandlerFunc {
 	auth.Config.AuthUserKey = "X-Authenticated-user"
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Currently no needs to do something, websspi will try to set the userinfo
 	})
 	// try to use the handler to do the sspi
 	h := auth.WithAuth(handler)
