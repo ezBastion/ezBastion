@@ -14,18 +14,38 @@ import (
 )
 
 var (
-	auth               *websspi.Authenticator
-	config             *websspi.Config
-	contextKeyUserInfo = contextKey("UserInfo")
+	auth   *websspi.Authenticator
+	config *websspi.Config
+	h      http.Handler
 )
 
-type contextKey string
-
-func (c contextKey) String() string {
-	return string(c)
+func init() {
+	config = websspi.NewConfig()
+	auth, _ = websspi.New(config)
+	auth.Config.AuthUserKey = "X-Authenticated-user"
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Currently no needs to do something, websspi will try to set the userinfo
+	})
+	// try to use the handler to do the sspi
+	h = auth.WithAuth(handler)
 }
 
 func EzbAuthSSPI(c *gin.Context) {
+
+	// SSPI middleware changes result, so it must be set at the end, and exit immediately if one of the other middlerware
+	// handled the context
+	// Hnadle only AD requests
+	a, err := c.Get("aud")
+	if err {
+		if a == "internal" {
+			return
+		}
+	}
+	// if request is jwt request, abort
+	a, err = c.Get("jwt")
+	if err {
+		return
+	}
 
 	authHead := c.GetHeader("Authorization")
 	username := c.GetHeader("X-Authenticated-user")
@@ -55,20 +75,13 @@ func EzbAuthSSPI(c *gin.Context) {
 }
 
 func SspiHandler() gin.HandlerFunc {
-	// NewExecutableSchema and Config are in the generated.go file
-	// Resolver is in the resolver.go file
-	config = websspi.NewConfig()
-	auth, _ = websspi.New(config)
-	auth.Config.AuthUserKey = "X-Authenticated-user"
-
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Currently no needs to do something, websspi will try to set the userinfo
-	})
-	// try to use the handler to do the sspi
-	h := auth.WithAuth(handler)
-
 	return func(c *gin.Context) {
-		c.Request = c.Request.WithContext(c)
+		a, err := c.Get("aud")
+		if err {
+			if a == "internal" {
+				return
+			}
+		}
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }

@@ -54,15 +54,15 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	})
 
 	// Middleware
-	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthJWT)
-	server.Use(middleware.EzbAuthform)
+	server.Use(middleware.EzbAuthForm)
+	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthSSPI)
 	// token endpoint
-	server.POST("/token", ctrl.Createtoken)
 	//route.POST("/token", middleware.EzbCache)
+	server.POST("/token", ctrl.Createtoken)
 	server.GET("/token", ctrl.Createtoken)
 	server.GET("/renew", ctrl.Renewtoken)
-
+	server.GET("/access", ctrl.Renewtoken)
 	server.RunTLS(":"+strconv.Itoa(conf.EZBSTA.Network.Port), path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 }

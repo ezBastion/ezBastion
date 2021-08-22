@@ -30,7 +30,8 @@ func Renewtoken(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0002 - Cannot read the STA secret key"))
 		return
 	}
-	expirationTime := time.Now().Add(time.Minute)
+	ttl := conf.EZBSTA.JWT.TTL * 1000000000
+	expirationTime := time.Now().Add(time.Duration(ttl))
 	stauser, _ := c.MustGet("user").(string)
 	j := c.MustGet("jwt").(*jwt.Token)
 	claims, _ := j.Claims.(jwt.MapClaims)
@@ -72,7 +73,9 @@ func Createtoken(c *gin.Context) {
 		return
 	}
 	stauser := conn.(models.StaUser)
-	expirationTime := time.Now().Add(time.Minute)
+	// ttl in nanoseconds
+	ttl := conf.EZBSTA.JWT.TTL * 1000000000
+	expirationTime := time.Now().Add(time.Duration(ttl))
 	payload := &models.Payload{
 		JTI: uuid.NewV4().String(),
 		ISS: conf.EZBSTA.JWT.Issuer,
