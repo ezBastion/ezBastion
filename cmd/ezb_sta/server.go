@@ -54,6 +54,7 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	})
 
 	// Middleware
+	server.Use(middleware.EzbAuthCacheJWT)
 	server.Use(middleware.EzbAuthJWT)
 	server.Use(middleware.EzbAuthForm)
 	server.Use(middleware.SspiHandler())
