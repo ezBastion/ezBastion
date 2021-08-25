@@ -16,6 +16,8 @@
 package main
 
 import (
+	"ezBastion/cmd/ezb_srv/cache"
+	"ezBastion/cmd/ezb_srv/cache/memory"
 	"ezBastion/cmd/ezb_sta/ctrl"
 	"ezBastion/cmd/ezb_sta/middleware"
 	"ezBastion/pkg/logmanager"
@@ -27,17 +29,14 @@ import (
 // Must implement Mainservice interface from servicemanager package
 type mainService struct{}
 
+var storage cache.Storage
+
 func (sm mainService) StartMainService(serverchan *chan bool) {
 	logmanager.Debug("#### Main service started #####")
 	// Pushing current conf to controllers
 	server := gin.Default()
+	storage = memory.NewStorage()
 
-	if err != nil {
-		panic(err)
-	}
-	if err != nil {
-		panic(err)
-	}
 	server.Use(func(c *gin.Context) {
 		c.Set("configuration", conf)
 		c.Set("exPath", exePath)
@@ -52,10 +51,11 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	server.OPTIONS("*a", func(c *gin.Context) {
 		c.AbortWithStatus(200)
 	})
+	// Init the caching system
 
 	// Middleware
-	server.Use(middleware.EzbAuthCacheJWT)
-	server.Use(middleware.EzbAuthJWT)
+	server.Use(middleware.EzbAuthCacheJWT(storage, &conf, exePath))
+	server.Use(middleware.EzbAuthJWT(storage, &conf, exePath))
 	server.Use(middleware.EzbAuthForm)
 	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthSSPI)

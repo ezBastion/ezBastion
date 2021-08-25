@@ -12,20 +12,15 @@ import (
 	"time"
 )
 
-var (
-	ExePath string
-	Conf    confmanager.Configuration
-)
-
 func Renewtoken(c *gin.Context) {
-	expath := c.GetString("exPath")
+	ExePath := c.GetString("exPath")
 	conf, err := c.Keys["configuration"].(confmanager.Configuration)
 	if err == false {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0001 - Context does not contain configuration struct"))
 		return
 	}
 
-	cert, tErr := ioutil.ReadFile(expath + "/cert/" + conf.EZBSTA.JWT.Issuer + ".key")
+	cert, tErr := ioutil.ReadFile(ExePath + "/cert/" + conf.EZBSTA.JWT.Issuer + ".key")
 	if tErr != nil {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0002 - Cannot read the STA secret key"))
 		return
@@ -58,11 +53,14 @@ func Renewtoken(c *gin.Context) {
 }
 
 func Createtoken(c *gin.Context) {
+	ExePath := c.GetString("exPath")
+	conf, err := c.Keys["configuration"].(confmanager.Configuration)
+	if err == false {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0001 - Context does not contain configuration struct"))
+		return
+	}
 
-	expath := c.GetString("exPath")
-	conf := c.Keys["configuration"].(confmanager.Configuration)
-
-	key, tErr := ioutil.ReadFile(expath + "/cert/" + conf.EZBSTA.JWT.Issuer + ".key")
+	key, tErr := ioutil.ReadFile(ExePath + "/cert/" + conf.EZBSTA.JWT.Issuer + ".key")
 	if tErr != nil {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0002 - Cannot read the STA secret key"))
 		return
@@ -96,5 +94,8 @@ func Createtoken(c *gin.Context) {
 	b.AccessToken = tokenString
 	b.ExpireAt = payload.EXP
 	b.ExpireIn = expirationTime.Second()
+	// Token is created, let's cache it
+
+	// then send it
 	c.JSON(http.StatusOK, b)
 }

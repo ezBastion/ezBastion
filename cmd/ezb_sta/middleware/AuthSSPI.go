@@ -3,14 +3,11 @@ package middleware
 import (
 	"errors"
 	"ezBastion/cmd/ezb_sta/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/quasoft/websspi"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"reflect"
 	"strings"
-	"unsafe"
 )
 
 var (
@@ -84,40 +81,4 @@ func SspiHandler() gin.HandlerFunc {
 		}
 		h.ServeHTTP(c.Writer, c.Request)
 	}
-}
-
-func getContextInternals(ctx interface{}, ctxkey string) interface{} {
-	contextValues := reflect.ValueOf(ctx).Elem()
-	contextKeys := reflect.TypeOf(ctx).Elem()
-
-	found := false
-	if contextKeys.Kind() == reflect.Struct {
-		for i := 0; i < contextValues.NumField(); i++ {
-			reflectValue := contextValues.Field(i)
-			reflectValue = reflect.NewAt(reflectValue.Type(), unsafe.Pointer(reflectValue.UnsafeAddr())).Elem()
-
-			reflectField := contextKeys.Field(i)
-
-			if reflectField.Name == "Context" {
-				getContextInternals(reflectValue.Interface(), ctxkey)
-			} else {
-				fmt.Printf("field name: %+v\n", reflectField.Name)
-				fmt.Printf("value: %+v\n", reflectValue.Interface())
-				if strings.ToLower(reflectField.Name) == "key" {
-					if strings.ToLower(ctxkey) == strings.ToLower(fmt.Sprintf("%+v", reflectValue.Interface())) {
-						// the context value is a key and this key matches the parameter. Next try should be a "val"
-						found = true
-					}
-				} else {
-					if found && strings.ToLower(reflectField.Name) == "val" {
-						// the new try is effectively a "val", we will return th interface hosted by the val
-						return reflectValue.Interface()
-					} else {
-						found = false
-					}
-				}
-			}
-		}
-	}
-	return nil
 }
