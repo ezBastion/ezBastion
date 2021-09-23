@@ -54,7 +54,6 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	// Init the caching system
 
 	// Middleware
-	server.Use(middleware.EzbAuthCacheJWT(storage, &conf, exePath))
 	server.Use(middleware.EzbAuthJWT(storage, &conf, exePath))
 	server.Use(middleware.EzbAuthForm)
 	server.Use(middleware.SspiHandler())

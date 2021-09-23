@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+func init() {
+	gob.Register(jwt.SigningMethodECDSA{})
+	gob.Register(models.Payload{})
+}
+
 func Renewtoken(storage cache.Storage) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ExePath := c.GetString("exPath")
@@ -55,7 +60,7 @@ func Renewtoken(storage cache.Storage) gin.HandlerFunc {
 		b.ExpireAt = payload.EXP
 		b.ExpireIn = expirationTime.Second()
 		// Token is created, let's cache it
-		StoreToken(storage, b, tjti, b.ExpireIn)
+		StoreToken(storage, token, tokenString, payload.EXP)
 		// then send it
 		c.JSON(http.StatusOK, b)
 	}
@@ -84,9 +89,8 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 		// ttl in nanoseconds
 		ttl := conf.EZBSTA.JWT.TTL * 1000000000
 		expirationTime := time.Now().Add(time.Duration(ttl))
-		tjti := uuid.NewV4().String()
 		payload := &models.Payload{
-			JTI: tjti,
+			JTI: uuid.NewV4().String(),
 			ISS: conf.EZBSTA.JWT.Issuer,
 			SUB: stauser.User,
 			AUD: conf.EZBSTA.JWT.Audience,
@@ -96,6 +100,9 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(key)
 		tokenString, tErr := token.SignedString(keystruct)
+		// Token is created, let's cache it
+		StoreToken(storage, token, tokenString, payload.EXP)
+		// then send it
 		b := new(models.Bearer)
 		if tErr != nil {
 			c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0003 - Error signing token : "+tErr.Error()))
@@ -105,20 +112,18 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 		b.AccessToken = tokenString
 		b.ExpireAt = payload.EXP
 		b.ExpireIn = expirationTime.Second()
-		// Token is created, let's cache it
-		StoreToken(storage, b, tjti, b.ExpireIn)
-		// then send it
 		c.JSON(http.StatusOK, b)
 	}
 }
 
-func StoreToken(storage cache.Storage, b *models.Bearer, key string, ttk int) {
+func StoreToken(storage cache.Storage, j *jwt.Token, key string, ttk int64) {
 
-	var bearer bytes.Buffer
-	enc := gob.NewEncoder(&bearer)
-	err := enc.Encode(b)
+	var token bytes.Buffer
+	enc := gob.NewEncoder(&token)
+	err := enc.Encode(j)
 	if err != nil {
 		// Error on encoding
+		return
 	}
-	storage.Set(key, bearer.Bytes(), time.Duration(ttk)*time.Second)
+	storage.Set(key, token.Bytes(), time.Duration(ttk)*time.Second)
 }

@@ -22,7 +22,7 @@ import (
 	"errors"
 	"ezBastion/cmd/ezb_db/Middleware"
 	"ezBastion/cmd/ezb_srv/cache"
-	ezbmodels "ezBastion/cmd/ezb_srv/models"
+	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
@@ -60,6 +60,19 @@ func EzbAuthJWT(storage cache.Storage, conf *confmanager.Configuration, exePath 
 				return
 			}
 			tokenString := bearer[1]
+			// tokenstring is used as the key, to check the memory store
+			jwtstored, err := models.GetJWT(storage, conf, tokenString)
+			if err == nil {
+				if claims, ok := jwtstored.Claims.(jwt.MapClaims); ok && jwtstored.Valid {
+					c.Set("jwt", jwtstored)
+					c.Set("user", claims["sub"])
+				} else {
+					c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0005s"))
+					logg.Error(err)
+				}
+				return
+			}
+
 			ex, _ := os.Executable()
 			exPath := filepath.Dir(ex)
 			parts := strings.Split(tokenString, ".")
@@ -114,24 +127,4 @@ func EzbAuthJWT(storage cache.Storage, conf *confmanager.Configuration, exePath 
 			}
 		}
 	}
-}
-
-func EzbAuthCacheJWT(storage cache.Storage, conf *confmanager.Configuration, exePath string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-	}
-}
-
-func Store(storage cache.Storage, conf *confmanager.Configuration) gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		tr, _ := c.Get("trace")
-		trace := tr.(ezbmodels.EzbLogs)
-		logg := log.WithFields(log.Fields{
-			"middleware": "store",
-			"xtrack":     trace.Xtrack,
-		})
-		logg.Debug("start")
-
-	}
-
 }

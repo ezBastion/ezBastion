@@ -9,7 +9,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 type Payload struct {
@@ -49,27 +48,17 @@ func init() {
 	exPath = filepath.Dir(ex)
 }
 
-func GetBearers(s cache.Storage, conf *confmanager.Configuration) (bearers []Bearer, err error) {
-	content := s.Get("bearers")
-	if content != nil {
+func GetJWT(s cache.Storage, conf *confmanager.Configuration, key string) (j *jwt.Token, err error) {
+	j = new(jwt.Token)
+	content := s.Get(key)
+	if content == nil {
 		byteCtrl := bytes.NewBuffer(content)
 		dec := gob.NewDecoder(byteCtrl)
-		err := dec.Decode(&bearers)
+		err := dec.Decode(&j)
 		if err != nil {
 			fmt.Println(err)
-			return bearers, err
+			return j, err
 		}
-	} else {
-		if len(bearers) == 0 {
-			return bearers, fmt.Errorf("BEARERS NOT FOUND")
-		}
-		var byteCtrl bytes.Buffer
-		enc := gob.NewEncoder(&byteCtrl)
-		encErr := enc.Encode(bearers)
-		if encErr != nil {
-			return bearers, encErr
-		}
-		s.Set("bearers", byteCtrl.Bytes(), time.Duration(conf.EZBSTA.JWT.TTL)*time.Second)
 	}
-	return bearers, nil
+	return j, nil
 }
