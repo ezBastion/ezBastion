@@ -7,6 +7,7 @@ import (
 	"github.com/quasoft/websspi"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os/user"
 	"strings"
 )
 
@@ -31,15 +32,13 @@ func EzbAuthSSPI(c *gin.Context) {
 
 	// SSPI middleware changes result, so it must be set at the end, and exit immediately if one of the other middlerware
 	// handled the context
-	// Hnadle only AD requests
-	a, err := c.Get("aud")
+	// Handle only AD requests
+	_, err := c.Get("aud")
 	if err {
-		if a == "internal" {
-			return
-		}
+		return
 	}
 	// if request is jwt request, abort
-	a, err = c.Get("jwt")
+	_, err = c.Get("jwt")
 	if err {
 		return
 	}
@@ -59,26 +58,45 @@ func EzbAuthSSPI(c *gin.Context) {
 
 			// user is computed from specific module
 			stauser := models.StaUser{}
+
 			stauser.User = username
-			stauser.UserGroups = ""
+			ADu, err := GetUserAttributes(username)
+			if err != nil {
+				logg.Error("user error #SSPI0002: " + authHead)
+				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0002"))
+			}
+			stauser.UserSid = ADu.Uid
+			// get the groups
+			groups, err := ADu.GroupIds()
+			if err != nil {
+				logg.Error("user error when getting groups #SSPI0003: " + authHead)
+				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0003"))
+			}
+			stauser.UserGroups = strings.Join(groups, ",")
 
 			// TODO compute SID and groups
 			c.Set("connection", stauser)
 			c.Set("aud", "ad")
-			//testhash := fmt.Sprintf("%x", md5.Sum([]byte(username)))
-			//c.Set("sign_key", testhash)
+
 		}
 	}
 }
 
 func SspiHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		a, err := c.Get("aud")
+		_, err := c.Get("aud")
 		if err {
-			if a == "internal" {
-				return
-			}
+			return
 		}
 		h.ServeHTTP(c.Writer, c.Request)
 	}
+}
+
+func GetUserAttributes(username string) (u *user.User, ret error) {
+	u, err := user.Lookup(username)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return u, ret
 }

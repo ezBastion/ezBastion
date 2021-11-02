@@ -21,8 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"ezBastion/cmd/ezb_db/Middleware"
-	"ezBastion/cmd/ezb_srv/cache"
-	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
 	"fmt"
 	"io/ioutil"
@@ -38,7 +36,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func EzbAuthJWT(storage cache.Storage, conf *confmanager.Configuration, exePath string) gin.HandlerFunc {
+func EzbAuthJWT(conf *confmanager.Configuration, exePath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		logg := log.WithFields(log.Fields{"Middleware": "jwt"})
 
@@ -47,31 +45,22 @@ func EzbAuthJWT(storage cache.Storage, conf *confmanager.Configuration, exePath 
 			var err error
 			bearer := strings.Split(authHead, " ")
 			if len(bearer) != 2 {
-				logg.Error("bad Authorization #J0001: " + authHead)
-				c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0001"))
+				//logg.Error("bad Authorization #J0001: " + authHead)
+				//c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0001"))
 				return
 			}
 			if strings.Compare(strings.ToLower(bearer[0]), "bearer") != 0 {
 				if strings.Compare(strings.ToLower(bearer[0]), "negotiate") == 0 {
 					return
 				}
-				logg.Error("bad Authorization #J0002: " + authHead)
-				c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0002"))
+				if strings.Compare(strings.ToLower(bearer[0]), "basic") == 0 {
+					return
+				}
+				//logg.Error("bad Authorization #J0002: " + authHead)
+				//c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0002"))
 				return
 			}
 			tokenString := bearer[1]
-			// tokenstring is used as the key, to check the memory store
-			jwtstored, err := models.GetJWT(storage, conf, tokenString)
-			if err == nil {
-				if claims, ok := jwtstored.Claims.(jwt.MapClaims); ok && jwtstored.Valid {
-					c.Set("jwt", jwtstored)
-					c.Set("user", claims["sub"])
-				} else {
-					c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0005s"))
-					logg.Error(err)
-				}
-				return
-			}
 
 			ex, _ := os.Executable()
 			exPath := filepath.Dir(ex)

@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"ezBastion/cmd/ezb_srv/cache"
 	"ezBastion/pkg/confmanager"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"os"
 	"path/filepath"
@@ -48,17 +47,16 @@ func init() {
 	exPath = filepath.Dir(ex)
 }
 
-func GetJWT(s cache.Storage, conf *confmanager.Configuration, key string) (j *jwt.Token, err error) {
-	j = new(jwt.Token)
+func GetUser(s cache.Storage, key string) (u *StaUser, err error) {
+	u = new(StaUser)
 	content := s.Get(key)
-	if content == nil {
+	if content != nil {
 		byteCtrl := bytes.NewBuffer(content)
 		dec := gob.NewDecoder(byteCtrl)
-		err := dec.Decode(&j)
-		if err != nil {
-			fmt.Println(err)
-			return j, err
+		err := dec.Decode(&u)
+		if err == nil {
+			return u, err
 		}
 	}
-	return j, nil
+	return u, nil
 }

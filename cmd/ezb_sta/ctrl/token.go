@@ -1,10 +1,8 @@
 package ctrl
 
 import (
-	"bytes"
 	"encoding/gob"
 	"errors"
-	"ezBastion/cmd/ezb_srv/cache"
 	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
 	"github.com/dgrijalva/jwt-go"
@@ -16,11 +14,10 @@ import (
 )
 
 func init() {
-	gob.Register(jwt.SigningMethodECDSA{})
-	gob.Register(models.Payload{})
+	gob.Register(models.StaUser{})
 }
 
-func Renewtoken(storage cache.Storage) gin.HandlerFunc {
+func Renewtoken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ExePath := c.GetString("exPath")
 		conf, err := c.Keys["configuration"].(confmanager.Configuration)
@@ -36,14 +33,17 @@ func Renewtoken(storage cache.Storage) gin.HandlerFunc {
 		}
 		ttl := conf.EZBSTA.JWT.TTL * 1000000000
 		expirationTime := time.Now().Add(time.Duration(ttl))
-		stauser, _ := c.MustGet("user").(string)
+		stauser := new(models.StaUser)
+		stauser.User = c.MustGet("user").(string)
+		// TODO Getting user properties from the cache...
+
 		j := c.MustGet("jwt").(*jwt.Token)
 		claims, _ := j.Claims.(jwt.MapClaims)
 		tjti := claims["jti"].(string)
 		payload := &models.Payload{
 			JTI: tjti,
 			ISS: conf.EZBSTA.JWT.Issuer,
-			SUB: stauser,
+			SUB: stauser.User,
 			AUD: conf.EZBSTA.JWT.Audience,
 			EXP: expirationTime.Unix(),
 		}
@@ -59,14 +59,12 @@ func Renewtoken(storage cache.Storage) gin.HandlerFunc {
 		b.AccessToken = tokenString
 		b.ExpireAt = payload.EXP
 		b.ExpireIn = expirationTime.Second()
-		// Token is created, let's cache it
-		StoreToken(storage, token, tokenString, payload.EXP)
-		// then send it
+
 		c.JSON(http.StatusOK, b)
 	}
 }
 
-func Createtoken(storage cache.Storage) gin.HandlerFunc {
+func Createtoken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ExePath := c.GetString("exPath")
 		conf, err := c.Keys["configuration"].(confmanager.Configuration)
@@ -86,6 +84,8 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 			return
 		}
 		stauser := conn.(models.StaUser)
+		// TODO Getting user properties from the cache...
+
 		// ttl in nanoseconds
 		ttl := conf.EZBSTA.JWT.TTL * 1000000000
 		expirationTime := time.Now().Add(time.Duration(ttl))
@@ -100,9 +100,8 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(key)
 		tokenString, tErr := token.SignedString(keystruct)
-		// Token is created, let's cache it
-		StoreToken(storage, token, tokenString, payload.EXP)
-		// then send it
+
+		// send the token
 		b := new(models.Bearer)
 		if tErr != nil {
 			c.AbortWithError(http.StatusInternalServerError, errors.New("#STA0003 - Error signing token : "+tErr.Error()))
@@ -114,16 +113,4 @@ func Createtoken(storage cache.Storage) gin.HandlerFunc {
 		b.ExpireIn = expirationTime.Second()
 		c.JSON(http.StatusOK, b)
 	}
-}
-
-func StoreToken(storage cache.Storage, j *jwt.Token, key string, ttk int64) {
-
-	var token bytes.Buffer
-	enc := gob.NewEncoder(&token)
-	err := enc.Encode(j)
-	if err != nil {
-		// Error on encoding
-		return
-	}
-	storage.Set(key, token.Bytes(), time.Duration(ttk)*time.Second)
 }

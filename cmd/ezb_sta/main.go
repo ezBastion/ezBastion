@@ -24,18 +24,20 @@ import (
 	"ezBastion/pkg/servicemanager"
 	"ezBastion/pkg/setupmanager"
 	"fmt"
+	"github.com/jtblin/go-ldap-client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
 	"os"
 	"path"
-	"strings"
 )
 
 var (
-	exePath string
-	conf    confmanager.Configuration
-	err     error
+	exePath    string
+	conf       confmanager.Configuration
+	err        error
+	staservice mainService
+	ldapclient *ldap.LDAPClient
 )
 
 const (
@@ -51,33 +53,28 @@ func init() {
 	if err != nil {
 		log.Fatalf("Path error: %v", err)
 	}
-	// Get the current user
-	userdomain := os.Getenv("USERDNSDOMAIN")
-	cdomain := strings.Split(userdomain, ".")
-	b_dn := ""
-	for _, dcbloc := range cdomain {
-		if b_dn != "" {
-			b_dn += ","
-		}
-		b_dn += "dc=" + dcbloc
-	}
-	// Logonserver is like \\server, removing \\
-	dcname := os.Getenv("LOGONSERVER")
-	dcname = dcname[2 : len(dcname)-2]
 
-	/*cfg := &ldap.Config{
-		BaseDN:       b_dn,
-		BindDN:       "cn=LDAP viewer,ou=Services,ou=Accounts,dc=EZB,dc=local",
-		Port:         "389",
-		Host:         dcname,
-		BindPassword: "P@ssw0rd!EZB",
-		Filter:       "(uid=%s)",
+	// successful bind *Conn is ready to be requested
+	ldapclient = &ldap.LDAPClient{
+		Base:         "dc=ezb,dc=local",
+		Host:         "ezb-srv1.ezb.local",
+		Port:         389,
+		UseSSL:       false,
+		SkipTLS:      true,
+		BindDN:       "cn=ADRequester,ou=requester,ou=production,ou=Accounts,dc=EZB,dc=local",
+		BindPassword: "P@ssw0rd!Requester",
+		UserFilter:   "(cn=%s)",
+		GroupFilter:  "(memberUid=%s)",
+		Attributes:   []string{"givenName", "sn", "mail", "cn"},
 	}
-	*/
+
+	staservice = mainService{STAldapauth: ldapclient}
+
 }
 
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
+	defer ldapclient.Close()
 
 	confPath := path.Join(exePath, CONFFILE)
 	conf, err = confmanager.CheckConfig(confPath, exePath)
@@ -88,7 +85,7 @@ func main() {
 		}
 		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, LOGFILE, conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
 		if IsWindowsService {
-			servicemanager.RunService(SERVICENAME, false, mainService{})
+			servicemanager.RunService(SERVICENAME, false, staservice)
 			return
 		}
 	}
@@ -98,7 +95,7 @@ func main() {
 	app.Version = VERSION
 	app.Usage = SERVICEFULLNAME
 
-	app.Commands = ez_cli.EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath, mainService{})
+	app.Commands = ez_cli.EZCli(SERVICENAME, SERVICEFULLNAME, exePath, confPath, staservice)
 	// ascii art url: http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=ezBastion
 	cli.AppHelpTemplate = fmt.Sprintf(`
 

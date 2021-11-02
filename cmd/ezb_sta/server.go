@@ -16,26 +16,24 @@
 package main
 
 import (
-	"ezBastion/cmd/ezb_srv/cache"
-	"ezBastion/cmd/ezb_srv/cache/memory"
 	"ezBastion/cmd/ezb_sta/ctrl"
 	"ezBastion/cmd/ezb_sta/middleware"
 	"ezBastion/pkg/logmanager"
 	"github.com/gin-gonic/gin"
+	"github.com/jtblin/go-ldap-client"
 	"path"
 	"strconv"
 )
 
 // Must implement Mainservice interface from servicemanager package
-type mainService struct{}
-
-var storage cache.Storage
+type mainService struct {
+	STAldapauth *ldap.LDAPClient
+}
 
 func (sm mainService) StartMainService(serverchan *chan bool) {
 	logmanager.Debug("#### Main service started #####")
 	// Pushing current conf to controllers
 	server := gin.Default()
-	storage = memory.NewStorage()
 
 	server.Use(func(c *gin.Context) {
 		c.Set("configuration", conf)
@@ -54,15 +52,16 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	// Init the caching system
 
 	// Middleware
-	server.Use(middleware.EzbAuthJWT(storage, &conf, exePath))
+	server.Use(middleware.EzbAuthJWT(&conf, exePath))
 	server.Use(middleware.EzbAuthForm)
+	server.Use(middleware.EzbAuthBasic(sm.STAldapauth))
 	server.Use(middleware.SspiHandler())
 	server.Use(middleware.EzbAuthSSPI)
 	// token endpoint
 	//route.POST("/token", middleware.EzbCache)
-	server.POST("/token", ctrl.Createtoken(storage))
-	server.GET("/token", ctrl.Createtoken(storage))
-	server.GET("/renew", ctrl.Renewtoken(storage))
-	server.GET("/access", ctrl.Renewtoken(storage))
+	server.POST("/token", ctrl.Createtoken())
+	server.GET("/token", ctrl.Createtoken())
+	server.GET("/renew", ctrl.Renewtoken())
+	server.GET("/access", ctrl.Renewtoken())
 	server.RunTLS(":"+strconv.Itoa(conf.EZBSTA.Network.Port), path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 }
