@@ -35,6 +35,8 @@ import (
 var (
 	exePath    string
 	conf       confmanager.Configuration
+	confPath   string
+	conferr    error
 	err        error
 	staservice mainService
 	ldapclient *ldap.LDAPClient
@@ -53,32 +55,32 @@ func init() {
 	if err != nil {
 		log.Fatalf("Path error: %v", err)
 	}
+	confPath = path.Join(exePath, CONFFILE)
+	conf, conferr = confmanager.CheckConfig(confPath, exePath)
+	if conferr == nil {
+		// successful bind *Conn is ready to be requested
+		ldapclient = &ldap.LDAPClient{
+			Base:         conf.EZBSTA.StaLdap.Base,
+			Host:         conf.EZBSTA.StaLdap.Host,
+			Port:         conf.EZBSTA.StaLdap.Port,
+			UseSSL:       conf.EZBSTA.StaLdap.UseSSL,
+			SkipTLS:      conf.EZBSTA.StaLdap.SkipTLS,
+			BindDN:       conf.EZBSTA.StaLdap.BindDN,
+			BindPassword: conf.EZBSTA.StaLdap.BindPassword,
+			UserFilter:   "(cn=%s)",
+			GroupFilter:  "(memberUid=%s)",
+			Attributes:   []string{"givenName", "sn", "mail", "cn"},
+		}
 
-	// successful bind *Conn is ready to be requested
-	ldapclient = &ldap.LDAPClient{
-		Base:         "dc=ezb,dc=local",
-		Host:         "ezb-srv1.ezb.local",
-		Port:         389,
-		UseSSL:       false,
-		SkipTLS:      true,
-		BindDN:       "cn=ADRequester,ou=requester,ou=production,ou=Accounts,dc=EZB,dc=local",
-		BindPassword: "P@ssw0rd!Requester",
-		UserFilter:   "(cn=%s)",
-		GroupFilter:  "(memberUid=%s)",
-		Attributes:   []string{"givenName", "sn", "mail", "cn"},
+		staservice = mainService{STAldapauth: ldapclient}
 	}
-
-	staservice = mainService{STAldapauth: ldapclient}
-
 }
 
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
 	defer ldapclient.Close()
 
-	confPath := path.Join(exePath, CONFFILE)
-	conf, err = confmanager.CheckConfig(confPath, exePath)
-	if err == nil {
+	if conferr == nil {
 		IsWindowsService, err := svc.IsWindowsService()
 		if err != nil {
 			log.Fatalf("failed to determine if we are running in an interactive session: %v", err)

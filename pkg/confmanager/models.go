@@ -57,7 +57,19 @@ type EZBSRV struct {
 type EZBSTA struct {
 	Network Network `ini:"ezb_sta.listener" json:"listener" toml:"listener"`
 	JWT     JWT     `ini:"ezb_sta.jwt" json:"jwt" toml:"jwt"`
+	StaLdap StaLdap `ini:"ezb_sta.ldap" json:"ldap" toml:"ldap"`
 }
+
+type StaLdap struct {
+	Base         string `ini:"base" json:"base" toml:"base" comment:"Base DN of the LDAP searcher"`
+	Host         string `ini:"host" json:"host" toml:"host" comment:"Specific LDAP server name"`
+	Port         int    `ini:"port" json:"port" toml:"port" comment:"Port number to access ldap server"`
+	UseSSL       bool   `ini:"usessl" json:"usessl" toml:"usessl" comment:"Flag to use or not SSL"`
+	SkipTLS      bool   `ini:"skiptls" json:"skiptls" toml:"skiptls" comment:"Flag to skip TLS"`
+	BindDN       string `ini:"binddn" json:"binddn" toml:"binddn" comment:"Distinguished name for LDAP connector user"`
+	BindPassword string `ini:"bindpassword" json:"bindpassword" toml:"bindpassword" comment:"Password of the connector user"`
+}
+
 type JWT struct {
 	Issuer   string `ini:"issuer" json:"issuer" toml:"issuer" comment:" sta (Secure Token Authority) name, must be unique and set in ezb_admin"`
 	Audience string `ini:"audience" json:"audience" toml:"audience" comment:"by default [ezBastion]"`

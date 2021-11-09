@@ -64,6 +64,13 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBSTA.JWT.TTL = 1200
 		conf.EZBSTA.JWT.Audience = "ezBastion"
 		conf.EZBSTA.JWT.Issuer = "ezbastion"
+		conf.EZBSTA.StaLdap.Base = ""
+		conf.EZBSTA.StaLdap.Host = ""
+		conf.EZBSTA.StaLdap.Port = 389
+		conf.EZBSTA.StaLdap.UseSSL = false
+		conf.EZBSTA.StaLdap.SkipTLS = false
+		conf.EZBSTA.StaLdap.BindDN = ""
+		conf.EZBSTA.StaLdap.BindPassword = ""
 		conf.EZBWKS.ScriptPath = path.Join(exePath, "script")
 		conf.EZBWKS.JobPath = path.Join(exePath, "job")
 		conf.EZBWKS.LimitMax = 0
