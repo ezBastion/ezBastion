@@ -67,12 +67,23 @@ func EzbAuthSSPI(c *gin.Context) {
 			}
 			stauser.UserSid = ADu.Uid
 			// get the groups
+
 			groups, err := ADu.GroupIds()
 			if err != nil {
 				logg.Error("user error when getting groups #SSPI0003: " + authHead)
 				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0003"))
 			}
-			stauser.UserGroups = strings.Join(groups, ",")
+			// Parse all groupids to get the real group names
+			groupsnames := make([]string, 5)
+			for _, g := range groups {
+				gname, aderr := user.LookupGroupId(g)
+				if aderr != nil {
+					logg.Warning("GroupID " + g + " is not found in Active Directory")
+					continue
+				}
+				groupsnames = append(groupsnames, gname.Name)
+			}
+			stauser.UserGroups = strings.Join(groupsnames, ",")
 
 			// TODO compute SID and groups
 			c.Set("connection", stauser)
