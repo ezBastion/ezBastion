@@ -58,8 +58,7 @@ func Renewtoken() gin.HandlerFunc {
 		b.TokenType = "bearer"
 		b.AccessToken = tokenString
 		b.ExpireAt = payload.EXP
-		b.ExpireIn = expirationTime.Second()
-
+		b.ExpireIn = conf.EZBSTA.JWT.TTL
 		c.JSON(http.StatusOK, b)
 	}
 }
@@ -110,7 +109,7 @@ func Createtoken() gin.HandlerFunc {
 		b.TokenType = "bearer"
 		b.AccessToken = tokenString
 		b.ExpireAt = payload.EXP
-		b.ExpireIn = expirationTime.Second()
+		b.ExpireIn = conf.EZBSTA.JWT.TTL
 		c.JSON(http.StatusOK, b)
 	}
 }

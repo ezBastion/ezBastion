@@ -18,7 +18,13 @@ func EzbAuthForm(c *gin.Context) {
 
 		username := mp.Username
 		password := mp.Password
-
-		CheckUserandSet(c, username, password, nil)
+		err := checkDBUser(c, username, password)
+		if err == 0 {
+			// user is computed from specific module
+			stauser := models.StaUser{}
+			stauser.User = username
+			c.Set("connection", stauser)
+			c.Set("aud", "internal")
+		}
 	}
 }

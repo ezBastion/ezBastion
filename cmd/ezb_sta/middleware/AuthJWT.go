@@ -15,6 +15,7 @@
 
 package middleware
 
+import "C"
 import (
 	"crypto/ecdsa"
 	"encoding/base64"
@@ -109,6 +110,7 @@ func EzbAuthJWT(conf *confmanager.Configuration, exePath string) gin.HandlerFunc
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 				c.Set("jwt", token)
 				c.Set("user", claims["sub"])
+				c.Set("jti", claims["jti"])
 			} else {
 				c.AbortWithError(http.StatusForbidden, errors.New("#STA-JWT0005"))
 				logg.Error(err)

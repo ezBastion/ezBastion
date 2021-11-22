@@ -83,19 +83,23 @@ func EzbAuthSSPI(c *gin.Context) {
 				}
 				groupsnames = append(groupsnames, gname.Name)
 			}
-			stauser.UserGroups = strings.Join(groupsnames, ",")
+			stauser.UserGroups = groupsnames
 
 			// TODO compute SID and groups
 			c.Set("connection", stauser)
 			c.Set("aud", "ad")
-
 		}
 	}
 }
 
 func SspiHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// if request is jwt or auyd request, abort
 		_, err := c.Get("aud")
+		if err {
+			return
+		}
+		_, err = c.Get("jwt")
 		if err {
 			return
 		}
