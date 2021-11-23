@@ -68,10 +68,9 @@ func init() {
 			BindDN:       conf.EZBSTA.StaLdap.BindDN,
 			BindPassword: conf.EZBSTA.StaLdap.BindPassword,
 			UserFilter:   "(cn=%s)",
-			GroupFilter:  "(memberUid=%s)",
-			Attributes:   []string{"givenName", "sn", "mail", "cn"},
+			GroupFilter:  "(&(objectClass=group)(member=%s))",
+			Attributes:   []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
 		}
-
 		staservice = mainService{STAldapauth: ldapclient}
 	}
 }

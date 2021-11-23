@@ -3,9 +3,12 @@ package middleware
 import (
 	"errors"
 	"ezBastion/cmd/ezb_sta/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jtblin/go-ldap-client"
 	"github.com/quasoft/websspi"
 	log "github.com/sirupsen/logrus"
+	genldap "gopkg.in/ldap.v2"
 	"net/http"
 	"os/user"
 	"strings"
@@ -28,66 +31,74 @@ func init() {
 	h = auth.WithAuth(handler)
 }
 
-func EzbAuthSSPI(c *gin.Context) {
+func EzbAuthSSPI(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
+	return func(c *gin.Context) {
 
-	// SSPI middleware changes result, so it must be set at the end, and exit immediately if one of the other middlerware
-	// handled the context
-	// Handle only AD requests
-	_, err := c.Get("aud")
-	if err {
-		return
-	}
-	// if request is jwt request, abort
-	_, err = c.Get("jwt")
-	if err {
-		return
-	}
-
-	authHead := c.GetHeader("Authorization")
-	username := c.GetHeader("X-Authenticated-user")
-	logg := log.WithFields(log.Fields{"middleware": "sspi"})
-
-	if authHead != "" {
-		nego := strings.Split(authHead, " ")
-		if len(nego) != 2 {
-			logg.Error("bad Negotiation #SSPI0001: " + authHead)
-			c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0001"))
+		// SSPI middleware changes result, so it must be set at the end, and exit immediately if one of the other middlerware
+		// handled the context
+		// Handle only AD requests
+		_, err := c.Get("aud")
+		if err {
 			return
 		}
-		if username != "" && strings.ToLower(nego[0]) == "negotiate" {
+		// if request is jwt request, abort
+		_, err = c.Get("jwt")
+		if err {
+			return
+		}
 
-			// user is computed from specific module
-			stauser := models.StaUser{}
+		authHead := c.GetHeader("Authorization")
+		username := c.GetHeader("X-Authenticated-user")
+		logg := log.WithFields(log.Fields{"middleware": "sspi"})
 
-			stauser.User = username
-			ADu, err := GetUserAttributes(username)
-			if err != nil {
-				logg.Error("user error #SSPI0002: " + authHead)
-				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0002"))
+		if authHead != "" {
+			nego := strings.Split(authHead, " ")
+			if len(nego) != 2 {
+				logg.Error("bad Negotiation #SSPI0001: " + authHead)
+				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0001"))
+				return
 			}
-			stauser.UserSid = ADu.Uid
-			// get the groups
+			if username != "" && strings.ToLower(nego[0]) == "negotiate" {
 
-			groups, err := ADu.GroupIds()
-			if err != nil {
-				logg.Error("user error when getting groups #SSPI0003: " + authHead)
-				c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0003"))
-			}
-			// Parse all groupids to get the real group names
-			groupsnames := make([]string, 5)
-			for _, g := range groups {
-				gname, aderr := user.LookupGroupId(g)
-				if aderr != nil {
-					logg.Warning("GroupID " + g + " is not found in Active Directory")
-					continue
+				// user is computed from specific module
+				stauser := models.StaUser{}
+
+				stauser.User = username
+				ADu, err := GetUserAttributes(username)
+				if err != nil {
+					logg.Error("user error #SSPI0002: " + authHead)
+					c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0002"))
 				}
-				groupsnames = append(groupsnames, gname.Name)
-			}
-			stauser.UserGroups = groupsnames
+				stauser.UserSid = ADu.Uid
+				// get the groups
 
-			// TODO compute SID and groups
-			c.Set("connection", stauser)
-			c.Set("aud", "ad")
+				groups, err := ADu.GroupIds()
+				if err != nil {
+					logg.Error("user error when getting groups #SSPI0003: " + authHead)
+					c.AbortWithError(http.StatusForbidden, errors.New("#STA-SSPI0003"))
+				}
+				// Parse all groupids to get the real group names
+				groupsnames := make([]string, 5)
+				for _, g := range groups {
+					gname, aderr := user.LookupGroupId(g)
+					if aderr != nil {
+						logg.Warning("GroupID " + g + " is not found in Active Directory")
+						continue
+					}
+					groupsnames = append(groupsnames, gname.Name)
+				}
+				stauser.UserGroups = groupsnames
+				// Fill all the "extended" active directory properties
+				attr, err := F_GetADproperties(username, ldapclient)
+				if err != nil {
+					logg.Warning(fmt.Sprintf("Active Directory properties retrieved errors for user %s", username))
+				} else {
+					stauser.ExtProperties = attr
+				}
+				// TODO compute SID and groups
+				c.Set("connection", stauser)
+				c.Set("aud", "ad")
+			}
 		}
 	}
 }
@@ -114,4 +125,26 @@ func GetUserAttributes(username string) (u *user.User, ret error) {
 	}
 
 	return u, ret
+}
+
+func F_GetADproperties(username string, lc *ldap.LDAPClient) ([]string, error) {
+
+	searchRequest := genldap.NewSearchRequest(
+		lc.Base,
+		genldap.ScopeWholeSubtree, genldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf(lc.UserFilter, username),
+		[]string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
+		nil,
+	)
+	sr, err := lc.Conn.Search(searchRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	groups := []string{}
+	for _, entry := range sr.Entries {
+		groups = append(groups, entry.GetAttributeValue("cn"))
+	}
+
+	return groups, nil
 }
