@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"ezBastion/cmd/ezb_sta/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jtblin/go-ldap-client"
 	log "github.com/sirupsen/logrus"
@@ -46,7 +47,13 @@ func EzbAuthBasic(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
 					stauser.UserGroups = groupsnames
 				}
 				stauser.User = username
-				// TODO compute SID and groups
+				attr, err := F_GetADproperties(username, ldapclient)
+				if err != nil {
+					logg.Warning(fmt.Sprintf("Active Directory properties retrieved errors for user %s", username))
+				} else {
+					stauser.ExtProperties = attr
+					stauser.ExtProperties.Groups = groupsnames
+				}
 				c.Set("connection", stauser)
 				c.Set("aud", "ad")
 			} else {

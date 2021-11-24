@@ -8,7 +8,6 @@ import (
 	"github.com/jtblin/go-ldap-client"
 	"github.com/quasoft/websspi"
 	log "github.com/sirupsen/logrus"
-	genldap "gopkg.in/ldap.v2"
 	"net/http"
 	"os/user"
 	"strings"
@@ -94,8 +93,8 @@ func EzbAuthSSPI(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
 					logg.Warning(fmt.Sprintf("Active Directory properties retrieved errors for user %s", username))
 				} else {
 					stauser.ExtProperties = attr
+					stauser.ExtProperties.Groups = groupsnames
 				}
-				// TODO compute SID and groups
 				c.Set("connection", stauser)
 				c.Set("aud", "ad")
 			}
@@ -125,26 +124,4 @@ func GetUserAttributes(username string) (u *user.User, ret error) {
 	}
 
 	return u, ret
-}
-
-func F_GetADproperties(username string, lc *ldap.LDAPClient) ([]string, error) {
-
-	searchRequest := genldap.NewSearchRequest(
-		lc.Base,
-		genldap.ScopeWholeSubtree, genldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(lc.UserFilter, username),
-		[]string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
-		nil,
-	)
-	sr, err := lc.Conn.Search(searchRequest)
-	if err != nil {
-		return nil, err
-	}
-
-	groups := []string{}
-	for _, entry := range sr.Entries {
-		groups = append(groups, entry.GetAttributeValue("cn"))
-	}
-
-	return groups, nil
 }

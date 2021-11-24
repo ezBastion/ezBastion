@@ -4,10 +4,13 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	db "ezBastion/cmd/ezb_db/models"
+	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
+	"github.com/jtblin/go-ldap-client"
+	genldap "gopkg.in/ldap.v2"
 	"net/http"
 	"path"
 	"strconv"
@@ -52,4 +55,34 @@ func checkDBUser(c *gin.Context, username string, password string) (errorcode in
 		errorcode = 0
 	}
 	return errorcode
+}
+
+func F_GetADproperties(username string, lc *ldap.LDAPClient) (iu *models.IntrospectUser, err error) {
+
+	searchRequest := genldap.NewSearchRequest(
+		lc.Base,
+		genldap.ScopeWholeSubtree, genldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf(lc.UserFilter, username),
+		[]string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
+		nil,
+	)
+	sr, err := lc.Conn.Search(searchRequest)
+	if err != nil {
+		return nil, err
+	}
+	if len(sr.Entries) > 0 {
+		// We will take obnly the first entry (the first user matching username given
+		firstentry := sr.Entries[0]
+		iu.Distinguishedname = firstentry.DN
+		iu.Displayname = firstentry.GetAttributeValue("displayname")
+		iu.Description = firstentry.GetAttributeValue("description")
+		iu.Emailaddress = firstentry.GetAttributeValue("emailaddress")
+		iu.Givenname = firstentry.GetAttributeValue("givenname")
+		iu.Ntaccount = firstentry.GetAttributeValue("ntaccount")
+		iu.Ou = firstentry.GetAttributeValue("ou")
+		iu.Samaccountname = firstentry.GetAttributeValue("samaccountname")
+		iu.Groups, _ = lc.GetGroupsOfUser(firstentry.DN)
+	}
+
+	return iu, nil
 }

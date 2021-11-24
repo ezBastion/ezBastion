@@ -15,12 +15,12 @@ func Introspect() gin.HandlerFunc {
 		if (len(vform) == 0) || (len(vform) > 1) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, errors.New("#STA0200 - wrong jti request"))
 		}
+		// Checks the values set by the middleware
 		jwt := c.MustGet("jti").(string)
 		for _, j := range vform {
 			if j == jwt {
-				user := c.MustGet("user").(string)
-				introspect := new(models.IntrospectUser)
-
+				u := c.MustGet("connection").(models.StaUser)
+				c.JSON(http.StatusOK, u.ExtProperties)
 				return
 			}
 
