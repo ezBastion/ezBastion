@@ -71,6 +71,7 @@ func F_GetADproperties(username string, lc *ldap.LDAPClient) (iu *models.Introsp
 		return nil, err
 	}
 	if len(sr.Entries) > 0 {
+		iu = new(models.IntrospectUser)
 		// We will take obnly the first entry (the first user matching username given
 		firstentry := sr.Entries[0]
 		iu.Distinguishedname = firstentry.DN

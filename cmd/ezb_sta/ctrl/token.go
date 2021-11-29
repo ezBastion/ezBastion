@@ -5,6 +5,7 @@ import (
 	"errors"
 	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -95,7 +96,7 @@ func Createtoken() gin.HandlerFunc {
 			AUD: conf.EZBSTA.JWT.Audience,
 			EXP: expirationTime.Unix(),
 		}
-
+		fmt.Println("JTI : " + payload.JTI)
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(key)
 		tokenString, tErr := token.SignedString(keystruct)
