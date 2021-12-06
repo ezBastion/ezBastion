@@ -5,7 +5,6 @@ import (
 	"errors"
 	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -36,8 +35,6 @@ func Renewtoken() gin.HandlerFunc {
 		expirationTime := time.Now().Add(time.Duration(ttl))
 		stauser := new(models.StaUser)
 		stauser.User = c.MustGet("user").(string)
-		// TODO Getting user properties from the cache...
-
 		j := c.MustGet("jwt").(*jwt.Token)
 		claims, _ := j.Claims.(jwt.MapClaims)
 		tjti := claims["jti"].(string)
@@ -48,6 +45,8 @@ func Renewtoken() gin.HandlerFunc {
 			AUD: conf.EZBSTA.JWT.Audience,
 			EXP: expirationTime.Unix(),
 		}
+		// TODO Setting user  into the cache but not now...
+
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(cert)
 		tokenString, tErr := token.SignedString(keystruct)
@@ -84,7 +83,7 @@ func Createtoken() gin.HandlerFunc {
 			return
 		}
 		stauser := conn.(models.StaUser)
-		// TODO Getting user properties from the cache...
+		// TODO Setting user properties into the cache but not now...
 
 		// ttl in nanoseconds
 		ttl := conf.EZBSTA.JWT.TTL * 1000000000
@@ -96,7 +95,7 @@ func Createtoken() gin.HandlerFunc {
 			AUD: conf.EZBSTA.JWT.Audience,
 			EXP: expirationTime.Unix(),
 		}
-		fmt.Println("JTI : " + payload.JTI)
+
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(key)
 		tokenString, tErr := token.SignedString(keystruct)

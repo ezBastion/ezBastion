@@ -32,6 +32,7 @@ type mainService struct {
 
 func (sm mainService) StartMainService(serverchan *chan bool) {
 	logmanager.Debug("#### Main service started #####")
+
 	// Pushing current conf to controllers
 	server := gin.Default()
 

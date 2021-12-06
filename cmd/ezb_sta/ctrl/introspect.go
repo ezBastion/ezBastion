@@ -2,6 +2,7 @@ package ctrl
 
 import (
 	"errors"
+	"ezBastion/cmd/ezb_sta/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,23 +12,16 @@ func Introspect() gin.HandlerFunc {
 		c.Request.ParseForm()
 		kform := "jti"
 		vform := c.Request.Form[kform]
-		if (len(vform) == 0) || (len(vform) > 1) {
+		if len(vform) != 1 {
 			c.AbortWithStatusJSON(http.StatusBadRequest, errors.New("#STA0200 - wrong jti request"))
 		}
-		// TODO how to compute the introspect part
-		// Checks the values set by the middleware
-		// Or use a cache to retrieve the connection from this jti
-		/*jwt := c.MustGet("jti").(string)
-		for _, j := range vform {
-			if j == jwt {
-				u := c.MustGet("connection").(models.StaUser)
-				c.JSON(http.StatusOK, u.ExtProperties)
-				return
-			}
+		// TODO how to compute the introspect part for a next feature
+		// Compute a DUMMY instrospect
+		u := new(models.IntrospectUser)
+		u.Samaccountname = "Dummy"
+		u.Groups = []string{"Dummy group A", "Dummy group B"}
+		c.JSON(http.StatusOK, u)
 
-		}
-		*/
-		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("#STA0299 - jti is not recognized"))
 	}
 
 }
