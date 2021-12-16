@@ -18,16 +18,18 @@
 package main
 
 import (
+	"ezBastion/cmd/ezb_sta/middleware"
+	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
 	"ezBastion/pkg/ez_cli"
 	"ezBastion/pkg/logmanager"
 	"ezBastion/pkg/servicemanager"
 	"ezBastion/pkg/setupmanager"
 	"fmt"
-	"github.com/jtblin/go-ldap-client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
+	"gopkg.in/ldap.v2"
 	"os"
 	"path"
 )
@@ -39,7 +41,8 @@ var (
 	conferr    error
 	err        error
 	staservice mainService
-	ldapclient *ldap.LDAPClient
+	ldapclient *models.Ldapinfo
+	conn       *ldap.Conn
 )
 
 const (
@@ -59,25 +62,48 @@ func init() {
 	conf, conferr = confmanager.CheckConfig(confPath, exePath)
 	if conferr == nil {
 		// successful bind *Conn is ready to be requested
-		ldapclient = &ldap.LDAPClient{
-			Base:         conf.EZBSTA.StaLdap.Base,
-			Host:         conf.EZBSTA.StaLdap.Host,
-			Port:         conf.EZBSTA.StaLdap.Port,
-			UseSSL:       conf.EZBSTA.StaLdap.UseSSL,
-			SkipTLS:      conf.EZBSTA.StaLdap.SkipTLS,
-			BindDN:       conf.EZBSTA.StaLdap.BindDN,
-			BindPassword: conf.EZBSTA.StaLdap.BindPassword,
-			UserFilter:   "(cn=%s)",
-			GroupFilter:  "(&(objectClass=group)(member=%s))",
-			Attributes:   []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
+		ldapclient = new(models.Ldapinfo)
+		ldapclient.Base = conf.EZBSTA.StaLdap.Base
+		ldapclient.Host = conf.EZBSTA.StaLdap.Host
+		ldapclient.Port = conf.EZBSTA.StaLdap.Port
+		ldapclient.UseSSL = conf.EZBSTA.StaLdap.UseSSL
+		ldapclient.SkipTLS = conf.EZBSTA.StaLdap.SkipTLS
+		ldapclient.BindDN = conf.EZBSTA.StaLdap.BindDN
+		ldapclient.BindUser = conf.EZBSTA.StaLdap.BindUser
+		ldapclient.BindPassword = conf.EZBSTA.StaLdap.BindPassword
+		ldapclient.ServerName = conf.EZBSTA.StaLdap.ServerName
+		ldapclient.UserFilter = "(cn=%s)"
+		ldapclient.GroupFilter = "(&(objectClass=group)(member=%s))"
+		ldapclient.Attributes = []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"}
+
+		//staservice = mainService{STAldapauth: ldapclient}
+		// Proceed to a test...
+		conn, err = ldap.Dial("tcp", ldapclient.ServerName)
+		if err != nil {
+			fmt.Errorf("Failed to connect. %s", err)
 		}
-		staservice = mainService{STAldapauth: ldapclient}
+
+		if err := conn.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
+			fmt.Errorf("Failed to bind. %s", err)
+		}
+
+		lconn, err := middleware.LDAPconnect(ldapclient)
+		if err != nil {
+			fmt.Printf("Failed to connect. %s", err)
+		}
+		ldapclient.LConn = lconn
+		ok, _, err := middleware.LDAPauth(ldapclient, "testbasic", "P@ssw0rd!")
+		if ok {
+			fmt.Printf("%v", err)
+			return
+		}
+
 	}
 }
 
 func main() {
 	//All hardcoded path MUST be ONLY in main.go, it's bad enough.
-	defer ldapclient.Close()
+	defer conn.Close()
 
 	if conferr == nil {
 		IsWindowsService, err := svc.IsWindowsService()

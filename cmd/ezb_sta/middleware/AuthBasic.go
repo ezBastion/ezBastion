@@ -6,13 +6,12 @@ import (
 	"ezBastion/cmd/ezb_sta/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jtblin/go-ldap-client"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
 
-func EzbAuthBasic(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
+func EzbAuthBasic(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		logg := log.WithFields(log.Fields{"Middleware": "basic"})
 		auth := strings.SplitN(c.Request.Header.Get("Authorization"), " ", 2)
@@ -35,24 +34,24 @@ func EzbAuthBasic(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
 			username := pair[0]
 			password := pair[1]
 
-			ok, attr, err := ldapclient.Authenticate(username, password)
+			ok, _, err := LDAPauth(ldapclient, username, password)
 			if ok {
 				// user is computed from specific module
 				stauser := models.StaUser{}
 				// Compute the group list
-				groupsnames, aderr := ldapclient.GetGroupsOfUser(attr["distinguishedName"])
+				/*groupsnames, aderr := ldapclient.GetGroupsOfUser(attr["distinguishedName"])
 				if aderr != nil {
 					log.Errorf("Error when getting groups for user %s ", username)
 				} else {
 					stauser.UserGroups = groupsnames
-				}
+				}*/
 				stauser.User = username
 				attr, err := F_GetADproperties(username, ldapclient)
 				if err != nil {
 					logg.Warning(fmt.Sprintf("Active Directory properties retrieved errors for user %s", username))
 				} else {
 					stauser.ExtProperties = attr
-					stauser.ExtProperties.Groups = groupsnames
+					//stauser.ExtProperties.Groups = groupsnames
 				}
 				c.Set("connection", stauser)
 				c.Set("aud", "ad")

@@ -67,7 +67,9 @@ type StaLdap struct {
 	UseSSL       bool   `ini:"usessl" json:"usessl" toml:"usessl" comment:"Flag to use or not SSL"`
 	SkipTLS      bool   `ini:"skiptls" json:"skiptls" toml:"skiptls" comment:"Flag to skip TLS"`
 	BindDN       string `ini:"binddn" json:"binddn" toml:"binddn" comment:"Distinguished name for LDAP connector user"`
+	BindUser     string `ini:"binduser" json:"binduser" toml:"binduser" comment:"LDAP connector user"`
 	BindPassword string `ini:"bindpassword" json:"bindpassword" toml:"bindpassword" comment:"Password of the connector user"`
+	ServerName   string `ini:"servername" json:"servername" toml:"servername" comment:"Domain server name for SSL connection"`
 }
 
 type JWT struct {

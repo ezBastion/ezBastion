@@ -9,8 +9,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
-	"github.com/jtblin/go-ldap-client"
-	genldap "gopkg.in/ldap.v2"
+	"gopkg.in/ldap.v2"
 	"net/http"
 	"path"
 	"strconv"
@@ -57,16 +56,16 @@ func checkDBUser(c *gin.Context, username string, password string) (errorcode in
 	return errorcode
 }
 
-func F_GetADproperties(username string, lc *ldap.LDAPClient) (iu *models.IntrospectUser, err error) {
+func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.IntrospectUser, err error) {
 
-	searchRequest := genldap.NewSearchRequest(
+	searchRequest := ldap.NewSearchRequest(
 		lc.Base,
-		genldap.ScopeWholeSubtree, genldap.NeverDerefAliases, 0, 0, false,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf(lc.UserFilter, username),
 		[]string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
 		nil,
 	)
-	sr, err := lc.Conn.Search(searchRequest)
+	sr, err := lc.LConn.Search(searchRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +81,56 @@ func F_GetADproperties(username string, lc *ldap.LDAPClient) (iu *models.Introsp
 		iu.Ntaccount = firstentry.GetAttributeValue("ntaccount")
 		iu.Ou = firstentry.GetAttributeValue("ou")
 		iu.Samaccountname = firstentry.GetAttributeValue("samaccountname")
-		iu.Groups, _ = lc.GetGroupsOfUser(firstentry.DN)
+		//TODO groups
+		//iu.Groups, _ = lc.GetGroupsOfUser(firstentry.DN)
 	}
 
 	return iu, nil
+}
+func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
+	conn, err := ldap.Dial("tcp", ldapclient.ServerName)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to connect. %s", err)
+	}
+
+	if err := conn.Bind(ldapclient.BindUser, ldapclient.BindPassword); err != nil {
+		return nil, fmt.Errorf("Failed to bind. %s", err)
+	}
+
+	return conn, nil
+}
+
+func LDAPauth(ldapclient *models.Ldapinfo, user string, pass string) (bool, []string, error) {
+	result, err := ldapclient.LConn.Search(ldap.NewSearchRequest(
+		ldapclient.Base,
+		ldap.ScopeWholeSubtree,
+		ldap.NeverDerefAliases,
+		0,
+		0,
+		false,
+		fmt.Sprintf(ldapclient.UserFilter, user),
+		[]string{"dn"},
+		nil,
+	))
+
+	if err != nil {
+		return false, nil, fmt.Errorf("Failed to find user. %s", err)
+	}
+
+	if len(result.Entries) < 1 {
+		return false, nil, fmt.Errorf("User does not exist")
+	}
+
+	if len(result.Entries) > 1 {
+		return false, nil, fmt.Errorf("Too many entries returned")
+	}
+
+	if err := ldapclient.LConn.Bind(result.Entries[0].DN, pass); err != nil {
+		fmt.Printf("Failed to auth. %s", err)
+	} else {
+		fmt.Printf("Authenticated successfuly!")
+	}
+
+	return true, nil, nil
 }

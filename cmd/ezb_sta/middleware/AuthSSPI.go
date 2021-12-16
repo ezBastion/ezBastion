@@ -5,7 +5,6 @@ import (
 	"ezBastion/cmd/ezb_sta/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jtblin/go-ldap-client"
 	"github.com/quasoft/websspi"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -30,7 +29,7 @@ func init() {
 	h = auth.WithAuth(handler)
 }
 
-func EzbAuthSSPI(ldapclient *ldap.LDAPClient) gin.HandlerFunc {
+func EzbAuthSSPI(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// SSPI middleware changes result, so it must be set at the end, and exit immediately if one of the other middlerware

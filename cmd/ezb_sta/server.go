@@ -18,16 +18,16 @@ package main
 import (
 	"ezBastion/cmd/ezb_sta/ctrl"
 	"ezBastion/cmd/ezb_sta/middleware"
+	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/logmanager"
 	"github.com/gin-gonic/gin"
-	"github.com/jtblin/go-ldap-client"
 	"path"
 	"strconv"
 )
 
 // Must implement Mainservice interface from servicemanager package
 type mainService struct {
-	STAldapauth *ldap.LDAPClient
+	STAldapauth *models.Ldapinfo
 }
 
 func (sm mainService) StartMainService(serverchan *chan bool) {
