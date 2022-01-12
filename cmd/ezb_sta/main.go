@@ -26,10 +26,10 @@ import (
 	"ezBastion/pkg/servicemanager"
 	"ezBastion/pkg/setupmanager"
 	"fmt"
+	"github.com/go-ldap/ldap"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
-	"gopkg.in/ldap.v2"
 	"os"
 	"path"
 )
@@ -77,15 +77,6 @@ func init() {
 		ldapclient.Attributes = []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"}
 
 		//staservice = mainService{STAldapauth: ldapclient}
-		// Proceed to a test...
-		conn, err = ldap.Dial("tcp", ldapclient.ServerName)
-		if err != nil {
-			fmt.Errorf("Failed to connect. %s", err)
-		}
-
-		if err := conn.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
-			fmt.Errorf("Failed to bind. %s", err)
-		}
 
 		lconn, err := middleware.LDAPconnect(ldapclient)
 		if err != nil {

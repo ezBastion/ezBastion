@@ -88,17 +88,29 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 	return iu, nil
 }
 func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
-	conn, err := ldap.Dial("tcp", ldapclient.ServerName)
-
+	// Proceed to a test...
+	ldapurl := fmt.Sprintf("%s:636", ldapclient.ServerName)
+	tlsconf := &tls.Config{InsecureSkipVerify: true}
+	/* TODO
+	// Load cer & key files into a pair of []byte
+	cert, err := tls.X509KeyPair(cer, key)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to connect. %s", err)
+	    log.Fatal(err)
+	}
+	tlsCong := &tls.Config{Certificates: []tls.Certificate{cert}}
+	*/
+	l, err := ldap.DialTLS("tcp", ldapurl, tlsconf)
+	if err != nil {
+		fmt.Errorf("Failed to connect. %s", err)
+		return nil, err
 	}
 
-	if err := conn.Bind(ldapclient.BindUser, ldapclient.BindPassword); err != nil {
-		return nil, fmt.Errorf("Failed to bind. %s", err)
+	if err := l.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
+		fmt.Errorf("Failed to bind. %s", err)
+		return nil, err
 	}
 
-	return conn, nil
+	return l, nil
 }
 
 func LDAPauth(ldapclient *models.Ldapinfo, user string, pass string) (bool, []string, error) {
