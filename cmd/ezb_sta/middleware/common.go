@@ -6,6 +6,7 @@ import (
 	db "ezBastion/cmd/ezb_db/models"
 	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
+	"ezBastion/pkg/setupmanager"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
@@ -89,16 +90,30 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 }
 func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
 	// Proceed to a test...
-	ldapurl := fmt.Sprintf("%s:636", ldapclient.ServerName)
-	tlsconf := &tls.Config{InsecureSkipVerify: true}
-	/* TODO
-	// Load cer & key files into a pair of []byte
-	cert, err := tls.X509KeyPair(cer, key)
+	ldapurl := fmt.Sprintf("%s:389", ldapclient.ServerName)
+	l, err := ldap.Dial("tcp", ldapurl)
 	if err != nil {
-	    log.Fatal(err)
+		fmt.Errorf("Failed to connect. %s", err)
+		return nil, err
 	}
-	tlsCong := &tls.Config{Certificates: []tls.Certificate{cert}}
-	*/
+
+	if err := l.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
+		fmt.Errorf("Failed to bind. %s", err)
+		return nil, err
+	}
+
+	return l, nil
+}
+
+func LDAPTLSconnect(ldapclient *models.Ldapinfo, certfile string, pkfile string, srvname string) (*ldap.Conn, error) {
+	// Proceed to a test...
+	exePath, err := setupmanager.ExePath()
+	ldapurl := fmt.Sprintf("%s:636", ldapclient.ServerName)
+	//tlsconf := &tls.Config{InsecureSkipVerify: true}
+
+	// Load cer & key files into a pair of []byte
+	cert, err := tls.LoadX509KeyPair(path.Join(exePath, certfile), path.Join(exePath, pkfile))
+	tlsconf := &tls.Config{ServerName: srvname, Certificates: []tls.Certificate{cert}}
 	l, err := ldap.DialTLS("tcp", ldapurl, tlsconf)
 	if err != nil {
 		fmt.Errorf("Failed to connect. %s", err)

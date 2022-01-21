@@ -73,6 +73,8 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.EZBSTA.StaLdap.BindUser = ""
 		conf.EZBSTA.StaLdap.BindPassword = ""
 		conf.EZBSTA.StaLdap.ServerName = ""
+		conf.EZBSTA.StaLdap.LDAPcrt = "cert/ldap.cer"
+		conf.EZBSTA.StaLdap.LDAPpk = "cert/ldap.key"
 		conf.EZBWKS.ScriptPath = path.Join(exePath, "script")
 		conf.EZBWKS.JobPath = path.Join(exePath, "job")
 		conf.EZBWKS.LimitMax = 0

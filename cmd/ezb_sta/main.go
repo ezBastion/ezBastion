@@ -78,7 +78,7 @@ func init() {
 
 		//staservice = mainService{STAldapauth: ldapclient}
 
-		lconn, err := middleware.LDAPconnect(ldapclient)
+		lconn, err := middleware.LDAPTLSconnect(ldapclient, conf.EZBSTA.StaLdap.LDAPcrt, conf.EZBSTA.StaLdap.LDAPpk, conf.EZBSTA.StaLdap.ServerName)
 		if err != nil {
 			fmt.Printf("Failed to connect. %s", err)
 		}

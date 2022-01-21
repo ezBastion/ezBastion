@@ -70,6 +70,8 @@ type StaLdap struct {
 	BindUser     string `ini:"binduser" json:"binduser" toml:"binduser" comment:"LDAP connector user"`
 	BindPassword string `ini:"bindpassword" json:"bindpassword" toml:"bindpassword" comment:"Password of the connector user"`
 	ServerName   string `ini:"servername" json:"servername" toml:"servername" comment:"Domain server name for SSL connection"`
+	LDAPcrt      string `ini:"ldapcrt" json:"ldapcrt" toml:"ldapcrt" comment:"Crt public certificate file for LDAP access"`
+	LDAPpk       string `ini:"ldappk" json:"ldappk" toml:"ldappk" comment:"private key of certificate file for LDAP access"`
 }
 
 type JWT struct {
