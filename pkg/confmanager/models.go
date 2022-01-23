@@ -72,6 +72,8 @@ type StaLdap struct {
 	ServerName   string `ini:"servername" json:"servername" toml:"servername" comment:"Domain server name for SSL connection"`
 	LDAPcrt      string `ini:"ldapcrt" json:"ldapcrt" toml:"ldapcrt" comment:"Crt public certificate file for LDAP access"`
 	LDAPpk       string `ini:"ldappk" json:"ldappk" toml:"ldappk" comment:"private key of certificate file for LDAP access"`
+	Userfilter   string `ini:"userfilter" json:"userfilter" toml:"userfilter" comment:"filter string to search users"`
+	Groupfilter  string `ini:"groupfilter" json:"groupfilter" toml:"groupfilter" comment:"filter string to reach groups"`
 }
 
 type JWT struct {

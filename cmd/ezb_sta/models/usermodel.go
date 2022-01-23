@@ -33,6 +33,8 @@ type Ldapinfo struct {
 	BindUser     string     `json:"binduser"`
 	BindPassword string     `json:"bindpassword"`
 	ServerName   string     `json:"servername"`
+	LDAPcrt      string     `json:"ldapcrt"`
+	LDAPpk       string     `json:"ldappk"`
 	UserFilter   string     `json:"userfilter"`
 	GroupFilter  string     `json:"groupfilter"`
 	Attributes   []string   `json:"attributes"`

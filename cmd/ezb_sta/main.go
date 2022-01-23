@@ -72,23 +72,19 @@ func init() {
 		ldapclient.BindUser = conf.EZBSTA.StaLdap.BindUser
 		ldapclient.BindPassword = conf.EZBSTA.StaLdap.BindPassword
 		ldapclient.ServerName = conf.EZBSTA.StaLdap.ServerName
-		ldapclient.UserFilter = "(cn=%s)"
-		ldapclient.GroupFilter = "(&(objectClass=group)(member=%s))"
+		ldapclient.LDAPcrt = conf.EZBSTA.StaLdap.LDAPcrt
+		ldapclient.LDAPpk = conf.EZBSTA.StaLdap.LDAPpk
+		ldapclient.UserFilter = conf.EZBSTA.StaLdap.Userfilter
+		ldapclient.GroupFilter = conf.EZBSTA.StaLdap.Groupfilter
 		ldapclient.Attributes = []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"}
 
 		//staservice = mainService{STAldapauth: ldapclient}
 
-		lconn, err := middleware.LDAPTLSconnect(ldapclient, conf.EZBSTA.StaLdap.LDAPcrt, conf.EZBSTA.StaLdap.LDAPpk, conf.EZBSTA.StaLdap.ServerName)
+		lconn, err := middleware.LDAPconnect(ldapclient)
 		if err != nil {
 			fmt.Printf("Failed to connect. %s", err)
 		}
 		ldapclient.LConn = lconn
-		ok, _, err := middleware.LDAPauth(ldapclient, "testbasic", "P@ssw0rd!")
-		if ok {
-			fmt.Printf("%v", err)
-			return
-		}
-
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	db "ezBastion/cmd/ezb_db/models"
 	"ezBastion/cmd/ezb_sta/models"
 	"ezBastion/pkg/confmanager"
+	"ezBastion/pkg/logmanager"
 	"ezBastion/pkg/setupmanager"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -88,41 +89,62 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 
 	return iu, nil
 }
+
 func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
+	// This is the main entry to handle LDAP connection. First check the configuration to see the settings
+	if ldapclient.SkipTLS {
+		if ldapclient.UseSSL {
+			// If port is set to 389, switch to 636, otherwise use the port defined
+			if ldapclient.Port == 389 {
+				logmanager.Debug("LDAP client port set to 389 but also using SSL, so switched to 636")
+				ldapclient.Port = 636
+			}
+			return ldapSTDconnect(ldapclient)
+		} else {
+			// If port set to a value different from 389, switched to 389, standard non SSL port
+			if ldapclient.Port != 389 {
+				logmanager.Debug(fmt.Sprintf("LDAP client port set to %d but not using SSLL, so switched to 389", ldapclient.Port))
+				ldapclient.Port = 389
+			}
+			return ldapSTDconnect(ldapclient)
+		}
+	} else {
+		// Will use the TLS to connect the LDAP, bypass use SSL and port check
+		return ldapTLSconnect(ldapclient)
+	}
+}
+
+func ldapSTDconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
 	// Proceed to a test...
-	ldapurl := fmt.Sprintf("%s:389", ldapclient.ServerName)
+	ldapurl := fmt.Sprintf("%s:%d", ldapclient.ServerName, ldapclient.Port)
 	l, err := ldap.Dial("tcp", ldapurl)
 	if err != nil {
-		fmt.Errorf("Failed to connect. %s", err)
-		return nil, err
+		return nil, fmt.Errorf("Failed to connect. %s", err)
 	}
 
 	if err := l.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
-		fmt.Errorf("Failed to bind. %s", err)
-		return nil, err
+		return nil, fmt.Errorf("Failed to bind. %s", err)
 	}
 
 	return l, nil
 }
 
-func LDAPTLSconnect(ldapclient *models.Ldapinfo, certfile string, pkfile string, srvname string) (*ldap.Conn, error) {
+func ldapTLSconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
 	// Proceed to a test...
 	exePath, err := setupmanager.ExePath()
-	ldapurl := fmt.Sprintf("%s:636", ldapclient.ServerName)
+	ldapurl := fmt.Sprintf("%s:%d", ldapclient.ServerName, ldapclient.Port)
 	//tlsconf := &tls.Config{InsecureSkipVerify: true}
 
 	// Load cer & key files into a pair of []byte
-	cert, err := tls.LoadX509KeyPair(path.Join(exePath, certfile), path.Join(exePath, pkfile))
-	tlsconf := &tls.Config{ServerName: srvname, Certificates: []tls.Certificate{cert}}
+	cert, err := tls.LoadX509KeyPair(path.Join(exePath, ldapclient.LDAPcrt), path.Join(exePath, ldapclient.LDAPpk))
+	tlsconf := &tls.Config{ServerName: ldapclient.ServerName, Certificates: []tls.Certificate{cert}}
 	l, err := ldap.DialTLS("tcp", ldapurl, tlsconf)
 	if err != nil {
-		fmt.Errorf("Failed to connect. %s", err)
-		return nil, err
+		return nil, fmt.Errorf("Failed to connect. %s", err)
 	}
 
 	if err := l.Bind(ldapclient.BindDN, ldapclient.BindPassword); err != nil {
-		fmt.Errorf("Failed to bind. %s", err)
-		return nil, err
+		return nil, fmt.Errorf("Failed to bind. %s", err)
 	}
 
 	return l, nil
