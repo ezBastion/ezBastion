@@ -64,7 +64,6 @@ func init() {
 		// successful bind *Conn is ready to be requested
 		ldapclient = new(models.Ldapinfo)
 		ldapclient.Base = conf.EZBSTA.StaLdap.Base
-		ldapclient.Host = conf.EZBSTA.StaLdap.Host
 		ldapclient.Port = conf.EZBSTA.StaLdap.Port
 		ldapclient.UseSSL = conf.EZBSTA.StaLdap.UseSSL
 		ldapclient.SkipTLS = conf.EZBSTA.StaLdap.SkipTLS
@@ -97,7 +96,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 		}
-		logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, LOGFILE, conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
+		_ = logmanager.SetLogLevel(conf.Logger.LogLevel, exePath, LOGFILE, conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, IsWindowsService)
 		if IsWindowsService {
 			servicemanager.RunService(SERVICENAME, false, staservice)
 			return
@@ -132,5 +131,5 @@ INFO:
 		http://www.ezbastion.com		
 		support@ezbastion.com
 		`, cli.AppHelpTemplate)
-	app.Run(os.Args)
+	_ = app.Run(os.Args)
 }

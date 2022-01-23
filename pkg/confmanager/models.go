@@ -62,7 +62,6 @@ type EZBSTA struct {
 
 type StaLdap struct {
 	Base         string `ini:"base" json:"base" toml:"base" comment:"Base DN of the LDAP searcher"`
-	Host         string `ini:"host" json:"host" toml:"host" comment:"Specific LDAP server name"`
 	Port         int    `ini:"port" json:"port" toml:"port" comment:"Port number to access ldap server"`
 	UseSSL       bool   `ini:"usessl" json:"usessl" toml:"usessl" comment:"Flag to use or not SSL"`
 	SkipTLS      bool   `ini:"skiptls" json:"skiptls" toml:"skiptls" comment:"Flag to skip TLS"`

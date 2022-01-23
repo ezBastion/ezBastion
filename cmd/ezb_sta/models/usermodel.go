@@ -25,7 +25,6 @@ type IntrospectUser struct {
 
 type Ldapinfo struct {
 	Base         string     `json:"base"`
-	Host         string     `json:"host"`
 	Port         int        `json:"port"`
 	UseSSL       bool       `json:"usessl"`
 	SkipTLS      bool       `json:"skiptls"`

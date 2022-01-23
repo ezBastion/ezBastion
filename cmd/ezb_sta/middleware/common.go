@@ -96,14 +96,14 @@ func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
 		if ldapclient.UseSSL {
 			// If port is set to 389, switch to 636, otherwise use the port defined
 			if ldapclient.Port == 389 {
-				logmanager.Debug("LDAP client port set to 389 but also using SSL, so switched to 636")
+				_ = logmanager.Debug("LDAP client port set to 389 but also using SSL, so switched to 636")
 				ldapclient.Port = 636
 			}
 			return ldapSTDconnect(ldapclient)
 		} else {
 			// If port set to a value different from 389, switched to 389, standard non SSL port
 			if ldapclient.Port != 389 {
-				logmanager.Debug(fmt.Sprintf("LDAP client port set to %d but not using SSLL, so switched to 389", ldapclient.Port))
+				_ = logmanager.Debug(fmt.Sprintf("LDAP client port set to %d but not using SSLL, so switched to 389", ldapclient.Port))
 				ldapclient.Port = 389
 			}
 			return ldapSTDconnect(ldapclient)
