@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -88,6 +89,32 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 	}
 
 	return iu, nil
+}
+
+func F_GetGroupNestedMemberOf(groupdn string, username string, lc *models.Ldapinfo) (found bool, err error) {
+	found = false
+
+	searchfilter := fmt.Sprintf("(&(objectCategory=Person)(sAMAccountName=*)(memberOf:1.2.840.113556.1.4.1941:=%s))", groupdn)
+	searchRequest := ldap.NewSearchRequest(
+		lc.Base,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		searchfilter,
+		[]string{"ntaccount", "samaccountname"},
+		nil,
+	)
+	sr, err := lc.LConn.Search(searchRequest)
+	if err != nil {
+		return false, err
+	}
+	if len(sr.Entries) > 0 {
+		for _, entry := range sr.Entries {
+			if strings.ToLower(entry.GetAttributeValue("samaccountname")) == strings.ToLower(username) {
+				found = true
+				break
+			}
+		}
+	}
+	return found, err
 }
 
 func LDAPconnect(ldapclient *models.Ldapinfo) (*ldap.Conn, error) {
