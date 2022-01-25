@@ -32,6 +32,7 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"os"
 	"path"
+	"strings"
 )
 
 var (
@@ -77,13 +78,18 @@ func init() {
 		ldapclient.GroupFilter = conf.EZBSTA.StaLdap.Groupfilter
 		ldapclient.Attributes = []string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"}
 
-		//staservice = mainService{STAldapauth: ldapclient}
-
 		lconn, err := middleware.LDAPconnect(ldapclient)
 		if err != nil {
 			fmt.Printf("Failed to connect. %s", err)
 		}
 		ldapclient.LConn = lconn
+		// Compute shortdomainname
+
+		sd := strings.Split(conf.EZBSTA.StaLdap.Base, ",")
+		line := sd[0]
+		ldapclient.Shortdomainname = strings.Split(line, "=")[1]
+
+		staservice = mainService{STAldapauth: ldapclient}
 	}
 }
 

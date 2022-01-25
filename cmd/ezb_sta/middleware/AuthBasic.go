@@ -45,7 +45,7 @@ func EzbAuthBasic(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 				} else {
 					stauser.UserGroups = groupsnames
 				}*/
-				stauser.User = username
+				stauser.User = fmt.Sprintf("%s\\%s", ldapclient.Shortdomainname, username)
 				attr, err := F_GetADproperties(username, ldapclient)
 				if err != nil {
 					logg.Warning(fmt.Sprintf("Active Directory properties retrieved errors for user %s", username))

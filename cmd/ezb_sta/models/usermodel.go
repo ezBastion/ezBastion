@@ -24,18 +24,19 @@ type IntrospectUser struct {
 }
 
 type Ldapinfo struct {
-	Base         string     `json:"base"`
-	Port         int        `json:"port"`
-	UseSSL       bool       `json:"usessl"`
-	SkipTLS      bool       `json:"skiptls"`
-	BindDN       string     `json:"binddn"`
-	BindUser     string     `json:"binduser"`
-	BindPassword string     `json:"bindpassword"`
-	ServerName   string     `json:"servername"`
-	LDAPcrt      string     `json:"ldapcrt"`
-	LDAPpk       string     `json:"ldappk"`
-	UserFilter   string     `json:"userfilter"`
-	GroupFilter  string     `json:"groupfilter"`
-	Attributes   []string   `json:"attributes"`
-	LConn        *ldap.Conn `json:"lconn"`
+	Base            string     `json:"base"`
+	Port            int        `json:"port"`
+	UseSSL          bool       `json:"usessl"`
+	SkipTLS         bool       `json:"skiptls"`
+	BindDN          string     `json:"binddn"`
+	BindUser        string     `json:"binduser"`
+	BindPassword    string     `json:"bindpassword"`
+	ServerName      string     `json:"servername"`
+	LDAPcrt         string     `json:"ldapcrt"`
+	LDAPpk          string     `json:"ldappk"`
+	UserFilter      string     `json:"userfilter"`
+	GroupFilter     string     `json:"groupfilter"`
+	Attributes      []string   `json:"attributes"`
+	LConn           *ldap.Conn `json:"lconn"`
+	Shortdomainname string     `json:"shortdomainname"`
 }

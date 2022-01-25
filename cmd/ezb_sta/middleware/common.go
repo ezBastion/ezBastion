@@ -176,9 +176,7 @@ func LDAPauth(ldapclient *models.Ldapinfo, user string, pass string) (bool, []st
 	}
 
 	if err := ldapclient.LConn.Bind(result.Entries[0].DN, pass); err != nil {
-		fmt.Printf("Failed to auth. %s", err)
-	} else {
-		fmt.Printf("Authenticated successfuly!")
+		return false, nil, fmt.Errorf("Failed to auth. %s", err)
 	}
 
 	return true, nil, nil
