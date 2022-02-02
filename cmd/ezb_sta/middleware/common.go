@@ -91,15 +91,15 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 	return iu, nil
 }
 
-func F_GetGroupNestedMemberOf(groupdn string, username string, lc *models.Ldapinfo) (found bool, err error) {
+func F_GetGroupNestedMemberOf(groupdn string, user string, lc *models.Ldapinfo) (found bool, err error) {
 	found = false
 
-	searchfilter := fmt.Sprintf("(&(objectCategory=Person)(sAMAccountName=*)(memberOf:1.2.840.113556.1.4.1941:=%s))", groupdn)
+	searchfilter := fmt.Sprintf("(&(objectCategory=person)(sAMAccountName=*)(memberOf:1.2.840.113556.1.4.1941:=%s))", groupdn)
 	searchRequest := ldap.NewSearchRequest(
 		lc.Base,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		searchfilter,
-		[]string{"ntaccount", "samaccountname"},
+		[]string{"samaccountname"},
 		nil,
 	)
 	sr, err := lc.LConn.Search(searchRequest)
@@ -108,7 +108,7 @@ func F_GetGroupNestedMemberOf(groupdn string, username string, lc *models.Ldapin
 	}
 	if len(sr.Entries) > 0 {
 		for _, entry := range sr.Entries {
-			if strings.ToLower(entry.GetAttributeValue("samaccountname")) == strings.ToLower(username) {
+			if strings.ToLower(entry.GetAttributeValue("sAMAccountName")) == strings.ToLower(user) {
 				found = true
 				break
 			}
