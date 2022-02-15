@@ -65,6 +65,6 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	server.GET("/renew", ctrl.Renewtoken())
 	server.POST("/access", ctrl.Access())
 	server.GET("/introspect", ctrl.Introspect())
-	server.GET("/memberof", ctrl.Memberof())
+	server.GET("/memberof", ctrl.Memberof(sm.STAldapauth))
 	server.RunTLS(":"+strconv.Itoa(conf.EZBSTA.Network.Port), path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 }

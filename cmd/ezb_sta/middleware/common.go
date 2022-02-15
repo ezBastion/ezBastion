@@ -59,6 +59,27 @@ func checkDBUser(c *gin.Context, username string, password string) (errorcode in
 	return errorcode
 }
 
+func F_GetADObjectDN(objectname string, lc *models.Ldapinfo) (objectDN string, err error) {
+
+	searchRequest := ldap.NewSearchRequest(
+		lc.Base,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf(lc.UserFilter, objectname),
+		[]string{"distinguishedName"},
+		nil,
+	)
+	sr, err := lc.LConn.Search(searchRequest)
+	if err != nil {
+		return "", err
+	}
+	if len(sr.Entries) > 0 {
+		firstentry := sr.Entries[0]
+		return firstentry.DN, nil
+	}
+
+	return "", fmt.Errorf("object %s not found", objectname)
+}
+
 func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.IntrospectUser, err error) {
 
 	searchRequest := ldap.NewSearchRequest(
@@ -94,6 +115,13 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 func F_GetGroupNestedMemberOf(groupdn string, user string, lc *models.Ldapinfo) (found bool, err error) {
 	found = false
 
+	username := ""
+	i := strings.Index(user, "\\")
+	if i > -1 {
+		username = user[i+1:]
+	} else {
+		username = user
+	}
 	searchfilter := fmt.Sprintf("(&(objectCategory=person)(sAMAccountName=*)(memberOf:1.2.840.113556.1.4.1941:=%s))", groupdn)
 	searchRequest := ldap.NewSearchRequest(
 		lc.Base,
@@ -108,7 +136,7 @@ func F_GetGroupNestedMemberOf(groupdn string, user string, lc *models.Ldapinfo) 
 	}
 	if len(sr.Entries) > 0 {
 		for _, entry := range sr.Entries {
-			if strings.ToLower(entry.GetAttributeValue("sAMAccountName")) == strings.ToLower(user) {
+			if strings.ToLower(entry.GetAttributeValue("sAMAccountName")) == strings.ToLower(username) {
 				found = true
 				break
 			}

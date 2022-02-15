@@ -2,6 +2,7 @@ package models
 
 import "gopkg.in/ldap.v2"
 
+// TODO remove UserGroups
 type StaUser struct {
 	User          string          `json:"user"`
 	UserSid       string          `json:"usersid"`

@@ -2,13 +2,14 @@ package ctrl
 
 import (
 	"errors"
+	"ezBastion/cmd/ezb_sta/middleware"
 	"ezBastion/cmd/ezb_sta/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strings"
 )
 
-func Memberof() gin.HandlerFunc {
+func Memberof(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.ParseForm()
 		kform := "group"
@@ -18,13 +19,17 @@ func Memberof() gin.HandlerFunc {
 		}
 		stauser := c.MustGet("connection").(models.StaUser)
 		for _, gname := range vform {
-			if len(stauser.UserGroups) != 0 {
-				for _, groups := range stauser.UserGroups {
-					if strings.ToLower(groups) == strings.ToLower(gname) {
-						c.JSON(http.StatusOK, "1")
-						return
-					}
-				}
+			gnameDN, err := middleware.F_GetADObjectDN(gname, ldapclient)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusConflict, fmt.Errorf("#STA0197 - Error during the DN request for the group %s ", gname))
+			}
+			found, err := middleware.F_GetGroupNestedMemberOf(gnameDN, stauser.User, ldapclient)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusConflict, fmt.Errorf("#STA0198 - Error, computing the nested group %s", gname))
+			}
+			if found {
+				c.JSON(http.StatusOK, "1")
+				return
 			}
 		}
 		c.AbortWithStatusJSON(http.StatusForbidden, errors.New("#STA0199 - user is not member of the requested group"))
