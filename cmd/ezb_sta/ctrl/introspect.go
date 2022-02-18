@@ -2,26 +2,42 @@ package ctrl
 
 import (
 	"errors"
+	"ezBastion/cmd/ezb_sta/middleware"
 	"ezBastion/cmd/ezb_sta/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
-func Introspect() gin.HandlerFunc {
+func Introspect(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Request.ParseForm()
-		kform := "jti"
-		vform := c.Request.Form[kform]
-		if len(vform) != 1 {
-			c.AbortWithStatusJSON(http.StatusBadRequest, errors.New("#STA0200 - wrong jti request"))
+		j, err := c.Get("jti")
+		if err == false {
+			c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0003"))
 		}
-		// TODO how to compute the introspect part for a next feature
-		// Compute a DUMMY instrospect
-		u := new(models.IntrospectUser)
-		u.Samaccountname = "Dummy"
-		u.Groups = []string{"Dummy group A", "Dummy group B"}
-		c.JSON(http.StatusOK, u)
+		user, ok := ldapclient.JTIMap[fmt.Sprintf("%s", j)]
+		if ok {
+			username := strings.Split(user, "\\")
+			u := new(models.IntrospectUser)
+			ADobj, err := middleware.F_GetADproperties(username[1], ldapclient)
+			if err != nil {
+				c.AbortWithError(http.StatusConflict, errors.New("#STA-INSP0002"))
+			}
+			u.Groups = ADobj.Groups
+			u.Ou = ADobj.Ou
+			u.Samaccountname = ADobj.Samaccountname
+			u.Ntaccount = ADobj.Ntaccount
+			u.Givenname = ADobj.Givenname
+			u.Emailaddress = ADobj.Emailaddress
+			u.Description = ADobj.Description
+			u.Distinguishedname = ADobj.Distinguishedname
+			u.Displayname = ADobj.Displayname
 
+			c.JSON(http.StatusOK, u)
+		} else {
+			c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0001"))
+		}
 	}
 
 }

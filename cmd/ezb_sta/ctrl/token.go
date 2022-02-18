@@ -17,7 +17,7 @@ func init() {
 	gob.Register(models.StaUser{})
 }
 
-func Renewtoken() gin.HandlerFunc {
+func Renewtoken(j map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ExePath := c.GetString("exPath")
 		conf, err := c.Keys["configuration"].(confmanager.Configuration)
@@ -63,7 +63,7 @@ func Renewtoken() gin.HandlerFunc {
 	}
 }
 
-func Createtoken() gin.HandlerFunc {
+func Createtoken(j map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ExePath := c.GetString("exPath")
 		conf, err := c.Keys["configuration"].(confmanager.Configuration)
@@ -95,6 +95,9 @@ func Createtoken() gin.HandlerFunc {
 			AUD: conf.EZBSTA.JWT.Audience,
 			EXP: expirationTime.Unix(),
 		}
+
+		// JTI storage
+		j[payload.JTI] = stauser.User
 
 		token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
 		keystruct, _ := jwt.ParseECPrivateKeyFromPEM(key)

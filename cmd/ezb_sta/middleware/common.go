@@ -105,8 +105,7 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 		iu.Ntaccount = firstentry.GetAttributeValue("ntaccount")
 		iu.Ou = firstentry.GetAttributeValue("ou")
 		iu.Samaccountname = firstentry.GetAttributeValue("samaccountname")
-		//TODO groups
-		//iu.Groups, _ = lc.GetGroupsOfUser(firstentry.DN)
+		// TODO Groups
 	}
 
 	return iu, nil

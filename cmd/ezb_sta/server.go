@@ -60,11 +60,11 @@ func (sm mainService) StartMainService(serverchan *chan bool) {
 	server.Use(middleware.EzbAuthSSPI(sm.STAldapauth))
 	// token endpoint
 	//route.POST("/token", middleware.EzbCache)
-	server.POST("/token", ctrl.Createtoken())
-	server.GET("/token", ctrl.Createtoken())
-	server.GET("/renew", ctrl.Renewtoken())
+	server.POST("/token", ctrl.Createtoken(sm.STAldapauth.JTIMap))
+	server.GET("/token", ctrl.Createtoken(sm.STAldapauth.JTIMap))
+	server.GET("/renew", ctrl.Renewtoken(sm.STAldapauth.JTIMap))
 	server.POST("/access", ctrl.Access())
-	server.GET("/introspect", ctrl.Introspect())
+	server.GET("/introspect", ctrl.Introspect(sm.STAldapauth))
 	server.GET("/memberof", ctrl.Memberof(sm.STAldapauth))
 	server.RunTLS(":"+strconv.Itoa(conf.EZBSTA.Network.Port), path.Join(exePath, conf.TLS.PublicCert), path.Join(exePath, conf.TLS.PrivateKey))
 }

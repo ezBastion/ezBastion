@@ -90,6 +90,10 @@ func init() {
 		line := sd[0]
 		ldapclient.Shortdomainname = strings.Split(line, "=")[1]
 
+		// JTIMap => used to store JTI and domain\usernames
+		// TODO => all sta should be connected to exchange JTIMap...
+		// currently this will work only with one sta !
+		ldapclient.JTIMap = make(map[string]string)
 		staservice = mainService{STAldapauth: ldapclient}
 	}
 }
