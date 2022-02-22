@@ -47,10 +47,7 @@ func getUserFromAD(user string, ldapclient *models.Ldapinfo) (u *models.Introspe
 	if err != nil {
 		return nil, errors.New("#STA-INSP0002")
 	}
-	usergroups, err := middleware.F_GetGroups(username[1], ldapclient)
-	if err == nil {
-		u.Groups = usergroups
-	}
+	u.Groups = ADobj.Groups
 	u.Ou = ADobj.Ou
 	u.Samaccountname = ADobj.Samaccountname
 	u.Ntaccount = ADobj.Ntaccount
