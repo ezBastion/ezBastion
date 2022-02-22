@@ -11,7 +11,7 @@ import (
 
 func Memberof(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		j, err := c.Get("jti")
+		_, err := c.Get("jti")
 		if err == false {
 			c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0003, no jti sent"))
 		}

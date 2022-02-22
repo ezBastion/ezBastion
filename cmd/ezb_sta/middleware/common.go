@@ -111,6 +111,39 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 	return iu, nil
 }
 
+func F_GetGroups(user string, lc *models.Ldapinfo) (g []string, e error) {
+	username := ""
+	i := strings.Index(user, "\\")
+	if i > -1 {
+		username = user[i+1:]
+	} else {
+		username = user
+	}
+	userdn, err := F_GetADObjectDN(username, lc)
+	if err != nil {
+		return nil, err
+	}
+	searchfilter := fmt.Sprintf("(member:1.2.840.113556.1.4.1941:=%s)", userdn)
+	searchRequest := ldap.NewSearchRequest(
+		lc.Base,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		searchfilter,
+		[]string{"sAMAccountName"},
+		nil,
+	)
+	sr, err := lc.LConn.Search(searchRequest)
+	if err != nil {
+		return nil, err
+	}
+	if len(sr.Entries) > 0 {
+		for _, entry := range sr.Entries {
+			group := strings.ToLower(entry.GetAttributeValue("sAMAccountName"))
+			g = append(g, group)
+		}
+	}
+	return g, nil
+}
+
 func F_GetGroupNestedMemberOf(groupdn string, user string, lc *models.Ldapinfo) (found bool, err error) {
 	found = false
 
