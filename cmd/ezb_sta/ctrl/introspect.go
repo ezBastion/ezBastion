@@ -16,12 +16,8 @@ func Introspect(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 		if err == false {
 			c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0003, no jti sent"))
 		}
-		user, ok := ldapclient.JTIMap[fmt.Sprintf("%s", j)]
+		u, ok := ldapclient.JTIMap[fmt.Sprintf("%s", j)]
 		if ok {
-			u, err := getUserFromAD(fmt.Sprintf("%s", user), ldapclient)
-			if err != nil {
-				c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0002, no user found in AD"))
-			}
 			c.JSON(http.StatusOK, u)
 		} else {
 			// the jti is not in the cache map, lets compute it
@@ -34,6 +30,7 @@ func Introspect(ldapclient *models.Ldapinfo) gin.HandlerFunc {
 			if err != nil {
 				c.AbortWithError(http.StatusNoContent, errors.New("#STA-INSP0002, no user found in AD"))
 			}
+			ldapclient.JTIMap[fmt.Sprintf("%s", j)] = u
 			c.JSON(http.StatusOK, u)
 
 		}

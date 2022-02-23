@@ -40,5 +40,5 @@ type Ldapinfo struct {
 	Attributes      []string   `json:"attributes"`
 	LConn           *ldap.Conn `json:"lconn"`
 	Shortdomainname string     `json:"shortdomainname"`
-	JTIMap          map[string]string
+	JTIMap          map[string]*IntrospectUser
 }

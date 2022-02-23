@@ -86,7 +86,7 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 		lc.Base,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf(lc.UserFilter, username),
-		[]string{"ou", "ntaccount", "samaccountname", "description", "displayname", "emailaddress", "givenname", "distinguishedName"},
+		[]string{"ou", "ntaccount", "sAMAccountName", "description", "displayName", "mail", "givenName", "distinguishedName"},
 		nil,
 	)
 	sr, err := lc.LConn.Search(searchRequest)
@@ -98,14 +98,14 @@ func F_GetADproperties(username string, lc *models.Ldapinfo) (iu *models.Introsp
 		// We will take obnly the first entry (the first user matching username given
 		firstentry := sr.Entries[0]
 		iu.Distinguishedname = firstentry.DN
-		iu.Displayname = firstentry.GetAttributeValue("displayname")
+		iu.Displayname = firstentry.GetAttributeValue("displayName")
 		iu.Description = firstentry.GetAttributeValue("description")
-		iu.Emailaddress = firstentry.GetAttributeValue("emailaddress")
-		iu.Givenname = firstentry.GetAttributeValue("givenname")
+		iu.Emailaddress = firstentry.GetAttributeValue("mail")
+		iu.Givenname = firstentry.GetAttributeValue("givenName")
 		iu.Ntaccount = firstentry.GetAttributeValue("ntaccount")
 		iu.Ou = firstentry.GetAttributeValue("ou")
-		iu.Samaccountname = firstentry.GetAttributeValue("samaccountname")
-		usergroups, err := F_GetGroups(firstentry.GetAttributeValue("samaccountname"), lc)
+		iu.Samaccountname = firstentry.GetAttributeValue("sAMAccountName")
+		usergroups, err := F_GetGroups(firstentry.GetAttributeValue("sAMAccountName"), lc)
 		if err == nil {
 			iu.Groups = usergroups
 		}

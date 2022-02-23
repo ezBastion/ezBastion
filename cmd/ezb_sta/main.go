@@ -93,7 +93,7 @@ func init() {
 		// JTIMap => used to store JTI and domain\usernames
 		// TODO => all sta should be connected to exchange JTIMap...
 		// currently this will work only with one sta !
-		ldapclient.JTIMap = make(map[string]string)
+		ldapclient.JTIMap = make(map[string]*models.IntrospectUser)
 		staservice = mainService{STAldapauth: ldapclient}
 	}
 }
