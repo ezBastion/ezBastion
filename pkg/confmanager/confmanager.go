@@ -27,13 +27,13 @@ import (
 func CheckConfig(confPath string, exePath string) (conf Configuration, err error) {
 	raw, readerror := ioutil.ReadFile(confPath)
 	if readerror != nil {
-		fqdn, err := fqdn.FqdnHostname()
+		currentfqdn, err := fqdn.FqdnHostname()
 		if err != nil {
-			fqdn, _ = os.Hostname()
+			currentfqdn, _ = os.Hostname()
 		}
-		conf.EZBPKI.Network.FQDN = fqdn
+		conf.EZBPKI.Network.FQDN = currentfqdn
 		conf.EZBPKI.Network.Port = 5010
-		conf.TLS.SAN = []string{fqdn}
+		conf.TLS.SAN = []string{currentfqdn}
 		conf.EZBWKS.ServiceName = "ezb_wks"
 		conf.EZBWKS.ScriptInterpreter = "powershell.exe"
 		conf.EZBWKS.InterpreterParams = []string{"-NoLogo", "-NonInteractive", "-File"}
@@ -48,27 +48,39 @@ func CheckConfig(confPath string, exePath string) (conf Configuration, err error
 		conf.Logger.MaxSize = 5
 		conf.EZBDB.DB = "sqlite"
 		conf.EZBDB.SQLITE.DBPath = "db/ezbastion.db"
-		conf.EZBDB.NetworkPKI.FQDN = fqdn
+		conf.EZBDB.NetworkPKI.FQDN = currentfqdn
 		conf.EZBDB.NetworkPKI.Port = 5011
-		conf.EZBDB.NetworkJWT.FQDN = fqdn
+		conf.EZBDB.NetworkJWT.FQDN = currentfqdn
 		conf.EZBDB.NetworkJWT.Port = 5012
-		conf.EZBSRV.Network.FQDN = fqdn
+		conf.EZBSRV.Network.FQDN = currentfqdn
 		conf.EZBSRV.Network.Port = 5000
 		conf.EZBSRV.CacheL1 = 600
-		conf.EZBSRV.ExternalURL = fmt.Sprintf("http://%s:5000/", fqdn)
+		conf.EZBSRV.ExternalURL = fmt.Sprintf("http://%s:5000/", currentfqdn)
 		conf.EZBSRV.LB = "rand"
-		conf.EZBWKS.Network.FQDN = fqdn
+		conf.EZBWKS.Network.FQDN = currentfqdn
 		conf.EZBWKS.Network.Port = 5100
-		conf.EZBSTA.Network.FQDN = fqdn
+		conf.EZBSTA.Network.FQDN = currentfqdn
 		conf.EZBSTA.Network.Port = 1443
 		conf.EZBSTA.JWT.TTL = 1200
 		conf.EZBSTA.JWT.Audience = "ezBastion"
 		conf.EZBSTA.JWT.Issuer = "ezbastion"
+		conf.EZBSTA.StaLdap.Base = ""
+		conf.EZBSTA.StaLdap.Port = 389
+		conf.EZBSTA.StaLdap.UseSSL = false
+		conf.EZBSTA.StaLdap.SkipTLS = false
+		conf.EZBSTA.StaLdap.BindDN = ""
+		conf.EZBSTA.StaLdap.BindUser = ""
+		conf.EZBSTA.StaLdap.BindPassword = ""
+		conf.EZBSTA.StaLdap.ServerName = ""
+		conf.EZBSTA.StaLdap.LDAPcrt = "cert/ldap.cer"
+		conf.EZBSTA.StaLdap.LDAPpk = "cert/ldap.key"
+		conf.EZBSTA.StaLdap.Userfilter = ""
+		conf.EZBSTA.StaLdap.Groupfilter = ""
 		conf.EZBWKS.ScriptPath = path.Join(exePath, "script")
 		conf.EZBWKS.JobPath = path.Join(exePath, "job")
 		conf.EZBWKS.LimitMax = 0
 		conf.EZBWKS.LimitWarning = 0
-		conf.EZBADM.Network.FQDN = fqdn
+		conf.EZBADM.Network.FQDN = currentfqdn
 		conf.EZBADM.Network.Port = 8080
 		return conf, readerror
 	}
